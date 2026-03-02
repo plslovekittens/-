@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Volt Digital Store - Игры и программы</title>
+    <title>Volt Store - Игры, подписки, пополнение Steam</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,10 +21,11 @@
                 </div>
                 <ul class="nav-menu">
                     <li><a href="#home" class="active">Главная</a></li>
-                    <li><a href="#games">Игры</a></li>
+                    <li><a href="#steam-games">Игры Steam</a></li>
+                    <li><a href="#subscriptions">Подписки</a></li>
                     <li><a href="#software">Программы</a></li>
                     <li><a href="#antivirus">Антивирусы</a></li>
-                    <li><a href="#os">ОС</a></li>
+                    <li><a href="#steam-balance">Пополнение Steam</a></li>
                 </ul>
                 <div class="nav-actions">
                     <button class="search-btn" onclick="toggleSearch()"><i class="fas fa-search"></i></button>
@@ -40,7 +41,7 @@
     <!-- Поиск -->
     <div class="search-overlay" id="searchOverlay">
         <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Поиск игр и программ..." onkeyup="searchProducts()">
+            <input type="text" id="searchInput" placeholder="Поиск игр, подписок, программ..." onkeyup="searchProducts()">
             <button onclick="closeSearch()"><i class="fas fa-times"></i></button>
         </div>
         <div class="search-results" id="searchResults"></div>
@@ -51,12 +52,12 @@
         <div class="container">
             <div class="hero-content">
                 <h1 class="hero-title">
-                    <span class="gradient-text">Цифровой мир</span> <br>в твоих руках
+                    <span class="gradient-text">Volt Store</span> <br>игры, подписки, софт
                 </h1>
-                <p class="hero-subtitle">Тысячи игр и программ. Мгновенная доставка. Лучшие цены.</p>
+                <p class="hero-subtitle">Лицензионные ключи Steam, подписки на сервисы, программы и антивирусы. Мгновенная доставка.</p>
                 <div class="hero-buttons">
-                    <a href="#games" class="btn btn-primary">Начать покупки <i class="fas fa-arrow-right"></i></a>
-                    <a href="#popular" class="btn btn-secondary">Популярное</a>
+                    <a href="#steam-games" class="btn btn-primary">Купить игры <i class="fas fa-arrow-right"></i></a>
+                    <a href="#steam-balance" class="btn btn-secondary">Пополнить Steam</a>
                 </div>
                 <div class="hero-stats">
                     <div class="stat-item">
@@ -87,20 +88,38 @@
         </div>
     </section>
 
-    <!-- Игры -->
-    <section id="games" class="products">
+    <!-- Игры Steam -->
+    <section id="steam-games" class="products">
         <div class="container">
             <div class="section-header">
-                <h2>🎮 Игры</h2>
-                <p>Лучшие игры по лучшим ценам</p>
+                <h2>🎮 Игры для Steam</h2>
+                <p>Лицензионные ключи. Мгновенная активация.</p>
                 <div class="filter-tabs" id="gamesFilter">
-                    <button class="filter-btn active" onclick="filterProducts('all', 'games')">Все игры</button>
-                    <button class="filter-btn" onclick="filterProducts('rpg', 'games')">RPG</button>
-                    <button class="filter-btn" onclick="filterProducts('action', 'games')">Экшн</button>
-                    <button class="filter-btn" onclick="filterProducts('simulator', 'games')">Симуляторы</button>
+                    <button class="filter-btn active" onclick="filterProducts('all', 'steam-games')">Все игры</button>
+                    <button class="filter-btn" onclick="filterProducts('top', 'steam-games')">Топ продаж</button>
+                    <button class="filter-btn" onclick="filterProducts('new', 'steam-games')">Новинки</button>
+                    <button class="filter-btn" onclick="filterProducts('sale', 'steam-games')">Скидки</button>
                 </div>
             </div>
-            <div class="products-grid" id="gamesGrid"></div>
+            <div class="products-grid" id="steamGamesGrid"></div>
+        </div>
+    </section>
+
+    <!-- Подписки на сервисы -->
+    <section id="subscriptions" class="products">
+        <div class="container">
+            <div class="section-header">
+                <h2>📱 Подписки на сервисы</h2>
+                <p>Discord Nitro, Telegram Premium, Яндекс Музыка и другие</p>
+                <div class="filter-tabs" id="subscriptionsFilter">
+                    <button class="filter-btn active" onclick="filterProducts('all', 'subscriptions')">Все подписки</button>
+                    <button class="filter-btn" onclick="filterProducts('discord', 'subscriptions')">Discord</button>
+                    <button class="filter-btn" onclick="filterProducts('telegram', 'subscriptions')">Telegram</button>
+                    <button class="filter-btn" onclick="filterProducts('music', 'subscriptions')">Музыка</button>
+                    <button class="filter-btn" onclick="filterProducts('video', 'subscriptions')">Видео</button>
+                </div>
+            </div>
+            <div class="products-grid" id="subscriptionsGrid"></div>
         </div>
     </section>
 
@@ -109,11 +128,11 @@
         <div class="container">
             <div class="section-header">
                 <h2>💻 Программы</h2>
-                <p>Профессиональное ПО для любых задач</p>
+                <p>Лицензионное ПО Microsoft Office и другие программы</p>
                 <div class="filter-tabs" id="softwareFilter">
                     <button class="filter-btn active" onclick="filterProducts('all', 'software')">Все программы</button>
+                    <button class="filter-btn" onclick="filterProducts('office', 'software')">Microsoft Office</button>
                     <button class="filter-btn" onclick="filterProducts('graphics', 'software')">Графика</button>
-                    <button class="filter-btn" onclick="filterProducts('office', 'software')">Офис</button>
                     <button class="filter-btn" onclick="filterProducts('development', 'software')">Разработка</button>
                 </div>
             </div>
@@ -126,61 +145,39 @@
         <div class="container">
             <div class="section-header">
                 <h2>🛡️ Антивирусы</h2>
-                <p>Надежная защита для всех устройств</p>
+                <p>Популярные антивирусы: Kaspersky, ESET, Dr.Web и другие</p>
                 <div class="filter-tabs" id="antivirusFilter">
                     <button class="filter-btn active" onclick="filterProducts('all', 'antivirus')">Все антивирусы</button>
-                    <button class="filter-btn" onclick="filterProducts('premium', 'antivirus')">Премиум</button>
-                    <button class="filter-btn" onclick="filterProducts('standard', 'antivirus')">Стандарт</button>
+                    <button class="filter-btn" onclick="filterProducts('kaspersky', 'antivirus')">Kaspersky</button>
+                    <button class="filter-btn" onclick="filterProducts('eset', 'antivirus')">ESET</button>
+                    <button class="filter-btn" onclick="filterProducts('drweb', 'antivirus')">Dr.Web</button>
                 </div>
             </div>
             <div class="products-grid" id="antivirusGrid"></div>
         </div>
     </section>
 
-    <!-- Операционные системы -->
-    <section id="os" class="products">
+    <!-- Пополнение Steam -->
+    <section id="steam-balance" class="steam-balance">
         <div class="container">
             <div class="section-header">
-                <h2>⚙️ Операционные системы</h2>
-                <p>Лицензионные ОС для вашего ПК</p>
-                <div class="filter-tabs" id="osFilter">
-                    <button class="filter-btn active" onclick="filterProducts('all', 'os')">Все ОС</button>
-                    <button class="filter-btn" onclick="filterProducts('windows', 'os')">Windows</button>
-                    <button class="filter-btn" onclick="filterProducts('linux', 'os')">Linux</button>
+                <h2>💰 Пополнение Steam</h2>
+                <p>Мгновенное зачисление на кошелек Steam</p>
+            </div>
+            <div class="balance-cards" id="steamBalanceGrid"></div>
+            <div class="steam-form">
+                <h3>Введите данные для пополнения</h3>
+                <div class="form-group">
+                    <label for="steamLogin">Логин Steam или ссылка на профиль:</label>
+                    <input type="text" id="steamLogin" placeholder="https://steamcommunity.com/id/...">
                 </div>
-            </div>
-            <div class="products-grid" id="osGrid"></div>
-        </div>
-    </section>
-
-    <!-- Контакты -->
-    <section class="contacts">
-        <div class="container">
-            <div class="section-header">
-                <h2>Наши контакты</h2>
-                <p>Свяжитесь с нами в любое время</p>
-            </div>
-            <div class="contacts-grid">
-                <a href="https://t.me/plslovekittens" target="_blank" rel="noopener noreferrer" class="contact-card telegram">
-                    <i class="fab fa-telegram"></i>
-                    <h3>Telegram</h3>
-                    <p>@plslovekittens</p>
-                    <span>Написать →</span>
-                </a>
-                
-                <a href="https://discord.gg/willka" target="_blank" rel="noopener noreferrer" class="contact-card discord">
-                    <i class="fab fa-discord"></i>
-                    <h3>Discord</h3>
-                    <p>willka.ru</p>
-                    <span>Присоединиться →</span>
-                </a>
-                
-                <a href="https://vk.com/ssaattaaann" target="_blank" rel="noopener noreferrer" class="contact-card vk">
-                    <i class="fab fa-vk"></i>
-                    <h3>ВКонтакте</h3>
-                    <p>@ssaattaaann</p>
-                    <span>Подписаться →</span>
-                </a>
+                <div class="balance-summary">
+                    <div class="selected-amount" id="selectedAmount">0 ₽</div>
+                    <button class="btn btn-primary btn-large" onclick="addSteamBalanceToCart()">
+                        <i class="fas fa-shopping-cart"></i>
+                        Добавить в корзину
+                    </button>
+                </div>
             </div>
         </div>
     </section>
@@ -197,11 +194,14 @@
                 <span>Итого:</span>
                 <span id="cartTotal">0 ₽</span>
             </div>
-            <button class="btn btn-primary btn-full" onclick="checkout()">Оформить заказ</button>
+            <button class="btn btn-primary btn-full" onclick="showPaymentModal()">
+                <i class="fas fa-qrcode"></i>
+                Оплатить через СБП
+            </button>
         </div>
     </div>
 
-    <!-- Подвал -->
+    <!-- Подвал с контактами -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -210,45 +210,77 @@
                         <i class="fas fa-bolt logo-icon"></i>
                         <span>VOLT</span>
                     </div>
-                    <p>Цифровой магазин игр и программ. Мгновенная доставка.</p>
-                    <div class="social-links">
-                        <a href="https://t.me/plslovekittens" target="_blank" rel="noopener noreferrer" title="Telegram"><i class="fab fa-telegram"></i></a>
-                        <a href="https://discord.gg/willka" target="_blank" rel="noopener noreferrer" title="Discord"><i class="fab fa-discord"></i></a>
-                        <a href="https://vk.com/ssaattaaann" target="_blank" rel="noopener noreferrer" title="ВКонтакте"><i class="fab fa-vk"></i></a>
-                    </div>
+                    <p>Цифровой магазин игр, подписок и программ. Мгновенная доставка. Оплата через СБП.</p>
                 </div>
                 <div class="footer-section">
                     <h4>Категории</h4>
                     <ul>
-                        <li><a href="#games">Игры</a></li>
+                        <li><a href="#steam-games">Игры Steam</a></li>
+                        <li><a href="#subscriptions">Подписки</a></li>
                         <li><a href="#software">Программы</a></li>
                         <li><a href="#antivirus">Антивирусы</a></li>
-                        <li><a href="#os">ОС</a></li>
+                        <li><a href="#steam-balance">Пополнение Steam</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>Помощь</h4>
                     <ul>
                         <li><a href="#" onclick="showHelp('howtobuy')">Как купить</a></li>
-                        <li><a href="#" onclick="showHelp('payment')">Оплата</a></li>
+                        <li><a href="#" onclick="showHelp('payment')">Оплата через СБП</a></li>
                         <li><a href="#" onclick="showHelp('delivery')">Доставка</a></li>
-                        <li><a href="#" onclick="showHelp('faq')">FAQ</a></li>
+                        <li><a href="#" onclick="showHelp('activation')">Активация Steam</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>Контакты</h4>
-                    <ul class="contact-list">
-                        <li><a href="https://t.me/plslovekittens" target="_blank" rel="noopener noreferrer"><i class="fab fa-telegram"></i> @plslovekittens</a></li>
-                        <li><a href="https://discord.gg/willka" target="_blank" rel="noopener noreferrer"><i class="fab fa-discord"></i> willka.ru</a></li>
-                        <li><a href="https://vk.com/ssaattaaann" target="_blank" rel="noopener noreferrer"><i class="fab fa-vk"></i> @ssaattaaann</a></li>
-                    </ul>
+                    <div class="contact-buttons">
+                        <a href="https://t.me/plslovekittens" target="_blank" rel="noopener noreferrer" class="contact-btn telegram">
+                            <i class="fab fa-telegram"></i>
+                            <span>Telegram</span>
+                        </a>
+                        <a href="https://discord.gg/willka" target="_blank" rel="noopener noreferrer" class="contact-btn discord">
+                            <i class="fab fa-discord"></i>
+                            <span>Discord</span>
+                        </a>
+                        <a href="https://vk.com/ssaattaaann" target="_blank" rel="noopener noreferrer" class="contact-btn vk">
+                            <i class="fab fa-vk"></i>
+                            <span>ВКонтакте</span>
+                        </a>
+                    </div>
+                    <div class="payment-methods">
+                        <p>Принимаем к оплате:</p>
+                        <i class="fas fa-qrcode"></i> СБП
+                    </div>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 Volt Digital Store. Все права защищены.</p>
+                <p>&copy; 2024 Volt Store. Все права защищены.</p>
             </div>
         </div>
     </footer>
+
+    <!-- Модальное окно для СБП оплаты -->
+    <div class="modal" id="sbpModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Оплата через СБП</h3>
+                <button onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="sbpModalBody">
+                <div class="sbp-qr">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=00020101021129370016A0000006770123456789012345802RU5912Volt%20Store6009Moscow6304ABCD" alt="QR код для оплаты">
+                    <p>Наведите камеру телефона на QR-код</p>
+                </div>
+                <div class="sbp-details">
+                    <p>Сумма к оплате: <strong id="sbpAmount">0 ₽</strong></p>
+                    <p>Номер заказа: <strong id="sbpOrderId">VOLT-2024-001</strong></p>
+                    <button class="btn btn-primary btn-full" onclick="confirmPayment()">
+                        Я оплатил
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Модальное окно для помощи -->
     <div class="modal" id="helpModal">
@@ -257,9 +289,7 @@
                 <h3 id="modalTitle">Помощь</h3>
                 <button onclick="closeModal()"><i class="fas fa-times"></i></button>
             </div>
-            <div class="modal-body" id="modalBody">
-                <!-- Контент будет загружаться динамически -->
-            </div>
+            <div class="modal-body" id="modalBody"></div>
         </div>
     </div>
 
