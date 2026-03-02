@@ -23,7 +23,8 @@
                     <li><a href="#home" class="active">Главная</a></li>
                     <li><a href="#games">Игры</a></li>
                     <li><a href="#software">Программы</a></li>
-                    <li><a href="#deals">Скидки</a></li>
+                    <li><a href="#antivirus">Антивирусы</a></li>
+                    <li><a href="#os">ОС</a></li>
                 </ul>
                 <div class="nav-actions">
                     <button class="search-btn" onclick="toggleSearch()"><i class="fas fa-search"></i></button>
@@ -86,24 +87,73 @@
         </div>
     </section>
 
-    <!-- Товары -->
+    <!-- Игры -->
     <section id="games" class="products">
         <div class="container">
             <div class="section-header">
-                <h2>Популярные товары</h2>
-                <p>Лучшие игры и программы по лучшим ценам</p>
-                <div class="filter-tabs">
-                    <button class="filter-btn active" onclick="filterProducts('all')">Все</button>
-                    <button class="filter-btn" onclick="filterProducts('games')">Игры</button>
-                    <button class="filter-btn" onclick="filterProducts('software')">Программы</button>
-                    <button class="filter-btn" onclick="filterProducts('antivirus')">Антивирусы</button>
+                <h2>🎮 Игры</h2>
+                <p>Лучшие игры по лучшим ценам</p>
+                <div class="filter-tabs" id="gamesFilter">
+                    <button class="filter-btn active" onclick="filterProducts('all', 'games')">Все игры</button>
+                    <button class="filter-btn" onclick="filterProducts('rpg', 'games')">RPG</button>
+                    <button class="filter-btn" onclick="filterProducts('action', 'games')">Экшн</button>
+                    <button class="filter-btn" onclick="filterProducts('simulator', 'games')">Симуляторы</button>
                 </div>
             </div>
-            <div class="products-grid" id="productsGrid"></div>
+            <div class="products-grid" id="gamesGrid"></div>
         </div>
     </section>
 
-    <!-- Контакты (НОВЫЙ БЛОК) -->
+    <!-- Программы -->
+    <section id="software" class="products">
+        <div class="container">
+            <div class="section-header">
+                <h2>💻 Программы</h2>
+                <p>Профессиональное ПО для любых задач</p>
+                <div class="filter-tabs" id="softwareFilter">
+                    <button class="filter-btn active" onclick="filterProducts('all', 'software')">Все программы</button>
+                    <button class="filter-btn" onclick="filterProducts('graphics', 'software')">Графика</button>
+                    <button class="filter-btn" onclick="filterProducts('office', 'software')">Офис</button>
+                    <button class="filter-btn" onclick="filterProducts('development', 'software')">Разработка</button>
+                </div>
+            </div>
+            <div class="products-grid" id="softwareGrid"></div>
+        </div>
+    </section>
+
+    <!-- Антивирусы -->
+    <section id="antivirus" class="products">
+        <div class="container">
+            <div class="section-header">
+                <h2>🛡️ Антивирусы</h2>
+                <p>Надежная защита для всех устройств</p>
+                <div class="filter-tabs" id="antivirusFilter">
+                    <button class="filter-btn active" onclick="filterProducts('all', 'antivirus')">Все антивирусы</button>
+                    <button class="filter-btn" onclick="filterProducts('premium', 'antivirus')">Премиум</button>
+                    <button class="filter-btn" onclick="filterProducts('standard', 'antivirus')">Стандарт</button>
+                </div>
+            </div>
+            <div class="products-grid" id="antivirusGrid"></div>
+        </div>
+    </section>
+
+    <!-- Операционные системы -->
+    <section id="os" class="products">
+        <div class="container">
+            <div class="section-header">
+                <h2>⚙️ Операционные системы</h2>
+                <p>Лицензионные ОС для вашего ПК</p>
+                <div class="filter-tabs" id="osFilter">
+                    <button class="filter-btn active" onclick="filterProducts('all', 'os')">Все ОС</button>
+                    <button class="filter-btn" onclick="filterProducts('windows', 'os')">Windows</button>
+                    <button class="filter-btn" onclick="filterProducts('linux', 'os')">Linux</button>
+                </div>
+            </div>
+            <div class="products-grid" id="osGrid"></div>
+        </div>
+    </section>
+
+    <!-- Контакты -->
     <section class="contacts">
         <div class="container">
             <div class="section-header">
@@ -111,21 +161,21 @@
                 <p>Свяжитесь с нами в любое время</p>
             </div>
             <div class="contacts-grid">
-                <a href="https://t.me/plslovekittens" target="_blank" class="contact-card telegram">
+                <a href="https://t.me/plslovekittens" target="_blank" rel="noopener noreferrer" class="contact-card telegram">
                     <i class="fab fa-telegram"></i>
                     <h3>Telegram</h3>
                     <p>@plslovekittens</p>
                     <span>Написать →</span>
                 </a>
                 
-                <a href="https://discord.gg/willka.ru" target="_blank" class="contact-card discord">
+                <a href="https://discord.gg/willka" target="_blank" rel="noopener noreferrer" class="contact-card discord">
                     <i class="fab fa-discord"></i>
                     <h3>Discord</h3>
                     <p>willka.ru</p>
                     <span>Присоединиться →</span>
                 </a>
                 
-                <a href="https://vk.com/ssaattaaann" target="_blank" class="contact-card vk">
+                <a href="https://vk.com/ssaattaaann" target="_blank" rel="noopener noreferrer" class="contact-card vk">
                     <i class="fab fa-vk"></i>
                     <h3>ВКонтакте</h3>
                     <p>@ssaattaaann</p>
@@ -151,7 +201,7 @@
         </div>
     </div>
 
-    <!-- Подвал (ОБНОВЛЕН) -->
+    <!-- Подвал -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -162,9 +212,9 @@
                     </div>
                     <p>Цифровой магазин игр и программ. Мгновенная доставка.</p>
                     <div class="social-links">
-                        <a href="https://t.me/plslovekittens" target="_blank" title="Telegram"><i class="fab fa-telegram"></i></a>
-                        <a href="https://discord.gg/willka.ru" target="_blank" title="Discord"><i class="fab fa-discord"></i></a>
-                        <a href="https://vk.com/ssaattaaann" target="_blank" title="ВКонтакте"><i class="fab fa-vk"></i></a>
+                        <a href="https://t.me/plslovekittens" target="_blank" rel="noopener noreferrer" title="Telegram"><i class="fab fa-telegram"></i></a>
+                        <a href="https://discord.gg/willka" target="_blank" rel="noopener noreferrer" title="Discord"><i class="fab fa-discord"></i></a>
+                        <a href="https://vk.com/ssaattaaann" target="_blank" rel="noopener noreferrer" title="ВКонтакте"><i class="fab fa-vk"></i></a>
                     </div>
                 </div>
                 <div class="footer-section">
@@ -173,22 +223,24 @@
                         <li><a href="#games">Игры</a></li>
                         <li><a href="#software">Программы</a></li>
                         <li><a href="#antivirus">Антивирусы</a></li>
+                        <li><a href="#os">ОС</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>Помощь</h4>
                     <ul>
-                        <li><a href="#">Как купить</a></li>
-                        <li><a href="#">Оплата</a></li>
-                        <li><a href="#">Доставка</a></li>
+                        <li><a href="#" onclick="showHelp('howtobuy')">Как купить</a></li>
+                        <li><a href="#" onclick="showHelp('payment')">Оплата</a></li>
+                        <li><a href="#" onclick="showHelp('delivery')">Доставка</a></li>
+                        <li><a href="#" onclick="showHelp('faq')">FAQ</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>Контакты</h4>
                     <ul class="contact-list">
-                        <li><a href="https://t.me/plslovekittens" target="_blank"><i class="fab fa-telegram"></i> @plslovekittens</a></li>
-                        <li><a href="https://discord.gg/willka.ru" target="_blank"><i class="fab fa-discord"></i> willka.ru</a></li>
-                        <li><a href="https://vk.com/ssaattaaann" target="_blank"><i class="fab fa-vk"></i> @ssaattaaann</a></li>
+                        <li><a href="https://t.me/plslovekittens" target="_blank" rel="noopener noreferrer"><i class="fab fa-telegram"></i> @plslovekittens</a></li>
+                        <li><a href="https://discord.gg/willka" target="_blank" rel="noopener noreferrer"><i class="fab fa-discord"></i> willka.ru</a></li>
+                        <li><a href="https://vk.com/ssaattaaann" target="_blank" rel="noopener noreferrer"><i class="fab fa-vk"></i> @ssaattaaann</a></li>
                     </ul>
                 </div>
             </div>
@@ -197,6 +249,22 @@
             </div>
         </div>
     </footer>
+
+    <!-- Модальное окно для помощи -->
+    <div class="modal" id="helpModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Помощь</h3>
+                <button onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Контент будет загружаться динамически -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомления -->
+    <div class="notification" id="notification"></div>
 
     <script src="script.js"></script>
 </body>
