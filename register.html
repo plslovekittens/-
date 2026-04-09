@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация - Volt Store</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -26,6 +26,7 @@
         .auth-card h2 {
             text-align: center;
             margin-bottom: 30px;
+            color: white;
         }
         .form-group {
             margin-bottom: 20px;
@@ -37,19 +38,6 @@
             border: 1px solid #334155;
             border-radius: 8px;
             color: white;
-        }
-        .btn-full {
-            width: 100%;
-            margin-top: 20px;
-        }
-        .auth-link {
-            text-align: center;
-            margin-top: 20px;
-            color: #94a3b8;
-        }
-        .auth-link a {
-            color: #7c3aed;
-            text-decoration: none;
         }
         .role-selector {
             display: flex;
@@ -64,11 +52,23 @@
             border: 1px solid #334155;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s;
+            color: white;
         }
         .role-option.selected {
             border-color: #7c3aed;
             background: #7c3aed20;
+        }
+        .btn-full {
+            width: 100%;
+        }
+        .auth-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #94a3b8;
+        }
+        .auth-link a {
+            color: #7c3aed;
+            text-decoration: none;
         }
     </style>
 </head>
@@ -102,7 +102,7 @@
             </div>
         </div>
     </div>
-    <script src="js/database.js"></script>
-    <script src="js/auth.js"></script>
+    <script src="database.js"></script>
+    <script src="auth.js"></script>
 </body>
 </html>
