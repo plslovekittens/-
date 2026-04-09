@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Volt Store - Цифровые товары</title>
+    <!-- СТИЛИ - ЭТО САМОЕ ВАЖНОЕ -->
     <link rel="stylesheet" href="css/style.css">
+    <!-- ШРИФТЫ -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- ИКОНКИ FONT AWESOME -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -37,6 +40,7 @@
                             <div id="authButtons">
                                 <a href="login.html" class="dropdown-item">Вход</a>
                                 <a href="register.html" class="dropdown-item">Регистрация</a>
+                                <a href="seller-info.html" class="dropdown-item">Стать продавцом</a>
                             </div>
                             <div id="userInfo" style="display:none;">
                                 <div class="dropdown-item" id="userName"></div>
@@ -148,7 +152,7 @@
     <!-- Корзина -->
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-header">
-            <h3>Корзина</h3>
+            <h3><i class="fas fa-shopping-cart"></i> Корзина</h3>
             <button onclick="toggleCart()"><i class="fas fa-times"></i></button>
         </div>
         <div class="cart-items" id="cartItems"></div>
@@ -157,7 +161,9 @@
                 <span>Итого:</span>
                 <span id="cartTotal">0 ₽</span>
             </div>
-            <button class="btn btn-primary btn-full" onclick="checkout()">Оформить заказ</button>
+            <button class="btn btn-primary btn-full" onclick="checkout()">
+                <i class="fas fa-qrcode"></i> Оплатить через СБП
+            </button>
         </div>
     </div>
 
@@ -168,11 +174,14 @@
         </button>
         <div class="chat-window" id="chatWindow">
             <div class="chat-header">
-                <h4>Поддержка Volt</h4>
+                <h4><i class="fas fa-headset"></i> Поддержка Volt</h4>
                 <button onclick="toggleChat()"><i class="fas fa-times"></i></button>
             </div>
             <div class="chat-messages" id="chatMessages">
-                <div class="chat-message support">Здравствуйте! Чем могу помочь?</div>
+                <div class="chat-message support">
+                    <span>Поддержка:</span>
+                    <div class="message-text">Здравствуйте! Чем могу помочь?</div>
+                </div>
             </div>
             <div class="chat-input">
                 <input type="text" id="chatInput" placeholder="Введите сообщение...">
@@ -188,6 +197,11 @@
                 <div class="footer-section">
                     <div class="logo"><i class="fas fa-bolt"></i> VOLT</div>
                     <p>Цифровой маркетплейс. Покупайте и продавайте безопасно.</p>
+                    <div class="payment-methods">
+                        <i class="fab fa-cc-visa"></i>
+                        <i class="fab fa-cc-mastercard"></i>
+                        <i class="fas fa-qrcode"></i>
+                    </div>
                 </div>
                 <div class="footer-section">
                     <h4>Для покупателей</h4>
@@ -226,10 +240,21 @@
         </div>
     </footer>
 
+    <!-- СКРИПТЫ - ПОДКЛЮЧАЕМ В ПРАВИЛЬНОМ ПОРЯДКЕ -->
     <script src="js/database.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/cart.js"></script>
     <script src="js/chat.js"></script>
     <script src="js/main.js"></script>
+    
+    <script>
+        // Дополнительная проверка, что стили загрузились
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Страница загружена, стили должны примениться');
+            // Проверяем, есть ли стили
+            const bodyStyle = window.getComputedStyle(document.body);
+            console.log('Фон body:', bodyStyle.backgroundColor);
+        });
+    </script>
 </body>
 </html>
