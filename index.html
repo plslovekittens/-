@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Volt Store - Цифровые товары</title>
-    <!-- СТИЛИ - ЭТО САМОЕ ВАЖНОЕ -->
+    <!-- СТИЛИ - теперь без папки css -->
     <link rel="stylesheet" href="style.css">
     <!-- ШРИФТЫ -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- ИКОНКИ FONT AWESOME -->
+    <!-- ИКОНКИ -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -240,21 +240,11 @@
         </div>
     </footer>
 
-    <!-- СКРИПТЫ - ПОДКЛЮЧАЕМ В ПРАВИЛЬНОМ ПОРЯДКЕ -->
-    <script src="js/database.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/cart.js"></script>
-    <script src="js/chat.js"></script>
-    <script src="js/main.js"></script>
-    
-    <script>
-        // Дополнительная проверка, что стили загрузились
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Страница загружена, стили должны примениться');
-            // Проверяем, есть ли стили
-            const bodyStyle = window.getComputedStyle(document.body);
-            console.log('Фон body:', bodyStyle.backgroundColor);
-        });
-    </script>
+    <!-- СКРИПТЫ - теперь все в корне, без папки js -->
+    <script src="database.js"></script>
+    <script src="auth.js"></script>
+    <script src="cart.js"></script>
+    <script src="chat.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>
