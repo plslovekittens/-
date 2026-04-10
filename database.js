@@ -184,6 +184,15 @@ function updateCartCountDisplay() {
         cartCountElement.textContent = count;
     }
 }
-
+function updateProduct(productId, updatedData) {
+    const products = getAllProducts();
+    const index = products.findIndex(p => p.id == productId);
+    if (index !== -1) {
+        products[index] = { ...products[index], ...updatedData };
+        localStorage.setItem('products', JSON.stringify(products));
+        return products[index];
+    }
+    return null;
+}
 // Инициализация
 initDatabase();
