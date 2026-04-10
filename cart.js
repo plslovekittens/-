@@ -324,4 +324,44 @@ function showNotification(message, type = 'success') {
         <div class="notification-content">
             <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
             <span>${message}</span>
-        </
+        </div>
+    `;
+    
+    const style = document.createElement('style');
+    style.textContent = `
+        .custom-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            animation: slideInRight 0.3s ease;
+        }
+        .notification-content {
+            background: #111118;
+            border-left: 4px solid ${type === 'success' ? '#10b981' : '#ef4444'};
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
