@@ -3,88 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Почему стоит продавать на Volt - Преимущества для продавцов</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Продавайте на Volt - Преимущества для продавцов</title>
+    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Навигация */
+        .navbar {
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(12px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(124, 58, 237, 0.3);
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: #a1a1aa;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: #ffffff;
+        }
+
+        /* Герой секция */
         .seller-hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 80px 0;
+            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
+            padding: 120px 0 80px;
             text-align: center;
             color: white;
         }
-        .seller-benefits {
-            padding: 60px 0;
+
+        .seller-hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
         }
+
+        .seller-hero p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+
+        /* Преимущества */
+        .benefits-section {
+            padding: 80px 0;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
         .benefit-card {
-            background: #1e293b;
-            border-radius: 16px;
-            padding: 30px;
+            background: #111118;
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            border-radius: 20px;
+            padding: 40px 30px;
             text-align: center;
-            transition: transform 0.3s;
+            transition: 0.3s;
         }
+
         .benefit-card:hover {
             transform: translateY(-5px);
+            border-color: #7c3aed;
+            box-shadow: 0 0 30px rgba(124, 58, 237, 0.2);
         }
+
         .benefit-card i {
             font-size: 48px;
             color: #7c3aed;
             margin-bottom: 20px;
         }
+
         .benefit-card h3 {
             font-size: 24px;
             margin-bottom: 15px;
+            color: white;
         }
+
         .benefit-card p {
-            color: #94a3b8;
+            color: #a1a1aa;
+            line-height: 1.6;
         }
+
+        /* Таблица комиссий */
         .commission-table {
-            background: #1e293b;
-            border-radius: 16px;
-            padding: 30px;
-            margin-top: 40px;
+            background: #111118;
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 60px;
         }
+
         .commission-table h3 {
             text-align: center;
+            font-size: 28px;
             margin-bottom: 30px;
+            color: white;
         }
+
         .commission-row {
             display: flex;
             justify-content: space-between;
-            padding: 15px;
-            border-bottom: 1px solid #334155;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
+
         .commission-row:last-child {
             border-bottom: none;
         }
-        .start-selling-btn {
-            display: inline-block;
-            margin-top: 40px;
-            padding: 15px 40px;
-            font-size: 18px;
+
+        .commission-row span:first-child {
+            color: #a1a1aa;
         }
+
+        .commission-row span:last-child {
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Требования */
         .requirements {
-            background: #0f172a;
-            border-radius: 16px;
-            padding: 30px;
-            margin-top: 40px;
+            background: #111118;
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 60px;
         }
+
+        .requirements h3 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: white;
+        }
+
         .requirements ul {
             list-style: none;
-            padding-left: 0;
+            max-width: 500px;
+            margin: 0 auto;
         }
+
         .requirements li {
-            padding: 10px 0;
-            padding-left: 25px;
+            padding: 12px 0;
+            padding-left: 30px;
             position: relative;
+            color: #a1a1aa;
         }
+
         .requirements li:before {
             content: "✓";
             position: absolute;
             left: 0;
             color: #10b981;
             font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* Кнопка начала продаж */
+        .start-selling {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(192, 132, 252, 0.05) 100%);
+            border-radius: 20px;
+        }
+
+        .start-selling h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .start-selling p {
+            color: #a1a1aa;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.5);
+        }
+
+        .btn-large {
+            padding: 16px 48px;
+            font-size: 18px;
+        }
+
+        /* Подвал */
+        .footer {
+            background: #111118;
+            padding: 60px 0 30px;
+            border-top: 1px solid rgba(124, 58, 237, 0.2);
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h4 {
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-section ul a {
+            color: #a1a1aa;
+            text-decoration: none;
+        }
+
+        .contact-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 10px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: #a1a1aa;
         }
     </style>
 </head>
@@ -92,7 +312,10 @@
     <nav class="navbar">
         <div class="container">
             <div class="nav-content">
-                <div class="logo"><i class="fas fa-bolt"></i> VOLT</div>
+                <div class="logo">
+                    <i class="fas fa-bolt"></i>
+                    <span>VOLT</span>
+                </div>
                 <ul class="nav-menu">
                     <li><a href="index.html">Главная</a></li>
                     <li><a href="index.html#products">Товары</a></li>
@@ -100,20 +323,9 @@
                 </ul>
                 <div class="nav-actions">
                     <div class="user-menu" id="userMenu">
-                        <button class="user-btn" onclick="toggleUserDropdown()">
+                        <button class="user-btn" onclick="window.location.href='login.html'" style="background: none; border: none; color: white; cursor: pointer;">
                             <i class="fas fa-user"></i>
                         </button>
-                        <div class="user-dropdown" id="userDropdown">
-                            <div id="authButtons">
-                                <a href="login.html" class="dropdown-item">Вход</a>
-                                <a href="register.html" class="dropdown-item">Регистрация</a>
-                            </div>
-                            <div id="userInfo" style="display:none;">
-                                <div class="dropdown-item" id="userName"></div>
-                                <a href="#" class="dropdown-item" onclick="logout()">Выйти</a>
-                                <a href="seller-dashboard.html" class="dropdown-item" id="sellerLink" style="display:none;">Панель продавца</a>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -127,9 +339,9 @@
         </div>
     </section>
 
-    <section class="seller-benefits">
+    <section class="benefits-section">
         <div class="container">
-            <div class="benefits-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+            <div class="benefits-grid">
                 <div class="benefit-card">
                     <i class="fas fa-chart-line"></i>
                     <h3>Низкая комиссия</h3>
@@ -191,11 +403,14 @@
                     <li>Своевременная доставка после оплаты</li>
                     <li>Соблюдение правил площадки</li>
                 </ul>
-                <div style="text-align: center;">
-                    <a href="register.html?role=seller" class="btn btn-primary start-selling-btn">
-                        <i class="fas fa-store"></i> Начать продавать сейчас
-                    </a>
-                </div>
+            </div>
+
+            <div class="start-selling">
+                <h2>Готовы начать зарабатывать?</h2>
+                <p>Присоединяйтесь к тысячам продавцов уже сегодня</p>
+                <a href="register.html?role=seller" class="btn btn-primary btn-large">
+                    <i class="fas fa-store"></i> Начать продавать
+                </a>
             </div>
         </div>
     </section>
@@ -208,32 +423,22 @@
                     <p>Цифровой маркетплейс. Покупайте и продавайте безопасно.</p>
                 </div>
                 <div class="footer-section">
-                    <h4>Для продавцов</h4>
-                    <ul>
-                        <li><a href="seller-info.html">Почему Volt?</a></li>
-                        <li><a href="#">Правила</a></li>
-                        <li><a href="#">Комиссия</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
                     <h4>Контакты</h4>
-                    <div class="contact-buttons">
-                        <a href="https://t.me/plslovekittens" target="_blank" class="contact-btn telegram">
-                            <i class="fab fa-telegram"></i> Telegram
-                        </a>
-                        <a href="https://discord.gg/willka" target="_blank" class="contact-btn discord">
-                            <i class="fab fa-discord"></i> Discord
-                        </a>
-                        <a href="https://vk.com/ssaattaaann" target="_blank" class="contact-btn vk">
-                            <i class="fab fa-vk"></i> VK
-                        </a>
-                    </div>
+                    <a href="https://t.me/plslovekittens" target="_blank" class="contact-btn">
+                        <i class="fab fa-telegram"></i> Telegram
+                    </a>
+                    <a href="https://discord.gg/willka" target="_blank" class="contact-btn">
+                        <i class="fab fa-discord"></i> Discord
+                    </a>
+                    <a href="https://vk.com/ssaattaaann" target="_blank" class="contact-btn">
+                        <i class="fab fa-vk"></i> VK
+                    </a>
                 </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Volt Store. Безопасная сделка — гарантия качества.</p>
             </div>
         </div>
     </footer>
-
-    <script src="js/database.js"></script>
-    <script src="js/auth.js"></script>
 </body>
 </html>
