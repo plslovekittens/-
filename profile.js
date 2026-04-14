@@ -1,283 +1,70 @@
-// ==================== ЛИЧНЫЙ КАБИНЕТ ====================
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет - Volt Store</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .profile-container { max-width: 1200px; margin: 100px auto 60px; padding: 0 20px; }
+        .profile-header { background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); border-radius: 20px; padding: 40px; margin-bottom: 30px; display: flex; align-items: center; gap: 30px; flex-wrap: wrap; }
+        .profile-avatar { width: 100px; height: 100px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 48px; }
+        .profile-info h2 { font-size: 28px; margin-bottom: 10px; }
+        .profile-info p { opacity: 0.9; }
+        .profile-tabs { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+        .profile-tab { padding: 12px 24px; background: #111118; border: 1px solid rgba(124,58,237,0.2); border-radius: 12px; color: white; cursor: pointer; transition: 0.3s; }
+        .profile-tab.active { background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); }
+        .tab-pane { display: none; background: #111118; border: 1px solid rgba(124,58,237,0.2); border-radius: 20px; padding: 30px; }
+        .tab-pane.active { display: block; }
+        .order-card { background: #0a0a0f; border-radius: 16px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .order-status { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-pending { background: #f59e0b; color: white; }
+        .status-paid { background: #3b82f6; color: white; }
+        .status-delivered { background: #8b5cf6; color: white; }
+        .status-completed { background: #10b981; color: white; }
+        .promo-card { background: linear-gradient(135deg, #7c3aed20 0%, #c084fc10 100%); border: 1px solid rgba(124,58,237,0.3); border-radius: 16px; padding: 20px; text-align: center; }
+        .promo-code { font-size: 24px; font-weight: bold; color: #7c3aed; margin: 15px 0; }
+        .support-chat { height: 400px; display: flex; flex-direction: column; }
+        .support-messages { flex: 1; overflow-y: auto; padding: 15px; background: #0a0a0f; border-radius: 12px; margin-bottom: 15px; }
+        .support-input { display: flex; gap: 10px; }
+        .support-input input { flex: 1; padding: 12px; background: #0a0a0f; border: 1px solid rgba(124,58,237,0.3); border-radius: 8px; color: white; }
+        .message { margin-bottom: 15px; padding: 10px 15px; border-radius: 12px; max-width: 80%; }
+        .message.user { background: #7c3aed; margin-left: auto; }
+        .message.support { background: #1e293b; }
+        .withdraw-btn { background: #10b981; color: white; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <nav class="navbar"><div class="container"><div class="nav-content"><div class="logo"><i class="fas fa-bolt"></i> VOLT</div><ul class="nav-menu"><li><a href="index.html">Главная</a></li><li><a href="index.html#products">Товары</a></li><li><a href="seller-info.html">Продавцам</a></li><li><a href="rules.html">Правила</a></li></ul><div class="nav-actions"><div class="user-menu"><button class="user-btn" onclick="window.location.href='profile.html'"><i class="fas fa-user"></i></button></div></div></div></div></nav>
 
-let currentSupportUser = null;
-
-document.addEventListener('DOMContentLoaded', function() {
-    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-    
-    if (!currentUser) {
-        window.location.href = 'login.html';
-        return;
-    }
-    
-    // Отображаем информацию о пользователе
-    document.getElementById('userNameDisplay').textContent = currentUser.name;
-    document.getElementById('userEmailDisplay').textContent = currentUser.email;
-    document.getElementById('userRoleDisplay').textContent = currentUser.role === 'seller' ? 'Продавец' : 'Покупатель';
-    document.getElementById('userDateDisplay').textContent = new Date(currentUser.createdAt).toLocaleDateString('ru-RU');
-    
-    // Показываем/скрываем вкладки для продавца
-    if (currentUser.role === 'seller') {
-        document.getElementById('sellerOrdersTab').style.display = 'inline-block';
-        document.getElementById('sellerReviewsTab').style.display = 'inline-block';
-        document.getElementById('sellerWithdrawTab').style.display = 'inline-block';
-    }
-    
-    // Загружаем заказы
-    loadUserOrders(currentUser.id);
-    loadPromoCodes(currentUser.id);
-    loadSellerIncomingOrders(currentUser.id);
-    loadSellerReviews(currentUser.id);
-    loadSellerBalance(currentUser.id);
-});
-
-// Переключение вкладок
-function switchProfileTab(tab) {
-    document.querySelectorAll('.tab-pane').forEach(pane => {
-        pane.classList.remove('active');
-    });
-    document.getElementById(`${tab}Pane`).classList.add('active');
-    
-    document.querySelectorAll('.profile-tab').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    event.target.classList.add('active');
-}
-
-// Загрузка заказов пользователя
-function loadUserOrders(userId) {
-    const orders = JSON.parse(localStorage.getItem('orders')) || [];
-    const userOrders = orders.filter(o => o.buyerId == userId);
-    const container = document.getElementById('ordersList');
-    
-    if (userOrders.length === 0) {
-        container.innerHTML = '<div style="text-align: center; padding: 40px; color: #a1a1aa;">У вас пока нет заказов</div>';
-        return;
-    }
-    
-    container.innerHTML = userOrders.map(order => `
-        <div class="order-card">
-            <div>
-                <strong>${order.productName}</strong><br>
-                Количество: ${order.quantity} шт.<br>
-                Сумма: ${order.total} ₽<br>
-                Дата: ${new Date(order.createdAt).toLocaleDateString('ru-RU')}
-            </div>
-            <div>
-                <span class="order-status status-${order.status}">${getStatusText(order.status)}</span>
-                ${order.status === 'delivered' ? `
-                    <button class="btn btn-primary" style="margin-top: 10px; padding: 5px 10px;" onclick="confirmReceipt(${order.id})">
-                        Подтвердить получение
-                    </button>
-                ` : ''}
-                ${order.status === 'paid' ? `
-                    <div style="margin-top: 10px; font-size: 12px; color: #f59e0b;">
-                        ⏳ Ожидает отправки от продавца
-                    </div>
-                ` : ''}
-                ${order.status === 'completed' ? `
-                    <div style="margin-top: 10px; font-size: 12px; color: #10b981;">
-                        ✅ Товар получен. Деньги переведены продавцу
-                    </div>
-                ` : ''}
-            </div>
+    <div class="profile-container">
+        <div class="profile-header" id="profileHeader">
+            <div class="profile-avatar"><i class="fas fa-user"></i></div>
+            <div class="profile-info"><h2 id="userNameDisplay">Загрузка...</h2><p id="userEmailDisplay"></p><p><span id="userRoleDisplay"></span> с <span id="userDateDisplay"></span></p></div>
         </div>
-    `).join('');
-}
 
-// Подтверждение получения товара
-function confirmReceipt(orderId) {
-    if (confirm('Вы подтверждаете получение товара? Деньги будут переведены продавцу.')) {
-        const orders = JSON.parse(localStorage.getItem('orders')) || [];
-        const orderIndex = orders.findIndex(o => o.id == orderId);
-        
-        if (orderIndex !== -1) {
-            orders[orderIndex].status = 'completed';
-            localStorage.setItem('orders', JSON.stringify(orders));
-            
-            // Переводим деньги продавцу (обновляем баланс)
-            const sellerTransactions = JSON.parse(localStorage.getItem('sellerTransactions')) || [];
-            sellerTransactions.push({
-                sellerId: orders[orderIndex].sellerId,
-                amount: orders[orderIndex].total,
-                orderId: orderId,
-                type: 'earning',
-                date: new Date().toISOString()
-            });
-            localStorage.setItem('sellerTransactions', JSON.stringify(sellerTransactions));
-            
-            alert('Спасибо за подтверждение! Деньги переведены продавцу.');
-            location.reload();
-        }
-    }
-}
-
-// Загрузка промокодов
-function loadPromoCodes(userId) {
-    const promoCodes = JSON.parse(localStorage.getItem('promoCodes')) || [];
-    const userPromoCodes = promoCodes.filter(p => p.userId == userId);
-    const container = document.getElementById('promoCodesList');
-    
-    // Добавляем базовые промокоды для примера
-    const defaultPromos = [
-        { code: "WELCOME10", discount: 10, used: false },
-        { code: "VOLT20", discount: 20, used: false }
-    ];
-    
-    container.innerHTML = `
-        <div class="promo-card">
-            <h4>Доступные промокоды</h4>
-            ${defaultPromos.map(p => `
-                <div class="promo-code">
-                    ${p.code} - скидка ${p.discount}%
-                    <button class="btn btn-secondary" style="margin-left: 10px;" onclick="copyPromoCode('${p.code}')">
-                        Скопировать
-                    </button>
-                </div>
-            `).join('')}
-            <p style="margin-top: 15px; font-size: 12px;">* Промокоды действуют на первый заказ</p>
+        <div class="profile-tabs">
+            <button class="profile-tab active" onclick="switchProfileTab('orders')">📦 Мои заказы</button>
+            <button class="profile-tab" onclick="switchProfileTab('promo')">🎁 Промокоды</button>
+            <button class="profile-tab" onclick="switchProfileTab('support')">💬 Поддержка</button>
+            <button class="profile-tab" id="sellerOrdersTab" style="display:none;" onclick="switchProfileTab('seller-orders')">📊 Поступление товаров</button>
+            <button class="profile-tab" id="sellerReviewsTab" style="display:none;" onclick="switchProfileTab('seller-reviews')">⭐ Отзывы</button>
+            <button class="profile-tab" id="sellerWithdrawTab" style="display:none;" onclick="switchProfileTab('seller-withdraw')">💰 Вывод средств</button>
         </div>
-    `;
-}
 
-function copyPromoCode(code) {
-    navigator.clipboard.writeText(code);
-    alert(`Промокод ${code} скопирован!`);
-}
+        <div id="ordersPane" class="tab-pane active"><h3 style="margin-bottom:20px;">История заказов</h3><div id="ordersList"></div></div>
+        <div id="promoPane" class="tab-pane"><h3 style="margin-bottom:20px;">Мои промокоды</h3><div id="promoCodesList"></div></div>
+        <div id="supportPane" class="tab-pane"><h3 style="margin-bottom:20px;">Чат с администратором</h3><div class="support-chat"><div class="support-messages" id="supportMessages"><div class="message support">Здравствуйте! Чем могу помочь?</div></div><div class="support-input"><input type="text" id="supportInput" placeholder="Введите сообщение..."><button class="btn btn-primary" onclick="sendSupportMessage()">Отправить</button></div></div></div>
+        <div id="sellerOrdersPane" class="tab-pane"><h3 style="margin-bottom:20px;">Поступление товаров (заказы на ваши товары)</h3><div id="sellerIncomingOrders"></div></div>
+        <div id="sellerReviewsPane" class="tab-pane"><h3 style="margin-bottom:20px;">Отзывы о ваших товарах</h3><div id="sellerReviewsList"></div></div>
+        <div id="sellerWithdrawPane" class="tab-pane"><h3 style="margin-bottom:20px;">Вывод средств</h3><div style="background:#0a0a0f; border-radius:16px; padding:20px;"><p style="margin-bottom:15px;">Доступно для вывода: <strong id="availableBalance">0 ₽</strong></p><p style="margin-bottom:15px;">На удержании (ожидает подтверждения): <strong id="pendingBalance">0 ₽</strong></p><div style="margin-top:20px;"><input type="text" id="withdrawAmount" placeholder="Сумма вывода" style="padding:10px; background:#0a0a0f; border:1px solid #7c3aed; border-radius:8px; color:white; width:200px; margin-right:10px;"><button class="withdraw-btn" onclick="requestWithdraw()">Запросить вывод</button></div><p style="font-size:12px; color:#a1a1aa; margin-top:15px;">Вывод средств осуществляется в течение 3-5 рабочих дней на карту или QIWI</p></div></div>
+    </div>
 
-// Загрузка поступления товаров (для продавца)
-function loadSellerIncomingOrders(sellerId) {
-    const orders = JSON.parse(localStorage.getItem('orders')) || [];
-    const sellerOrders = orders.filter(o => o.sellerId == sellerId && o.status !== 'completed');
-    const container = document.getElementById('sellerIncomingOrders');
-    
-    if (sellerOrders.length === 0) {
-        container.innerHTML = '<div style="text-align: center; padding: 40px; color: #a1a1aa;">Нет активных заказов</div>';
-        return;
-    }
-    
-    container.innerHTML = sellerOrders.map(order => `
-        <div class="order-card">
-            <div>
-                <strong>${order.productName}</strong><br>
-                Покупатель: ${order.buyerName}<br>
-                Количество: ${order.quantity} шт.<br>
-                Сумма: ${order.total} ₽
-            </div>
-            <div>
-                <span class="order-status status-${order.status}">${getStatusText(order.status)}</span>
-                ${order.status === 'paid' ? `
-                    <button class="btn btn-primary" style="margin-top: 10px; padding: 5px 10px;" onclick="sendProductKey(${order.id}, '${order.productKey}')">
-                        Отправить ключ
-                    </button>
-                ` : ''}
-            </div>
-        </div>
-    `).join('');
-}
-
-// Отправка ключа покупателю
-function sendProductKey(orderId, productKey) {
-    if (confirm('Отправить ключ покупателю? После отправки покупатель сможет подтвердить получение.')) {
-        const orders = JSON.parse(localStorage.getItem('orders')) || [];
-        const orderIndex = orders.findIndex(o => o.id == orderId);
-        
-        if (orderIndex !== -1) {
-            orders[orderIndex].status = 'delivered';
-            localStorage.setItem('orders', JSON.stringify(orders));
-            
-            alert(`Ключ отправлен: ${productKey}`);
-            location.reload();
-        }
-    }
-}
-
-// Загрузка отзывов
-function loadSellerReviews(sellerId) {
-    const reviews = JSON.parse(localStorage.getItem('reviews')) || [];
-    const sellerReviews = reviews.filter(r => r.sellerId == sellerId);
-    const container = document.getElementById('sellerReviewsList');
-    
-    if (sellerReviews.length === 0) {
-        container.innerHTML = '<div style="text-align: center; padding: 40px; color: #a1a1aa;">Пока нет отзывов</div>';
-        return;
-    }
-    
-    container.innerHTML = sellerReviews.map(review => `
-        <div class="order-card">
-            <div>
-                <strong>${review.productName}</strong><br>
-                Покупатель: ${review.buyerName}<br>
-                Оценка: ${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}<br>
-                Отзыв: "${review.comment}"
-            </div>
-        </div>
-    `).join('');
-}
-
-// Загрузка баланса продавца
-function loadSellerBalance(sellerId) {
-    const transactions = JSON.parse(localStorage.getItem('sellerTransactions')) || [];
-    const sellerEarnings = transactions.filter(t => t.sellerId == sellerId && t.type === 'earning');
-    const totalEarned = sellerEarnings.reduce((sum, t) => sum + t.amount, 0);
-    
-    // Считаем удержанные средства (ожидающие подтверждения)
-    const orders = JSON.parse(localStorage.getItem('orders')) || [];
-    const pendingOrders = orders.filter(o => o.sellerId == sellerId && o.status === 'delivered');
-    const pendingAmount = pendingOrders.reduce((sum, o) => sum + o.total, 0);
-    
-    document.getElementById('availableBalance').textContent = totalEarned + ' ₽';
-    document.getElementById('pendingBalance').textContent = pendingAmount + ' ₽';
-}
-
-// Запрос на вывод средств
-function requestWithdraw() {
-    const amount = document.getElementById('withdrawAmount').value;
-    if (!amount || amount <= 0) {
-        alert('Введите корректную сумму');
-        return;
-    }
-    
-    alert(`Заявка на вывод ${amount} ₽ отправлена. Ожидайте 3-5 рабочих дней.`);
-    document.getElementById('withdrawAmount').value = '';
-}
-
-// Отправка сообщения в поддержку
-function sendSupportMessage() {
-    const input = document.getElementById('supportInput');
-    const message = input.value.trim();
-    if (!message) return;
-    
-    const messagesContainer = document.getElementById('supportMessages');
-    
-    // Добавляем сообщение пользователя
-    const userMsg = document.createElement('div');
-    userMsg.className = 'message user';
-    userMsg.textContent = message;
-    messagesContainer.appendChild(userMsg);
-    
-    input.value = '';
-    
-    // Автоответ
-    setTimeout(() => {
-        const supportMsg = document.createElement('div');
-        supportMsg.className = 'message support';
-        supportMsg.textContent = 'Спасибо за обращение! Наш специалист свяжется с вами в ближайшее время.';
-        messagesContainer.appendChild(supportMsg);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }, 500);
-    
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-// Получение текста статуса
-function getStatusText(status) {
-    const statuses = {
-        'pending': '⏳ Ожидает оплаты',
-        'paid': '✅ Оплачено, ожидает отправки',
-        'delivered': '📦 Товар отправлен, ожидает подтверждения',
-        'completed': '🎉 Завершен',
-        'disputed': '⚠️ Спор'
-    };
-    return statuses[status] || status;
-}
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="database.js"></script>
+    <script type="module" src="auth.js"></script>
+    <script type="module" src="profile.js"></script>
+</body>
+</html>
