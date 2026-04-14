@@ -1,5 +1,7 @@
 // ==================== КОРЗИНА ====================
 
+let allProducts = [];
+
 // Получение корзины
 function getCart() {
     const cart = localStorage.getItem('cart');
@@ -124,7 +126,7 @@ window.toggleCart = function() {
 // Оформление заказа
 window.checkout = function() {
     const cart = getCart();
-    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+    const currentUser = getCurrentUser();
     
     if (cart.length === 0) {
         showNotification('Корзина пуста', 'error');
@@ -137,10 +139,11 @@ window.checkout = function() {
         return;
     }
     
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    
-    // Создаем заказы
+    let keysMessage = "✅ ОПЛАТА ПОДТВЕРЖДЕНА!\n\nВаши цифровые товары:\n\n";
     for (let item of cart) {
+        keysMessage += `📦 ${item.name} x${item.quantity}\n🔑 Ключ: ${item.key}\n\n`;
+        
+        // Сохраняем заказ
         const order = {
             productId: item.id,
             productName: item.name,
@@ -156,18 +159,9 @@ window.checkout = function() {
             createdAt: new Date().toISOString()
         };
         
-        if (window.db) {
-            window.db.collection('orders').add(order);
-        } else {
-            let orders = JSON.parse(localStorage.getItem('orders')) || [];
-            orders.push(order);
-            localStorage.setItem('orders', JSON.stringify(orders));
-        }
-    }
-    
-    let keysMessage = "✅ ОПЛАТА ПОДТВЕРЖДЕНА!\n\nВаши цифровые товары:\n\n";
-    for (let item of cart) {
-        keysMessage += `📦 ${item.name} x${item.quantity}\n🔑 Ключ: ${item.key}\n\n`;
+        let orders = JSON.parse(localStorage.getItem('orders')) || [];
+        orders.push(order);
+        localStorage.setItem('orders', JSON.stringify(orders));
     }
     
     alert(keysMessage);
@@ -177,6 +171,19 @@ window.checkout = function() {
     displayCartItems();
     toggleCart();
     showNotification('Заказ оформлен! Товары отправлены на email', 'success');
+};
+
+// Уведомления
+window.showNotification = function(message, type = 'success') {
+    const notification = document.getElementById('notification');
+    if (notification) {
+        notification.textContent = message;
+        notification.className = `notification ${type}`;
+        notification.classList.add('show');
+        setTimeout(() => notification.classList.remove('show'), 3000);
+    } else {
+        alert(message);
+    }
 };
 
 // Инициализация
