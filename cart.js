@@ -144,7 +144,8 @@ window.checkout = function() {
         keysMessage += `📦 ${item.name} x${item.quantity}\n🔑 Ключ: ${item.key}\n\n`;
         
         // Сохраняем заказ
-        const order = {
+        let orders = JSON.parse(localStorage.getItem('orders')) || [];
+        orders.push({
             productId: item.id,
             productName: item.name,
             quantity: item.quantity,
@@ -157,10 +158,7 @@ window.checkout = function() {
             productKey: item.key,
             status: 'paid',
             createdAt: new Date().toISOString()
-        };
-        
-        let orders = JSON.parse(localStorage.getItem('orders')) || [];
-        orders.push(order);
+        });
         localStorage.setItem('orders', JSON.stringify(orders));
     }
     
