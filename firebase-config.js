@@ -1,4 +1,4 @@
-// Firebase конфигурация - ЭТОТ ФАЙЛ ДОЛЖЕН ЗАГРУЖАТЬСЯ ПЕРВЫМ
+// Firebase конфигурация
 const firebaseConfig = {
     apiKey: "AIzaSyAeWBgPT84RzljctkdpGO1xtmhVd2MdD1w",
     authDomain: "diplom-57d78.firebaseapp.com",
