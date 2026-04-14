@@ -165,7 +165,9 @@ window.getCurrentUser = getCurrentUser;
 
 window.toggleUserDropdown = function() {
     const dropdown = document.getElementById('userDropdown');
-    if (dropdown) dropdown.classList.toggle('show');
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+    }
 };
 
 document.addEventListener('click', function(e) {
