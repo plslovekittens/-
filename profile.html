@@ -17,6 +17,18 @@
         .order-status { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .status-paid { background: #3b82f6; color: white; }
         .status-completed { background: #10b981; color: white; }
+        .navbar { background: rgba(10,10,15,0.95); backdrop-filter: blur(12px); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; border-bottom: 1px solid rgba(124,58,237,0.3); }
+        .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+        .nav-content { display: flex; align-items: center; justify-content: space-between; height: 70px; }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-menu { display: flex; gap: 32px; list-style: none; }
+        .nav-menu a { color: #a1a1aa; text-decoration: none; }
+        .user-menu { position: relative; }
+        .user-dropdown { position: absolute; top: 50px; right: 0; width: 220px; background: #1e293b; border: 1px solid rgba(124,58,237,0.2); border-radius: 12px; padding: 8px; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .user-dropdown.show { opacity: 1; visibility: visible; }
+        .dropdown-item { display: block; padding: 10px 15px; color: #a1a1aa; text-decoration: none; }
+        .dropdown-item:hover { background: rgba(124,58,237,0.1); color: #7c3aed; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); border: none; border-radius: 12px; color: white; font-weight: 600; cursor: pointer; text-decoration: none; }
     </style>
 </head>
 <body>
