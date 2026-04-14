@@ -1,23 +1,23 @@
-// ==================== ПАНЕЛЬ ПРОДАВЦА ====================
+// ==================== ПАНЕЛЬ ПРОДАВЦА С FIRESTORE ====================
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Проверка авторизации продавца
+let sellerProducts = [];
+let sellerOrders = [];
+
+document.addEventListener('DOMContentLoaded', async function() {
     const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+    
     if (!currentUser || currentUser.role !== 'seller') {
         alert('Доступ запрещен. Только для продавцов.');
         window.location.href = 'index.html';
         return;
     }
     
-    // Загрузка данных
-    loadSellerStats();
-    loadSellerProducts();
-    loadSellerOrders();
+    await loadSellerData();
     
     // Форма добавления товара
     const addForm = document.getElementById('addProductForm');
     if (addForm) {
-        addForm.addEventListener('submit', function(e) {
+        addForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const newProduct = {
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 price: parseInt(document.getElementById('productPrice').value),
                 description: document.getElementById('productDescription').value,
                 key: document.getElementById('productKey').value,
-                image: document.getElementById('productImage').value,
+                image: document.getElementById('productImage') ? document.getElementById('productImage').value : 'box',
                 sellerId: currentUser.id,
                 sellerName: currentUser.name,
                 rating: 5.0,
@@ -36,145 +36,172 @@ document.addEventListener('DOMContentLoaded', function() {
                 badge: 'new'
             };
             
-            addProduct(newProduct);
-            alert('Товар успешно добавлен!');
-            addForm.reset();
-            loadSellerProducts();
-            loadSellerStats();
+            try {
+                if (window.db && window.db.addProduct) {
+                    const added = await window.db.addProduct(newProduct);
+                    alert('Товар успешно добавлен в облачную базу данных!');
+                    addForm.reset();
+                    await loadSellerData();
+                } else {
+                    // Fallback на localStorage
+                    addProduct(newProduct);
+                    alert('Товар успешно добавлен!');
+                    addForm.reset();
+                    loadSellerData();
+                }
+            } catch (error) {
+                console.error('Ошибка добавления товара:', error);
+                alert('Ошибка при добавлении товара: ' + error.message);
+            }
         });
     }
 });
 
-// Загрузка статистики
+async function loadSellerData() {
+    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+    if (!currentUser) return;
+    
+    if (window.db && window.db.getSellerProducts) {
+        sellerProducts = await window.db.getSellerProducts(currentUser.id);
+        sellerOrders = await window.db.getSellerOrders(currentUser.id);
+    } else {
+        sellerProducts = getSellerProducts(currentUser.id);
+        sellerOrders = getSellerOrders(currentUser.id);
+    }
+    
+    loadSellerStats();
+    loadSellerProducts();
+    loadSellerOrders();
+}
+
 function loadSellerStats() {
     const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
     if (!currentUser) return;
     
-    const products = getSellerProducts(currentUser.id);
-    const orders = getSellerOrders(currentUser.id);
-    const completedOrders = orders.filter(o => o.status === 'completed');
+    const totalEarned = sellerOrders.filter(o => o.status === 'completed').reduce((sum, o) => sum + o.total, 0);
+    const pendingAmount = sellerOrders.filter(o => o.status === 'delivered').reduce((sum, o) => sum + o.total, 0);
     
-    const totalSales = orders.reduce((sum, o) => sum + o.total, 0);
-    const pendingBalance = orders.filter(o => o.status === 'paid').reduce((sum, o) => sum + o.total, 0);
-    
-    document.getElementById('totalProducts').textContent = products.length;
-    document.getElementById('totalSales').textContent = orders.length;
-    document.getElementById('totalEarnings').textContent = totalSales.toLocaleString() + ' ₽';
-    document.getElementById('pendingBalance').textContent = pendingBalance.toLocaleString() + ' ₽';
+    document.getElementById('totalProducts').textContent = sellerProducts.length;
+    document.getElementById('totalSales').textContent = sellerOrders.length;
+    document.getElementById('totalEarnings').textContent = totalEarned.toLocaleString() + ' ₽';
+    document.getElementById('pendingBalance').textContent = pendingAmount.toLocaleString() + ' ₽';
 }
 
-// Загрузка товаров продавца
 function loadSellerProducts() {
-    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-    if (!currentUser) return;
-    
-    const products = getSellerProducts(currentUser.id);
     const tbody = document.getElementById('sellerProductsList');
-    
     if (!tbody) return;
     
-    if (products.length === 0) {
+    if (sellerProducts.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5" style="text-align: center">У вас пока нет товаров</td></tr>';
         return;
     }
     
-    tbody.innerHTML = products.map(p => `
+    tbody.innerHTML = sellerProducts.map(p => `
         <tr>
             <td>${p.name}</td>
             <td>${p.price} ₽</td>
             <td>${p.category}</td>
             <td>${p.soldCount || 0}</td>
             <td>
-                <button class="edit-btn" onclick="editProduct(${p.id})"><i class="fas fa-edit"></i></button>
-                <button class="delete-btn" onclick="deleteProductConfirm(${p.id})"><i class="fas fa-trash"></i></button>
-            </td>
+                <button class="edit-btn" onclick="editProduct('${p.id}')"><i class="fas fa-edit"></i></button>
+                <button class="delete-btn" onclick="deleteProductConfirm('${p.id}')"><i class="fas fa-trash"></i></button>
+             </td>
         </tr>
     `).join('');
 }
 
-// Загрузка заказов
 function loadSellerOrders() {
-    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-    if (!currentUser) return;
-    
-    const orders = getSellerOrders(currentUser.id);
     const tbody = document.getElementById('ordersList');
-    
     if (!tbody) return;
     
-    if (orders.length === 0) {
+    if (sellerOrders.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5" style="text-align: center">Нет заказов</td></tr>';
         return;
     }
     
-    tbody.innerHTML = orders.map(o => `
+    tbody.innerHTML = sellerOrders.map(o => `
         <tr>
             <td>${o.productName} x${o.quantity}</td>
             <td>${o.buyerName}</td>
             <td>${o.total} ₽</td>
-            <td><span class="status ${o.status}">${getStatusText(o.status)}</span></td>
+            <td class="status-${o.status}">${getStatusText(o.status)}</td>
             <td>
-                ${o.status === 'paid' ? `<button class="edit-btn" onclick="confirmDelivery(${o.id})">Подтвердить доставку</button>` : ''}
-            </td>
+                ${o.status === 'paid' ? `<button class="edit-btn" onclick="sendProductKey('${o.id}', '${o.productKey}')">Отправить ключ</button>` : ''}
+             </td>
         </tr>
     `).join('');
 }
 
-// Подтверждение доставки
-function confirmDelivery(orderId) {
-    if (confirm('Подтвердите, что товар был передан покупателю. Средства будут зачислены на ваш счет.')) {
-        updateOrderStatus(orderId, 'completed');
-        loadSellerOrders();
-        loadSellerStats();
-        alert('Доставка подтверждена! Средства зачислены на ваш счет.');
+window.sendProductKey = async function(orderId, productKey) {
+    if (confirm('Отправить ключ покупателю?')) {
+        if (window.db && window.db.updateOrderStatus) {
+            await window.db.updateOrderStatus(orderId, 'delivered');
+            alert(`Ключ отправлен: ${productKey}`);
+            await loadSellerData();
+        } else {
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            const orderIndex = orders.findIndex(o => o.id == orderId);
+            if (orderIndex !== -1) {
+                orders[orderIndex].status = 'delivered';
+                localStorage.setItem('orders', JSON.stringify(orders));
+                alert(`Ключ отправлен: ${productKey}`);
+                loadSellerData();
+            }
+        }
     }
-}
+};
 
-// Удаление товара
-function deleteProductConfirm(productId) {
+window.deleteProductConfirm = async function(productId) {
     if (confirm('Вы уверены, что хотите удалить этот товар?')) {
-        deleteProduct(productId);
-        loadSellerProducts();
-        loadSellerStats();
-        alert('Товар удален');
+        if (window.db && window.db.deleteProduct) {
+            await window.db.deleteProduct(productId);
+            alert('Товар удален из облачной базы данных');
+            await loadSellerData();
+        } else {
+            deleteProduct(productId);
+            alert('Товар удален');
+            loadSellerData();
+        }
     }
-}
+};
 
-// Редактирование товара
-function editProduct(productId) {
-    const products = getAllProducts();
-    const product = products.find(p => p.id == productId);
+window.editProduct = async function(productId) {
+    const product = sellerProducts.find(p => p.id == productId);
     if (!product) return;
     
     const newName = prompt('Новое название:', product.name);
     const newPrice = prompt('Новая цена:', product.price);
     
     if (newName && newPrice) {
-        updateProduct(productId, {
-            name: newName,
-            price: parseInt(newPrice)
-        });
-        loadSellerProducts();
-        alert('Товар обновлен');
+        if (window.db && window.db.updateProduct) {
+            await window.db.updateProduct(productId, {
+                name: newName,
+                price: parseInt(newPrice)
+            });
+            alert('Товар обновлен в облачной базе данных');
+            await loadSellerData();
+        } else {
+            updateProduct(productId, { name: newName, price: parseInt(newPrice) });
+            alert('Товар обновлен');
+            loadSellerData();
+        }
     }
-}
+};
 
-// Переключение вкладок
-function switchTab(tab) {
+window.switchTab = function(tab) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.getElementById(`${tab}Tab`).classList.add('active');
-    
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
-}
+};
 
-// Вспомогательные функции
 function getStatusText(status) {
     const statuses = {
         'pending': '⏳ Ожидает оплаты',
-        'paid': '✅ Оплачено, ожидает доставки',
-        'delivered': '📦 Доставлено',
-        'completed': '🎉 Завершен'
+        'paid': '✅ Оплачено (деньги на удержании)',
+        'delivered': '📦 Ключ отправлен, ожидает подтверждения',
+        'completed': '🎉 Завершен (деньги получены)',
+        'disputed': '⚠️ Спор'
     };
     return statuses[status] || status;
 }
