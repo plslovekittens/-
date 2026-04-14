@@ -14,7 +14,7 @@
         .form-group { margin-bottom: 20px; }
         .form-group input { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; }
         .role-selector { display: flex; gap: 20px; margin-bottom: 20px; }
-        .role-option { flex: 1; padding: 12px; text-align: center; background: #0f172a; border: 1px solid #334155; border-radius: 8px; cursor: pointer; color: white; }
+        .role-option { flex: 1; padding: 12px; text-align: center; background: #0f172a; border: 1px solid #334155; border-radius: 8px; cursor: pointer; color: white; transition: 0.3s; }
         .role-option.selected { border-color: #7c3aed; background: #7c3aed20; }
         .btn-full { width: 100%; }
         .auth-link { text-align: center; margin-top: 20px; color: #94a3b8; }
@@ -26,22 +26,38 @@
         <div class="auth-card">
             <h2>Регистрация</h2>
             <form id="registerForm">
-                <div class="form-group"><input type="text" id="regName" placeholder="ФИО" required></div>
-                <div class="form-group"><input type="email" id="regEmail" placeholder="Email" required></div>
-                <div class="form-group"><input type="password" id="regPassword" placeholder="Пароль (минимум 6 символов)" required></div>
-                <div class="form-group"><input type="password" id="regPasswordConfirm" placeholder="Подтверждение пароля" required></div>
+                <div class="form-group">
+                    <input type="text" id="regName" placeholder="ФИО" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="regEmail" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="regPassword" placeholder="Пароль (минимум 6 символов)" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="regPasswordConfirm" placeholder="Подтверждение пароля" required>
+                </div>
                 <div class="role-selector">
-                    <div class="role-option" data-role="buyer" onclick="selectRole('buyer')"><i class="fas fa-user"></i> Покупатель</div>
-                    <div class="role-option" data-role="seller" onclick="selectRole('seller')"><i class="fas fa-store"></i> Продавец</div>
+                    <div class="role-option" data-role="buyer" onclick="selectRole('buyer')">
+                        <i class="fas fa-user"></i> Покупатель
+                    </div>
+                    <div class="role-option" data-role="seller" onclick="selectRole('seller')">
+                        <i class="fas fa-store"></i> Продавец
+                    </div>
                 </div>
                 <input type="hidden" id="regRole" value="buyer">
                 <button type="submit" class="btn btn-primary btn-full">Зарегистрироваться</button>
             </form>
-            <div class="auth-link">Уже есть аккаунт? <a href="login.html">Войти</a></div>
+            <div class="auth-link">
+                Уже есть аккаунт? <a href="login.html">Войти</a>
+            </div>
         </div>
     </div>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
     <script src="firebase-config.js"></script>
-    <script src="database.js"></script>
     <script src="auth.js"></script>
 </body>
 </html>
