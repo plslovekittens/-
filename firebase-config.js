@@ -13,17 +13,21 @@ import {
     where, 
     orderBy,
     setDoc,
-    serverTimestamp
+    serverTimestamp,
+    increment
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { 
     getAuth, 
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword, 
     signOut, 
-    onAuthStateChanged 
+    onAuthStateChanged,
+    sendPasswordResetEmail,
+    updatePassword,
+    reauthenticateWithCredential,
+    EmailAuthProvider
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyAeWBgPT84RzljctkdpGO1xtmhVd2MdD1w",
     authDomain: "diplom-57d78.firebaseapp.com",
@@ -34,12 +38,11 @@ const firebaseConfig = {
     measurementId: "G-T6F7KWP9RR"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Коллекции Firestore
+// Коллекции
 const USERS_COLLECTION = 'users';
 const PRODUCTS_COLLECTION = 'products';
 const ORDERS_COLLECTION = 'orders';
@@ -47,8 +50,8 @@ const REVIEWS_COLLECTION = 'reviews';
 const TRANSACTIONS_COLLECTION = 'transactions';
 const PROMO_CODES_COLLECTION = 'promoCodes';
 const SUPPORT_MESSAGES_COLLECTION = 'supportMessages';
+const LOGIN_ATTEMPTS_COLLECTION = 'loginAttempts';
 
-// Экспортируем всё для использования в других файлах
 export { 
     db, 
     auth,
@@ -59,6 +62,7 @@ export {
     TRANSACTIONS_COLLECTION,
     PROMO_CODES_COLLECTION,
     SUPPORT_MESSAGES_COLLECTION,
+    LOGIN_ATTEMPTS_COLLECTION,
     collection,
     doc,
     addDoc,
@@ -71,8 +75,13 @@ export {
     orderBy,
     setDoc,
     serverTimestamp,
+    increment,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
-    onAuthStateChanged
+    onAuthStateChanged,
+    sendPasswordResetEmail,
+    updatePassword,
+    reauthenticateWithCredential,
+    EmailAuthProvider
 };
