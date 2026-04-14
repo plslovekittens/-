@@ -1,12 +1,32 @@
 // ==================== ОСНОВНОЙ ФУНКЦИОНАЛ ====================
 
-document.addEventListener('DOMContentLoaded', function() {
+let allProducts = [];
+
+document.addEventListener('DOMContentLoaded', async function() {
+    // Загружаем товары из Firestore
+    await loadProducts();
     displayCategories();
-    displayProducts(getAllProducts());
     updateUserInterface();
     updateCartCountDisplay();
     displayCartItems();
+    
+    // Инициализируем товары если их нет
+    if (window.db && window.db.initializeProducts) {
+        await window.db.initializeProducts();
+    }
 });
+
+// Загрузка товаров из Firestore
+async function loadProducts() {
+    if (window.db && window.db.getAllProducts) {
+        allProducts = await window.db.getAllProducts();
+        displayProducts(allProducts);
+    } else {
+        // Fallback на localStorage
+        allProducts = JSON.parse(localStorage.getItem('products')) || [];
+        displayProducts(allProducts);
+    }
+}
 
 // Отображение категорий
 function displayCategories() {
@@ -14,9 +34,9 @@ function displayCategories() {
     if (!grid) return;
     
     const categories = [
-        { id: "games", name: "Игры", icon: "gamepad", count: 150 },
-        { id: "software", name: "Программы", icon: "laptop-code", count: 80 },
-        { id: "subscriptions", name: "Подписки", icon: "crown", count: 45 }
+        { id: "games", name: "Игры", icon: "gamepad", count: allProducts.filter(p => p.category === 'games').length },
+        { id: "software", name: "Программы", icon: "laptop-code", count: allProducts.filter(p => p.category === 'software').length },
+        { id: "subscriptions", name: "Подписки", icon: "crown", count: allProducts.filter(p => p.category === 'subscriptions').length }
     ];
     
     grid.innerHTML = categories.map(cat => `
@@ -57,7 +77,7 @@ function displayProducts(productsToShow) {
                     ${product.discount ? `<span class="discount-badge">-${product.discount}%</span>` : ''}
                 </div>
                 <div class="product-actions">
-                    <button class="add-to-cart" onclick="addToCart(${product.id})">
+                    <button class="add-to-cart" onclick="addToCart('${product.id}')">
                         <i class="fas fa-shopping-cart"></i> В корзину
                     </button>
                     <button class="wishlist-btn" onclick="showNotification('Добавлено в избранное', 'success')">
@@ -71,30 +91,29 @@ function displayProducts(productsToShow) {
 }
 
 // Фильтрация товаров
-function filterProducts(category) {
-    const products = getAllProducts();
+window.filterProducts = function(category) {
     const filtered = category === 'all' 
-        ? products 
-        : products.filter(p => p.category === category);
+        ? allProducts 
+        : allProducts.filter(p => p.category === category);
     displayProducts(filtered);
     
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.toggle('active', btn.textContent.toLowerCase().includes(category));
     });
-}
+};
 
 // Поиск
-function toggleSearch() {
+window.toggleSearch = function() {
     document.getElementById('searchOverlay').classList.toggle('active');
-}
+};
 
-function closeSearch() {
+window.closeSearch = function() {
     document.getElementById('searchOverlay').classList.remove('active');
     document.getElementById('searchInput').value = '';
     document.getElementById('searchResults').innerHTML = '';
-}
+};
 
-function searchProducts() {
+window.searchProducts = function() {
     const query = document.getElementById('searchInput').value.toLowerCase();
     const results = document.getElementById('searchResults');
     
@@ -103,8 +122,7 @@ function searchProducts() {
         return;
     }
     
-    const products = getAllProducts();
-    const filtered = products.filter(p => 
+    const filtered = allProducts.filter(p => 
         p.name.toLowerCase().includes(query) || 
         (p.category && p.category.toLowerCase().includes(query))
     );
@@ -115,7 +133,7 @@ function searchProducts() {
     }
     
     results.innerHTML = filtered.slice(0, 5).map(p => `
-        <div class="search-result-item" onclick="selectProduct(${p.id})">
+        <div class="search-result-item" onclick="selectProduct('${p.id}')">
             <i class="fas fa-${p.image || 'box'}"></i>
             <div>
                 <div>${p.name}</div>
@@ -123,18 +141,18 @@ function searchProducts() {
             </div>
         </div>
     `).join('');
-}
+};
 
-function selectProduct(productId) {
+window.selectProduct = async function(productId) {
     closeSearch();
-    const product = getAllProducts().find(p => p.id == productId);
+    const product = allProducts.find(p => p.id == productId);
     if (product) {
         alert(`${product.name}\nЦена: ${product.price} ₽\nПродавец: ${product.sellerName || 'Volt Official'}`);
     }
-}
+};
 
 // Уведомления
-function showNotification(message, type = 'success') {
+window.showNotification = function(message, type = 'success') {
     const notification = document.getElementById('notification');
     if (notification) {
         notification.textContent = message;
@@ -146,7 +164,7 @@ function showNotification(message, type = 'success') {
     } else {
         alert(message);
     }
-}
+};
 
 // Вспомогательные функции
 function getBadgeText(badge) {
