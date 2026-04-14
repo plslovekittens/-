@@ -8,162 +8,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .rules-container {
-            max-width: 1000px;
-            margin: 100px auto 60px;
-            padding: 0 20px;
-        }
-        .rules-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        .rules-header h1 {
-            font-size: 42px;
-            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
-        }
-        .rules-section {
-            background: #111118;
-            border: 1px solid rgba(124, 58, 237, 0.2);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-        }
-        .rules-section h2 {
-            color: #7c3aed;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-        .rules-section p {
-            color: #a1a1aa;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-        .rules-section ul {
-            list-style: none;
-            padding-left: 0;
-        }
-        .rules-section li {
-            color: #a1a1aa;
-            padding: 8px 0;
-            padding-left: 25px;
-            position: relative;
-        }
-        .rules-section li:before {
-            content: "•";
-            color: #7c3aed;
-            position: absolute;
-            left: 0;
-            font-weight: bold;
-        }
-        .warning-box {
-            background: rgba(239, 68, 68, 0.1);
-            border-left: 4px solid #ef4444;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-        }
-        .success-box {
-            background: rgba(16, 185, 129, 0.1);
-            border-left: 4px solid #10b981;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-        }
+        .rules-container { max-width: 1000px; margin: 100px auto 60px; padding: 0 20px; }
+        .rules-header { text-align: center; margin-bottom: 40px; }
+        .rules-header h1 { font-size: 42px; background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; }
+        .rules-section { background: #111118; border: 1px solid rgba(124,58,237,0.2); border-radius: 20px; padding: 30px; margin-bottom: 30px; }
+        .rules-section h2 { color: #7c3aed; margin-bottom: 20px; font-size: 24px; }
+        .rules-section p { color: #a1a1aa; line-height: 1.6; margin-bottom: 15px; }
+        .rules-section ul { list-style: none; padding-left: 0; }
+        .rules-section li { color: #a1a1aa; padding: 8px 0; padding-left: 25px; position: relative; }
+        .rules-section li:before { content: "•"; color: #7c3aed; position: absolute; left: 0; font-weight: bold; }
+        .warning-box { background: rgba(239,68,68,0.1); border-left: 4px solid #ef4444; padding: 20px; border-radius: 12px; margin-top: 20px; }
+        .success-box { background: rgba(16,185,129,0.1); border-left: 4px solid #10b981; padding: 20px; border-radius: 12px; margin-top: 20px; }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-content">
-                <div class="logo"><i class="fas fa-bolt"></i> VOLT</div>
-                <ul class="nav-menu">
-                    <li><a href="index.html">Главная</a></li>
-                    <li><a href="index.html#products">Товары</a></li>
-                    <li><a href="seller-info.html">Продавцам</a></li>
-                    <li><a href="rules.html" class="active">Правила</a></li>
-                </ul>
-                <div class="nav-actions">
-                    <div class="user-menu" id="userMenu">
-                        <button class="user-btn" onclick="window.location.href='login.html'">
-                            <i class="fas fa-user"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <nav class="navbar"><div class="container"><div class="nav-content"><div class="logo"><i class="fas fa-bolt"></i> VOLT</div><ul class="nav-menu"><li><a href="index.html">Главная</a></li><li><a href="index.html#products">Товары</a></li><li><a href="seller-info.html">Продавцам</a></li><li><a href="rules.html" class="active">Правила</a></li></ul><div class="nav-actions"><div class="user-menu"><button class="user-btn" onclick="window.location.href='login.html'"><i class="fas fa-user"></i></button></div></div></div></div></nav>
 
     <div class="rules-container">
-        <div class="rules-header">
-            <h1>Правила площадки Volt</h1>
-            <p>Пожалуйста, ознакомьтесь с правилами перед началом использования</p>
-        </div>
-
-        <div class="rules-section">
-            <h2>1. Общие положения</h2>
-            <p>Volt Store — это цифровая площадка для безопасной покупки и продажи цифровых товаров. Используя наш сервис, вы соглашаетесь с данными правилами.</p>
-        </div>
-
-        <div class="rules-section">
-            <h2>2. Для покупателей</h2>
-            <ul>
-                <li>Оплата товаров осуществляется через систему СБП с защитой сделки</li>
-                <li>Деньги замораживаются на счету площадки до момента получения товара</li>
-                <li>После получения товара у вас есть 3 дня на проверку</li>
-                <li>Если товар не соответствует описанию, вы можете открыть спор</li>
-                <li>После подтверждения получения, деньги переводятся продавцу</li>
-            </ul>
-        </div>
-
-        <div class="rules-section">
-            <h2>3. Для продавцов</h2>
-            <ul>
-                <li>Запрещено продавать нелицензионные товары</li>
-                <li>Комиссия площадки составляет 5% от каждой продажи</li>
-                <li>Выплаты производятся после подтверждения получения товара покупателем</li>
-                <li>За нарушение правил предусмотрена блокировка аккаунта</li>
-                <li>Все споры решаются администрацией площадки</li>
-            </ul>
-        </div>
-
-        <div class="rules-section">
-            <h2>4. Защита сделки (Escrow)</h2>
-            <div class="success-box">
-                <strong>🔒 Как это работает:</strong><br>
-                1. Покупатель оплачивает товар → деньги замораживаются<br>
-                2. Продавец отправляет товар (ключ, файл)<br>
-                3. Покупатель проверяет товар (3 дня)<br>
-                4. После подтверждения → деньги поступают продавцу<br>
-                5. Если товар не подошел → возврат средств
-            </div>
-        </div>
-
-        <div class="rules-section">
-            <h2>5. Запрещенные товары</h2>
-            <ul>
-                <li>Взломанные аккаунты и краденые ключи</li>
-                <li>Пиратский контент</li>
-                <li>Фишинговые ссылки и вредоносное ПО</li>
-                <li>Товары, нарушающие законодательство РФ</li>
-            </ul>
-        </div>
-
-        <div class="rules-section">
-            <h2>6. Санкции за нарушение</h2>
-            <div class="warning-box">
-                <strong>⚠️ Нарушение правил влечет за собой:</strong><br>
-                - Предупреждение<br>
-                - Временная блокировка аккаунта<br>
-                - Полная блокировка с конфискацией средств<br>
-                - Передача данных в правоохранительные органы
-            </div>
-        </div>
+        <div class="rules-header"><h1>Правила площадки Volt</h1><p>Пожалуйста, ознакомьтесь с правилами перед началом использования</p></div>
+        <div class="rules-section"><h2>1. Общие положения</h2><p>Volt Store — это цифровая площадка для безопасной покупки и продажи цифровых товаров. Используя наш сервис, вы соглашаетесь с данными правилами.</p></div>
+        <div class="rules-section"><h2>2. Для покупателей</h2><ul><li>Оплата товаров осуществляется через систему СБП с защитой сделки</li><li>Деньги замораживаются на счету площадки до момента получения товара</li><li>После получения товара у вас есть 3 дня на проверку</li><li>Если товар не соответствует описанию, вы можете открыть спор</li><li>После подтверждения получения, деньги переводятся продавцу</li></ul></div>
+        <div class="rules-section"><h2>3. Для продавцов</h2><ul><li>Запрещено продавать нелицензионные товары</li><li>Комиссия площадки составляет 5% от каждой продажи</li><li>Выплаты производятся после подтверждения получения товара покупателем</li><li>За нарушение правил предусмотрена блокировка аккаунта</li><li>Все споры решаются администрацией площадки</li></ul></div>
+        <div class="rules-section"><h2>4. Защита сделки (Escrow)</h2><div class="success-box"><strong>🔒 Как это работает:</strong><br>1. Покупатель оплачивает товар → деньги замораживаются<br>2. Продавец отправляет товар (ключ, файл)<br>3. Покупатель проверяет товар (3 дня)<br>4. После подтверждения → деньги поступают продавцу<br>5. Если товар не подошел → возврат средств</div></div>
+        <div class="rules-section"><h2>5. Запрещенные товары</h2><ul><li>Взломанные аккаунты и краденые ключи</li><li>Пиратский контент</li><li>Фишинговые ссылки и вредоносное ПО</li><li>Товары, нарушающие законодательство РФ</li></ul></div>
+        <div class="rules-section"><h2>6. Санкции за нарушение</h2><div class="warning-box"><strong>⚠️ Нарушение правил влечет за собой:</strong><br>- Предупреждение<br>- Временная блокировка аккаунта<br>- Полная блокировка с конфискацией средств<br>- Передача данных в правоохранительные органы</div></div>
     </div>
 
-    <script src="database.js"></script>
-    <script src="auth.js"></script>
+    <footer class="footer"><div class="container"><div class="footer-content"><div class="footer-section"><div class="logo"><i class="fas fa-bolt"></i> VOLT</div><p>Цифровой маркетплейс. Покупайте и продавайте безопасно.</p></div><div class="footer-section"><h4>Контакты</h4><a href="https://t.me/plslovekittens" target="_blank" class="contact-btn"><i class="fab fa-telegram"></i> Telegram</a><a href="https://discord.gg/willka" target="_blank" class="contact-btn"><i class="fab fa-discord"></i> Discord</a><a href="https://vk.com/ssaattaaann" target="_blank" class="contact-btn"><i class="fab fa-vk"></i> VK</a></div></div><div class="footer-bottom"><p>&copy; 2024 Volt Store. Безопасная сделка — гарантия качества.</p></div></div></footer>
 </body>
 </html>
