@@ -1,50 +1,35 @@
 // ==================== ОСНОВНОЙ ФУНКЦИОНАЛ ====================
 
-let allProducts = [];
-
-// Ждем загрузки Firebase
-function waitForFirebaseAndLoad() {
-    if (window.db) {
-        loadProducts();
-    } else {
-        setTimeout(waitForFirebaseAndLoad, 100);
-    }
-}
-
-// Загрузка товаров из Firestore
+// Загрузка товаров
 async function loadProducts() {
     try {
         const snapshot = await window.db.collection('products').get();
-        allProducts = [];
+        window.allProducts = [];
         snapshot.forEach(doc => {
-            allProducts.push({ id: doc.id, ...doc.data() });
+            window.allProducts.push({ id: doc.id, ...doc.data() });
         });
         
-        if (allProducts.length === 0) {
+        if (window.allProducts.length === 0) {
             await initializeProducts();
         } else {
-            displayProducts(allProducts);
+            displayProducts(window.allProducts);
             displayCategories();
         }
     } catch (error) {
         console.error('Ошибка загрузки товаров:', error);
-        // Запасные товары
-        allProducts = getFallbackProducts();
-        displayProducts(allProducts);
+        window.allProducts = getFallbackProducts();
+        displayProducts(window.allProducts);
         displayCategories();
     }
-    
-    updateCartCountDisplay();
-    displayCartItems();
 }
 
 // Запасные товары
 function getFallbackProducts() {
     return [
-        { id: 1, name: "Cyberpunk 2077", category: "games", price: 1990, oldPrice: 2990, discount: 33, image: "gamepad", badge: "sale", sellerName: "Volt Official" },
-        { id: 2, name: "Baldur's Gate 3", category: "games", price: 2490, oldPrice: 3490, discount: 28, image: "dragon", badge: "new", sellerName: "Volt Official" },
-        { id: 3, name: "Microsoft Office 2024", category: "software", price: 3990, oldPrice: 7990, discount: 50, image: "file-alt", badge: "popular", sellerName: "Volt Official" },
-        { id: 4, name: "Discord Nitro", category: "subscriptions", price: 299, oldPrice: 499, discount: 40, image: "discord", badge: "popular", sellerName: "Volt Official" }
+        { id: "1", name: "Cyberpunk 2077", category: "games", price: 1990, oldPrice: 2990, discount: 33, image: "gamepad", badge: "sale", sellerName: "Volt Official", key: "CYBER-2077-KEY" },
+        { id: "2", name: "Baldur's Gate 3", category: "games", price: 2490, oldPrice: 3490, discount: 28, image: "dragon", badge: "new", sellerName: "Volt Official", key: "BG3-KEY" },
+        { id: "3", name: "Microsoft Office 2024", category: "software", price: 3990, oldPrice: 7990, discount: 50, image: "file-alt", badge: "popular", sellerName: "Volt Official", key: "OFFICE-KEY" },
+        { id: "4", name: "Discord Nitro", category: "subscriptions", price: 299, oldPrice: 499, discount: 40, image: "discord", badge: "popular", sellerName: "Volt Official", key: "DISCORD-KEY" }
     ];
 }
 
@@ -56,9 +41,7 @@ async function initializeProducts() {
         { name: "Red Dead Redemption 2", category: "games", price: 2290, oldPrice: 3990, discount: 42, image: "horse", badge: "sale", sellerId: "admin", sellerName: "Volt Official", key: "RDR2-KEY", rating: 4.9, reviews: 15600 },
         { name: "Microsoft Office 2024", category: "software", price: 3990, oldPrice: 7990, discount: 50, image: "file-alt", badge: "popular", sellerId: "admin", sellerName: "Volt Official", key: "OFFICE-KEY", rating: 4.8, reviews: 3420 },
         { name: "Adobe Photoshop 2024", category: "software", price: 2990, oldPrice: 5990, discount: 50, image: "paint-brush", badge: "popular", sellerId: "admin", sellerName: "Volt Official", key: "PS-KEY", rating: 4.8, reviews: 2300 },
-        { name: "Discord Nitro", category: "subscriptions", price: 299, oldPrice: 499, discount: 40, image: "discord", badge: "popular", sellerId: "admin", sellerName: "Volt Official", key: "DISCORD-KEY", rating: 4.9, reviews: 5600 },
-        { name: "Telegram Premium", category: "subscriptions", price: 299, oldPrice: 499, discount: 40, image: "telegram", badge: "new", sellerId: "admin", sellerName: "Volt Official", key: "TG-KEY", rating: 4.7, reviews: 8900 },
-        { name: "The Witcher 3", category: "games", price: 1490, oldPrice: 2990, discount: 50, image: "hat-wizard", badge: "sale", sellerId: "admin", sellerName: "Volt Official", key: "WITCHER-KEY", rating: 4.9, reviews: 23400 }
+        { name: "Discord Nitro", category: "subscriptions", price: 299, oldPrice: 499, discount: 40, image: "discord", badge: "popular", sellerId: "admin", sellerName: "Volt Official", key: "DISCORD-KEY", rating: 4.9, reviews: 5600 }
     ];
     
     for (const product of defaultProducts) {
@@ -78,9 +61,9 @@ function displayCategories() {
     if (!grid) return;
     
     const categories = [
-        { id: "games", name: "Игры", icon: "gamepad", count: allProducts.filter(p => p.category === 'games').length },
-        { id: "software", name: "Программы", icon: "laptop-code", count: allProducts.filter(p => p.category === 'software').length },
-        { id: "subscriptions", name: "Подписки", icon: "crown", count: allProducts.filter(p => p.category === 'subscriptions').length }
+        { id: "games", name: "Игры", icon: "gamepad", count: window.allProducts.filter(p => p.category === 'games').length },
+        { id: "software", name: "Программы", icon: "laptop-code", count: window.allProducts.filter(p => p.category === 'software').length },
+        { id: "subscriptions", name: "Подписки", icon: "crown", count: window.allProducts.filter(p => p.category === 'subscriptions').length }
     ];
     
     grid.innerHTML = categories.map(cat => `
@@ -111,10 +94,6 @@ function displayProducts(productsToShow) {
             <div class="product-content">
                 <h3 class="product-title">${product.name}</h3>
                 <div class="product-category">${getCategoryName(product.category)}</div>
-                <div class="product-rating">
-                    <div class="stars">${generateStars(product.rating || 4.5)}</div>
-                    <span class="reviews">(${product.reviews || 0})</span>
-                </div>
                 <div class="product-price">
                     <span class="current-price">${product.price} ₽</span>
                     ${product.oldPrice ? `<span class="old-price">${product.oldPrice} ₽</span>` : ''}
@@ -123,9 +102,6 @@ function displayProducts(productsToShow) {
                 <div class="product-actions">
                     <button class="add-to-cart" onclick="addToCart('${product.id}')">
                         <i class="fas fa-shopping-cart"></i> В корзину
-                    </button>
-                    <button class="wishlist-btn" onclick="showNotification('Добавлено в избранное', 'success')">
-                        <i class="far fa-heart"></i>
                     </button>
                 </div>
                 <div class="seller-info">Продавец: ${product.sellerName || 'Volt Official'}</div>
@@ -136,7 +112,7 @@ function displayProducts(productsToShow) {
 
 // Фильтрация
 window.filterProducts = function(category) {
-    const filtered = category === 'all' ? allProducts : allProducts.filter(p => p.category === category);
+    const filtered = category === 'all' ? window.allProducts : window.allProducts.filter(p => p.category === category);
     displayProducts(filtered);
     
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -168,7 +144,7 @@ window.searchProducts = function() {
         return;
     }
     
-    const filtered = allProducts.filter(p => p.name.toLowerCase().includes(query));
+    const filtered = window.allProducts.filter(p => p.name.toLowerCase().includes(query));
     
     if (filtered.length === 0) {
         results.innerHTML = '<div class="no-results">Ничего не найдено</div>';
@@ -185,22 +161,9 @@ window.searchProducts = function() {
 
 window.selectProduct = function(productId) {
     closeSearch();
-    const product = allProducts.find(p => p.id == productId);
+    const product = window.allProducts.find(p => p.id == productId);
     if (product) {
-        alert(`${product.name}\nЦена: ${product.price} ₽\nПродавец: ${product.sellerName || 'Volt Official'}`);
-    }
-};
-
-// Уведомления
-window.showNotification = function(message, type = 'success') {
-    const notification = document.getElementById('notification');
-    if (notification) {
-        notification.textContent = message;
-        notification.className = `notification ${type}`;
-        notification.classList.add('show');
-        setTimeout(() => notification.classList.remove('show'), 3000);
-    } else {
-        alert(message);
+        alert(`${product.name}\nЦена: ${product.price} ₽`);
     }
 };
 
@@ -215,16 +178,12 @@ function getCategoryName(category) {
     return names[category] || category;
 }
 
-function generateStars(rating) {
-    let stars = '';
-    for (let i = 1; i <= 5; i++) {
-        stars += i <= rating ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
-    }
-    return stars;
-}
-
 // Запуск
 document.addEventListener('DOMContentLoaded', function() {
-    waitForFirebaseAndLoad();
+    if (window.db) {
+        loadProducts();
+    } else {
+        setTimeout(() => loadProducts(), 500);
+    }
     updateUserInterface();
 });
