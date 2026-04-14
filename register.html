@@ -12,20 +12,13 @@
         .auth-card { background: #1e293b; border-radius: 16px; padding: 40px; width: 100%; max-width: 500px; }
         .auth-card h2 { text-align: center; margin-bottom: 30px; color: white; }
         .form-group { margin-bottom: 20px; }
-        .form-group input, .form-group select { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; }
+        .form-group input { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; }
         .role-selector { display: flex; gap: 20px; margin-bottom: 20px; }
         .role-option { flex: 1; padding: 12px; text-align: center; background: #0f172a; border: 1px solid #334155; border-radius: 8px; cursor: pointer; color: white; }
         .role-option.selected { border-color: #7c3aed; background: #7c3aed20; }
         .btn-full { width: 100%; }
         .auth-link { text-align: center; margin-top: 20px; color: #94a3b8; }
         .auth-link a { color: #7c3aed; text-decoration: none; }
-        .password-strength { height: 4px; background: #334155; border-radius: 2px; margin-top: 5px; overflow: hidden; }
-        .password-strength-bar { height: 100%; width: 0; transition: width 0.3s, background 0.3s; }
-        .password-requirements { font-size: 12px; color: #94a3b8; margin-top: 5px; }
-        .requirement { margin-right: 10px; }
-        .requirement.valid { color: #10b981; }
-        .requirement.invalid { color: #ef4444; }
-        .breach-warning { background: rgba(239,68,68,0.1); border-left: 3px solid #ef4444; padding: 10px; margin-top: 10px; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -35,18 +28,7 @@
             <form id="registerForm">
                 <div class="form-group"><input type="text" id="regName" placeholder="ФИО" required></div>
                 <div class="form-group"><input type="email" id="regEmail" placeholder="Email" required></div>
-                <div class="form-group">
-                    <input type="password" id="regPassword" placeholder="Пароль" required onkeyup="checkPasswordStrength()">
-                    <div class="password-strength"><div class="password-strength-bar" id="strengthBar"></div></div>
-                    <div class="password-requirements" id="passwordRequirements">
-                        <span class="requirement" id="reqLength">🔒 Минимум 8 символов</span>
-                        <span class="requirement" id="reqUpper">🔒 Заглавная буква</span>
-                        <span class="requirement" id="reqLower">🔒 Строчная буква</span>
-                        <span class="requirement" id="reqNumber">🔒 Цифра</span>
-                        <span class="requirement" id="reqSpecial">🔒 Спецсимвол</span>
-                    </div>
-                    <div id="breachWarning" class="breach-warning" style="display:none;"></div>
-                </div>
+                <div class="form-group"><input type="password" id="regPassword" placeholder="Пароль (минимум 6 символов)" required></div>
                 <div class="form-group"><input type="password" id="regPasswordConfirm" placeholder="Подтверждение пароля" required></div>
                 <div class="role-selector">
                     <div class="role-option" data-role="buyer" onclick="selectRole('buyer')"><i class="fas fa-user"></i> Покупатель</div>
@@ -55,101 +37,11 @@
                 <input type="hidden" id="regRole" value="buyer">
                 <button type="submit" class="btn btn-primary btn-full">Зарегистрироваться</button>
             </form>
-            <div class="auth-link">Уже есть аккаунт? <a href="login.html">Войти</a> | <a href="#" onclick="showResetPassword()">Забыли пароль?</a></div>
+            <div class="auth-link">Уже есть аккаунт? <a href="login.html">Войти</a></div>
         </div>
     </div>
-    <script src="password-utils.js"></script>
-    <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="database.js"></script>
-    <script type="module" src="auth.js"></script>
-    <script>
-        async function checkPasswordStrength() {
-            const password = document.getElementById('regPassword').value;
-            const strengthBar = document.getElementById('strengthBar');
-            
-            // Проверка требований
-            const reqLength = document.getElementById('reqLength');
-            const reqUpper = document.getElementById('reqUpper');
-            const reqLower = document.getElementById('reqLower');
-            const reqNumber = document.getElementById('reqNumber');
-            const reqSpecial = document.getElementById('reqSpecial');
-            
-            const isValidLength = password.length >= 8;
-            const hasUpper = /[A-Z]/.test(password);
-            const hasLower = /[a-z]/.test(password);
-            const hasNumber = /[0-9]/.test(password);
-            const hasSpecial = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
-            
-            reqLength.classList.toggle('valid', isValidLength);
-            reqLength.classList.toggle('invalid', !isValidLength);
-            reqUpper.classList.toggle('valid', hasUpper);
-            reqUpper.classList.toggle('invalid', !hasUpper);
-            reqLower.classList.toggle('valid', hasLower);
-            reqLower.classList.toggle('invalid', !hasLower);
-            reqNumber.classList.toggle('valid', hasNumber);
-            reqNumber.classList.toggle('invalid', !hasNumber);
-            reqSpecial.classList.toggle('valid', hasSpecial);
-            reqSpecial.classList.toggle('invalid', !hasSpecial);
-            
-            // Сила пароля
-            let strength = 0;
-            if (isValidLength) strength++;
-            if (hasUpper) strength++;
-            if (hasLower) strength++;
-            if (hasNumber) strength++;
-            if (hasSpecial) strength++;
-            
-            const width = (strength / 5) * 100;
-            strengthBar.style.width = width + '%';
-            
-            if (strength <= 2) {
-                strengthBar.style.background = '#ef4444';
-            } else if (strength <= 3) {
-                strengthBar.style.background = '#f59e0b';
-            } else if (strength <= 4) {
-                strengthBar.style.background = '#3b82f6';
-            } else {
-                strengthBar.style.background = '#10b981';
-            }
-            
-            // Проверка на утечку
-            if (password.length >= 8) {
-                const breachCount = await window.PasswordUtils.isPasswordBreached(password);
-                const breachWarning = document.getElementById('breachWarning');
-                if (breachCount > 0) {
-                    breachWarning.style.display = 'block';
-                    breachWarning.innerHTML = `⚠️ Этот пароль был обнаружен в ${breachCount} утечках данных! Пожалуйста, выберите другой пароль.`;
-                } else {
-                    breachWarning.style.display = 'none';
-                }
-            }
-        }
-        
-        function selectRole(role) {
-            document.getElementById('regRole').value = role;
-            document.querySelectorAll('.role-option').forEach(opt => {
-                opt.classList.remove('selected');
-                if (opt.getAttribute('data-role') === role) {
-                    opt.classList.add('selected');
-                }
-            });
-        }
-        
-        function showResetPassword() {
-            const email = prompt('Введите ваш email для сброса пароля:');
-            if (email) {
-                window.submitResetPassword = async function() {
-                    const { sendPasswordResetEmail, auth } = await import('./firebase-config.js');
-                    try {
-                        await sendPasswordResetEmail(auth, email);
-                        alert('Письмо для сброса пароля отправлено на ваш email');
-                    } catch (error) {
-                        alert('Ошибка: ' + error.message);
-                    }
-                };
-                window.submitResetPassword();
-            }
-        }
-    </script>
+    <script src="firebase-config.js"></script>
+    <script src="database.js"></script>
+    <script src="auth.js"></script>
 </body>
 </html>
