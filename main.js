@@ -1,26 +1,36 @@
 // ==================== ОСНОВНОЙ ФУНКЦИОНАЛ ====================
 
+let allProducts = [];
+
 // Загрузка товаров
 async function loadProducts() {
     try {
         const snapshot = await window.db.collection('products').get();
-        window.allProducts = [];
+        allProducts = [];
         snapshot.forEach(doc => {
-            window.allProducts.push({ id: doc.id, ...doc.data() });
+            allProducts.push({ id: doc.id, ...doc.data() });
         });
         
-        if (window.allProducts.length === 0) {
+        if (allProducts.length === 0) {
             await initializeProducts();
         } else {
-            displayProducts(window.allProducts);
+            displayProducts(allProducts);
             displayCategories();
+            updateStats();
         }
     } catch (error) {
         console.error('Ошибка загрузки товаров:', error);
-        window.allProducts = getFallbackProducts();
-        displayProducts(window.allProducts);
+        allProducts = getFallbackProducts();
+        displayProducts(allProducts);
         displayCategories();
+        updateStats();
     }
+}
+
+// Обновление статистики на главной странице
+function updateStats() {
+    const productsCount = document.getElementById('productsCount');
+    if (productsCount) productsCount.textContent = allProducts.length;
 }
 
 // Запасные товары
@@ -33,37 +43,15 @@ function getFallbackProducts() {
     ];
 }
 
-// Инициализация товаров
-async function initializeProducts() {
-    const defaultProducts = [
-        { name: "Cyberpunk 2077", category: "games", price: 1990, oldPrice: 2990, discount: 33, image: "gamepad", badge: "sale", sellerId: "admin", sellerName: "Volt Official", key: "CYBER-2077-KEY", rating: 4.5, reviews: 1250 },
-        { name: "Baldur's Gate 3", category: "games", price: 2490, oldPrice: 3490, discount: 28, image: "dragon", badge: "new", sellerId: "admin", sellerName: "Volt Official", key: "BG3-KEY", rating: 5.0, reviews: 8760 },
-        { name: "Red Dead Redemption 2", category: "games", price: 2290, oldPrice: 3990, discount: 42, image: "horse", badge: "sale", sellerId: "admin", sellerName: "Volt Official", key: "RDR2-KEY", rating: 4.9, reviews: 15600 },
-        { name: "Microsoft Office 2024", category: "software", price: 3990, oldPrice: 7990, discount: 50, image: "file-alt", badge: "popular", sellerId: "admin", sellerName: "Volt Official", key: "OFFICE-KEY", rating: 4.8, reviews: 3420 },
-        { name: "Adobe Photoshop 2024", category: "software", price: 2990, oldPrice: 5990, discount: 50, image: "paint-brush", badge: "popular", sellerId: "admin", sellerName: "Volt Official", key: "PS-KEY", rating: 4.8, reviews: 2300 },
-        { name: "Discord Nitro", category: "subscriptions", price: 299, oldPrice: 499, discount: 40, image: "discord", badge: "popular", sellerId: "admin", sellerName: "Volt Official", key: "DISCORD-KEY", rating: 4.9, reviews: 5600 }
-    ];
-    
-    for (const product of defaultProducts) {
-        await window.db.collection('products').add({
-            ...product,
-            createdAt: new Date().toISOString(),
-            soldCount: 0
-        });
-    }
-    
-    loadProducts();
-}
-
 // Отображение категорий
 function displayCategories() {
     const grid = document.getElementById('categoryGrid');
     if (!grid) return;
     
     const categories = [
-        { id: "games", name: "Игры", icon: "gamepad", count: window.allProducts.filter(p => p.category === 'games').length },
-        { id: "software", name: "Программы", icon: "laptop-code", count: window.allProducts.filter(p => p.category === 'software').length },
-        { id: "subscriptions", name: "Подписки", icon: "crown", count: window.allProducts.filter(p => p.category === 'subscriptions').length }
+        { id: "games", name: "Игры", icon: "gamepad", count: allProducts.filter(p => p.category === 'games').length },
+        { id: "software", name: "Программы", icon: "laptop-code", count: allProducts.filter(p => p.category === 'software').length },
+        { id: "subscriptions", name: "Подписки", icon: "crown", count: allProducts.filter(p => p.category === 'subscriptions').length }
     ];
     
     grid.innerHTML = categories.map(cat => `
@@ -92,7 +80,7 @@ function displayProducts(productsToShow) {
                 ${product.badge ? `<span class="product-badge ${product.badge}">${getBadgeText(product.badge)}</span>` : ''}
             </div>
             <div class="product-content">
-                <h3 class="product-title">${product.name}</h3>
+                <h3 class="product-title">${escapeHtml(product.name)}</h3>
                 <div class="product-category">${getCategoryName(product.category)}</div>
                 <div class="product-price">
                     <span class="current-price">${product.price} ₽</span>
@@ -104,15 +92,23 @@ function displayProducts(productsToShow) {
                         <i class="fas fa-shopping-cart"></i> В корзину
                     </button>
                 </div>
-                <div class="seller-info">Продавец: ${product.sellerName || 'Volt Official'}</div>
+                <div class="seller-info">Продавец: ${escapeHtml(product.sellerName || 'Volt Official')}</div>
             </div>
         </div>
     `).join('');
 }
 
+// Функция экранирования HTML
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 // Фильтрация
 window.filterProducts = function(category) {
-    const filtered = category === 'all' ? window.allProducts : window.allProducts.filter(p => p.category === category);
+    const filtered = category === 'all' ? allProducts : allProducts.filter(p => p.category === category);
     displayProducts(filtered);
     
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -120,10 +116,14 @@ window.filterProducts = function(category) {
     });
 };
 
-// Поиск
+// ==================== ПОИСК (ИСПРАВЛЕН) ====================
+
 window.toggleSearch = function() {
     const overlay = document.getElementById('searchOverlay');
     if (overlay) overlay.classList.toggle('active');
+    if (overlay && overlay.classList.contains('active')) {
+        document.getElementById('searchInput').focus();
+    }
 };
 
 window.closeSearch = function() {
@@ -136,34 +136,51 @@ window.closeSearch = function() {
 };
 
 window.searchProducts = function() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
+    const query = document.getElementById('searchInput').value.toLowerCase().trim();
     const results = document.getElementById('searchResults');
     
-    if (query.length < 2) {
+    if (!results) return;
+    
+    if (query.length === 0) {
         results.innerHTML = '';
         return;
     }
     
-    const filtered = window.allProducts.filter(p => p.name.toLowerCase().includes(query));
+    if (query.length < 2) {
+        results.innerHTML = '<div class="search-info">Введите минимум 2 символа</div>';
+        return;
+    }
+    
+    // Ищем в allProducts (глобальная переменная из main.js)
+    const filtered = allProducts.filter(p => 
+        p.name.toLowerCase().includes(query) || 
+        (p.category && getCategoryName(p.category).toLowerCase().includes(query))
+    );
     
     if (filtered.length === 0) {
         results.innerHTML = '<div class="no-results">Ничего не найдено</div>';
         return;
     }
     
-    results.innerHTML = filtered.slice(0, 5).map(p => `
-        <div class="search-result-item" onclick="selectProduct('${p.id}')">
+    results.innerHTML = filtered.slice(0, 8).map(p => `
+        <div class="search-result-item" onclick="selectProductAndClose('${p.id}')">
             <i class="fas fa-${p.image || 'box'}"></i>
-            <div><div>${p.name}</div><small>${p.price} ₽</small></div>
+            <div class="search-result-info">
+                <div class="search-result-name">${escapeHtml(p.name)}</div>
+                <div class="search-result-price">${p.price} ₽</div>
+                <div class="search-result-category">${getCategoryName(p.category)}</div>
+            </div>
         </div>
     `).join('');
 };
 
-window.selectProduct = function(productId) {
+window.selectProductAndClose = function(productId) {
     closeSearch();
-    const product = window.allProducts.find(p => p.id == productId);
+    const product = allProducts.find(p => p.id == productId);
     if (product) {
-        alert(`${product.name}\nЦена: ${product.price} ₽`);
+        // Прокручиваем к товарам и показываем уведомление
+        document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+        showNotification(`Товар "${product.name}" найден!`, 'success');
     }
 };
 
@@ -177,6 +194,19 @@ function getCategoryName(category) {
     const names = { 'games': 'Игры', 'software': 'Программы', 'subscriptions': 'Подписки' };
     return names[category] || category;
 }
+
+// Уведомления
+window.showNotification = function(message, type = 'success') {
+    const notification = document.getElementById('notification');
+    if (notification) {
+        notification.textContent = message;
+        notification.className = `notification ${type}`;
+        notification.classList.add('show');
+        setTimeout(() => notification.classList.remove('show'), 3000);
+    } else {
+        console.log(message);
+    }
+};
 
 // Запуск
 document.addEventListener('DOMContentLoaded', function() {
