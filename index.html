@@ -161,7 +161,7 @@
             <div class="footer-content">
                 <div class="footer-section"><div class="logo"><i class="fas fa-bolt"></i> VOLT</div><p>Цифровой маркетплейс. Покупайте и продавайте безопасно.</p><div class="payment-methods"><i class="fab fa-cc-visa"></i><i class="fab fa-cc-mastercard"></i><i class="fas fa-qrcode"></i></div></div>
                 <div class="footer-section"><h4>Для покупателей</h4><ul><li><a href="#">Как купить</a></li><li><a href="rules.html">Защита сделки</a></li><li><a href="#">Возврат</a></li></ul></div>
-                <div class="footer-section"><h4>Для продавцов</h4><ul><li><a href="seller-info.html">Начать продавать</a></li><li><a href="#">Комиссия 5%</a></li><li><a href="rules.html">Правила площадки</a></li></ul></div>
+                <div class="footer-section"><h4>Для продавцов</h4><ul><li><a href="seller-info.html">Начать продавать</a></li><li><a href="add-product.html">Добавить товар</a></li><li><a href="#">Комиссия 5%</a></li><li><a href="rules.html">Правила площадки</a></li></ul></div>
                 <div class="footer-section"><h4>Контакты</h4><div class="contact-buttons"><a href="https://t.me/plslovekittens" target="_blank" class="contact-btn telegram"><i class="fab fa-telegram"></i> Telegram</a><a href="https://discord.gg/willka" target="_blank" class="contact-btn discord"><i class="fab fa-discord"></i> Discord</a><a href="https://vk.com/ssaattaaann" target="_blank" class="contact-btn vk"><i class="fab fa-vk"></i> VK</a></div></div>
             </div>
             <div class="footer-bottom"><p>&copy; 2024 Volt Store. Безопасная сделка — гарантия качества.</p></div>
@@ -184,9 +184,7 @@
             align-items: center;
             justify-content: center;
         }
-        .auth-modal.active {
-            display: flex;
-        }
+        .auth-modal.active { display: flex; }
         .auth-modal-content {
             background: #1e293b;
             border-radius: 20px;
@@ -205,10 +203,7 @@
             justify-content: space-between;
             align-items: center;
         }
-        .auth-modal-header h3 {
-            color: white;
-            margin: 0;
-        }
+        .auth-modal-header h3 { color: white; margin: 0; }
         .auth-modal-close {
             background: none;
             border: none;
@@ -216,21 +211,11 @@
             font-size: 28px;
             cursor: pointer;
         }
-        .auth-modal-close:hover {
-            color: #ef4444;
-        }
-        .auth-modal-body {
-            padding: 30px;
-        }
-        .auth-form {
-            display: none;
-        }
-        .auth-form.active {
-            display: block;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
+        .auth-modal-close:hover { color: #ef4444; }
+        .auth-modal-body { padding: 30px; }
+        .auth-form { display: none; }
+        .auth-form.active { display: block; }
+        .form-group { margin-bottom: 20px; }
         .form-group input {
             width: 100%;
             padding: 12px;
@@ -240,15 +225,8 @@
             color: white;
             font-size: 16px;
         }
-        .form-group input:focus {
-            outline: none;
-            border-color: #7c3aed;
-        }
-        .role-selector {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
+        .form-group input:focus { outline: none; border-color: #7c3aed; }
+        .role-selector { display: flex; gap: 15px; margin-bottom: 20px; }
         .role-option {
             flex: 1;
             padding: 10px;
@@ -260,23 +238,10 @@
             color: white;
             transition: 0.3s;
         }
-        .role-option.selected {
-            border-color: #7c3aed;
-            background: #7c3aed20;
-        }
-        .auth-switch {
-            text-align: center;
-            margin-top: 20px;
-            color: #94a3b8;
-        }
-        .auth-switch a {
-            color: #7c3aed;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .btn-full {
-            width: 100%;
-        }
+        .role-option.selected { border-color: #7c3aed; background: #7c3aed20; }
+        .auth-switch { text-align: center; margin-top: 20px; color: #94a3b8; }
+        .auth-switch a { color: #7c3aed; text-decoration: none; cursor: pointer; }
+        .btn-full { width: 100%; }
         .user-btn {
             background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
             border: none;
@@ -290,15 +255,7 @@
             justify-content: center;
             transition: transform 0.2s;
         }
-        .user-btn:hover {
-            transform: scale(1.05);
-        }
-        .user-btn.logged-in {
-            width: auto;
-            padding: 0 15px;
-            border-radius: 20px;
-            gap: 8px;
-        }
+        .user-btn:hover { transform: scale(1.05); }
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
@@ -307,24 +264,21 @@
     <script src="firebase-config.js"></script>
     <script src="firebase-db.js"></script>
     <script src="auth.js"></script>
+    <script src="cart.js"></script>
     <script src="main.js"></script>
     
     <script>
-        // Модальное окно авторизации
         function openAuthModal() {
             document.getElementById('authModal').classList.add('active');
             switchAuthForm('login');
         }
-        
         function closeAuthModal() {
             document.getElementById('authModal').classList.remove('active');
         }
-        
         function switchAuthForm(form) {
             const loginForm = document.getElementById('loginFormModal');
             const registerForm = document.getElementById('registerFormModal');
             const title = document.getElementById('authModalTitle');
-            
             if (form === 'login') {
                 loginForm.classList.add('active');
                 registerForm.classList.remove('active');
@@ -335,49 +289,37 @@
                 title.textContent = 'Регистрация';
             }
         }
-        
         function selectModalRole(role) {
             document.getElementById('modalRegRole').value = role;
             document.querySelectorAll('#registerFormModal .role-option').forEach(opt => {
                 opt.classList.remove('selected');
-                if (opt.getAttribute('data-role') === role) {
-                    opt.classList.add('selected');
-                }
+                if (opt.getAttribute('data-role') === role) opt.classList.add('selected');
             });
         }
-        
-        // Обработчик входа
         document.getElementById('loginFormModal').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('modalLoginEmail').value;
             const password = document.getElementById('modalLoginPassword').value;
-            
             const result = await window.loginUser(email, password);
             if (result.success) {
                 alert(`Добро пожаловать, ${result.userData.name}!`);
                 closeAuthModal();
-                updateUserButton();
                 window.location.reload();
             } else {
                 alert('Ошибка: ' + result.error);
             }
         });
-        
-        // Обработчик регистрации
         document.getElementById('registerFormModal').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const name = document.getElementById('modalRegName').value;
             const email = document.getElementById('modalRegEmail').value;
             const password = document.getElementById('modalRegPassword').value;
             const role = document.getElementById('modalRegRole').value;
             const passwordConfirm = document.getElementById('modalRegPasswordConfirm').value;
-            
             if (password !== passwordConfirm) {
                 alert('Пароли не совпадают');
                 return;
             }
-            
             const result = await window.registerUser(name, email, password, role);
             if (result.success) {
                 alert('Регистрация успешна! Теперь вы можете войти.');
@@ -390,54 +332,26 @@
                 alert('Ошибка: ' + result.error);
             }
         });
-        
-        // Закрытие модального окна при клике на фон
         document.getElementById('authModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeAuthModal();
-            }
+            if (e.target === this) closeAuthModal();
         });
-        
-        // Закрытие по Escape
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeAuthModal();
-            }
+            if (e.key === 'Escape') closeAuthModal();
         });
-        
-        // Обновление кнопки пользователя
-        function updateUserButton() {
-            const currentUser = window.getCurrentUser();
-            const userBtn = document.querySelector('.user-btn');
-            if (userBtn) {
-                if (currentUser) {
-                    userBtn.innerHTML = `<i class="fas fa-user"></i> ${currentUser.name.split(' ')[0]}`;
-                    userBtn.classList.add('logged-in');
-                } else {
-                    userBtn.innerHTML = `<i class="fas fa-user"></i>`;
-                    userBtn.classList.remove('logged-in');
-                }
-            }
-        }
-        
-        // Чат поддержки
         function toggleChat() {
             const chatWindow = document.getElementById('chatWindow');
             if (chatWindow) chatWindow.classList.toggle('active');
         }
-        
         function sendMessage() {
             const input = document.getElementById('chatInput');
             const messagesContainer = document.getElementById('chatMessages');
             const message = input.value.trim();
             if (!message) return;
-            
             const userMsg = document.createElement('div');
             userMsg.className = 'chat-message user';
             userMsg.innerHTML = `<span>Вы:</span><div class="message-text">${message}</div>`;
             messagesContainer.appendChild(userMsg);
             input.value = '';
-            
             setTimeout(() => {
                 const supportMsg = document.createElement('div');
                 supportMsg.className = 'chat-message support';
@@ -445,26 +359,16 @@
                 messagesContainer.appendChild(supportMsg);
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }, 500);
-            
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
-        
         function toggleSearch() {
             const overlay = document.getElementById('searchOverlay');
             if (overlay) overlay.classList.toggle('active');
         }
-        
         function closeSearch() {
             const overlay = document.getElementById('searchOverlay');
             if (overlay) overlay.classList.remove('active');
         }
-        
-        // Запуск
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                updateUserButton();
-            }, 1000);
-        });
     </script>
 </body>
 </html>
