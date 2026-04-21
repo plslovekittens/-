@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация - Volt Store</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -27,98 +23,29 @@
             max-width: 450px;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
         }
-        .register-card h2 {
-            color: white;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 28px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
+        .register-card h2 { color: white; text-align: center; margin-bottom: 30px; font-size: 28px; }
+        .form-group { margin-bottom: 20px; }
         .form-group input {
-            width: 100%;
-            padding: 14px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 10px;
-            color: white;
-            font-size: 16px;
+            width: 100%; padding: 14px; background: #0f172a; border: 1px solid #334155;
+            border-radius: 10px; color: white; font-size: 16px;
         }
-        .form-group input:focus {
-            outline: none;
-            border-color: #7c3aed;
-        }
-        .role-selector {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
+        .role-selector { display: flex; gap: 15px; margin-bottom: 25px; }
         .role-option {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 10px;
-            cursor: pointer;
-            color: #94a3b8;
-            transition: all 0.3s;
+            flex: 1; padding: 12px; text-align: center; background: #0f172a;
+            border: 1px solid #334155; border-radius: 10px; cursor: pointer;
+            color: #94a3b8; transition: all 0.3s;
         }
-        .role-option.selected {
-            border-color: #7c3aed;
-            background: #7c3aed20;
-            color: white;
-        }
-        .role-option i {
-            margin-right: 8px;
-        }
+        .role-option.selected { border-color: #7c3aed; background: #7c3aed20; color: white; }
         .btn-register {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s;
+            width: 100%; padding: 14px; background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
+            border: none; border-radius: 10px; color: white; font-size: 16px;
+            font-weight: 600; cursor: pointer;
         }
-        .btn-register:hover {
-            transform: translateY(-2px);
-        }
-        .auth-link {
-            text-align: center;
-            margin-top: 20px;
-            color: #94a3b8;
-        }
-        .auth-link a {
-            color: #7c3aed;
-            text-decoration: none;
-        }
-        .message {
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 14px;
-        }
-        .message.error {
-            background: rgba(239,68,68,0.2);
-            border: 1px solid #ef4444;
-            color: #ef4444;
-        }
-        .message.success {
-            background: rgba(16,185,129,0.2);
-            border: 1px solid #10b981;
-            color: #10b981;
-        }
-        .message.info {
-            background: rgba(59,130,246,0.2);
-            border: 1px solid #3b82f6;
-            color: #3b82f6;
-        }
+        .auth-link { text-align: center; margin-top: 20px; color: #94a3b8; }
+        .auth-link a { color: #7c3aed; text-decoration: none; }
+        .message { padding: 12px; border-radius: 10px; margin-bottom: 20px; text-align: center; font-size: 14px; }
+        .message.error { background: rgba(239,68,68,0.2); border: 1px solid #ef4444; color: #ef4444; }
+        .message.success { background: rgba(16,185,129,0.2); border: 1px solid #10b981; color: #10b981; }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -127,171 +54,69 @@
         <h2>📝 Регистрация</h2>
         <div id="messageArea"></div>
         <form id="registerForm">
-            <div class="form-group">
-                <input type="text" id="regName" placeholder="ФИО" required>
-            </div>
-            <div class="form-group">
-                <input type="email" id="regEmail" placeholder="Email" required>
-            </div>
-            <div class="form-group">
-                <input type="password" id="regPassword" placeholder="Пароль (минимум 6 символов)" required>
-            </div>
-            <div class="form-group">
-                <input type="password" id="regPasswordConfirm" placeholder="Подтверждение пароля" required>
-            </div>
+            <div class="form-group"><input type="text" id="regName" placeholder="ФИО" required></div>
+            <div class="form-group"><input type="email" id="regEmail" placeholder="Email" required></div>
+            <div class="form-group"><input type="password" id="regPassword" placeholder="Пароль (минимум 6 символов)" required></div>
+            <div class="form-group"><input type="password" id="regPasswordConfirm" placeholder="Подтверждение пароля" required></div>
             <div class="role-selector">
-                <div class="role-option" data-role="buyer" onclick="selectRole('buyer')">
-                    <i class="fas fa-user"></i> Покупатель
-                </div>
-                <div class="role-option" data-role="seller" onclick="selectRole('seller')">
-                    <i class="fas fa-store"></i> Продавец
-                </div>
+                <div class="role-option" data-role="buyer" onclick="selectRole('buyer')"><i class="fas fa-user"></i> Покупатель</div>
+                <div class="role-option" data-role="seller" onclick="selectRole('seller')"><i class="fas fa-store"></i> Продавец</div>
             </div>
             <input type="hidden" id="regRole" value="buyer">
             <button type="submit" class="btn-register">Зарегистрироваться</button>
         </form>
-        <div class="auth-link">
-            Уже есть аккаунт? <a href="login.html">Войти</a>
-        </div>
+        <div class="auth-link">Уже есть аккаунт? <a href="login.html">Войти</a></div>
     </div>
 
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="firebase-db.js"></script>
+    <script src="auth.js"></script>
     
     <script>
-        // Конфигурация Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyAeWBgPT84RzljctkdpGO1xtmhVd2MdD1w",
-            authDomain: "diplom-57d78.firebaseapp.com",
-            projectId: "diplom-57d78",
-            storageBucket: "diplom-57d78.firebasestorage.app",
-            messagingSenderId: "448908238147",
-            appId: "1:448908238147:web:d222f715cf13a3c83d23f6",
-            measurementId: "G-T6F7KWP9RR"
-        };
-        
-        // Инициализация Firebase
-        let db;
-        let auth;
-        
-        try {
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-            db = firebase.firestore();
-            auth = firebase.auth();
-            console.log('✅ Firebase инициализирован');
-            console.log('✅ Текущий домен:', window.location.origin);
-            showMessage('✅ Firebase подключен!', 'success');
-        } catch (error) {
-            console.error('❌ Ошибка:', error);
-            showMessage('Ошибка подключения к Firebase: ' + error.message, 'error');
-        }
-        
-        let selectedRole = 'buyer';
-        
         function selectRole(role) {
-            selectedRole = role;
             document.getElementById('regRole').value = role;
             document.querySelectorAll('.role-option').forEach(opt => {
                 opt.classList.remove('selected');
-                if (opt.getAttribute('data-role') === role) {
-                    opt.classList.add('selected');
-                }
+                if (opt.getAttribute('data-role') === role) opt.classList.add('selected');
             });
         }
         
         function showMessage(message, type) {
-            const messageArea = document.getElementById('messageArea');
-            messageArea.innerHTML = `<div class="message ${type}">${message}</div>`;
-            setTimeout(() => {
-                if (messageArea.innerHTML === `<div class="message ${type}">${message}</div>`) {
-                    messageArea.innerHTML = '';
-                }
-            }, 5000);
+            const area = document.getElementById('messageArea');
+            area.innerHTML = `<div class="message ${type}">${message}</div>`;
+            setTimeout(() => { if (area.innerHTML.includes(message)) area.innerHTML = ''; }, 5000);
         }
         
-        // Обработчик формы
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            if (!auth) {
-                showMessage('Ошибка: Firebase не загружен. Проверьте подключение к интернету.', 'error');
-                return;
-            }
+            if (!window.auth) { showMessage('Ошибка: Firebase не загружен', 'error'); return; }
             
             const name = document.getElementById('regName').value.trim();
             const email = document.getElementById('regEmail').value.trim();
             const password = document.getElementById('regPassword').value;
-            const passwordConfirm = document.getElementById('regPasswordConfirm').value;
+            const confirm = document.getElementById('regPasswordConfirm').value;
             const role = document.getElementById('regRole').value;
             
-            if (!name || !email || !password) {
-                showMessage('Заполните все поля', 'error');
-                return;
-            }
+            if (!name || !email || !password) { showMessage('Заполните все поля', 'error'); return; }
+            if (password !== confirm) { showMessage('Пароли не совпадают', 'error'); return; }
+            if (password.length < 6) { showMessage('Пароль минимум 6 символов', 'error'); return; }
             
-            if (password !== passwordConfirm) {
-                showMessage('Пароли не совпадают', 'error');
-                return;
-            }
+            showMessage('Регистрация...', 'success');
+            const result = await window.registerUser(name, email, password, role);
             
-            if (password.length < 6) {
-                showMessage('Пароль должен содержать минимум 6 символов', 'error');
-                return;
-            }
-            
-            if (!email.includes('@')) {
-                showMessage('Введите корректный email', 'error');
-                return;
-            }
-            
-            showMessage('Регистрация...', 'info');
-            
-            try {
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-                console.log('✅ Пользователь создан в Auth:', user.uid);
-                
-                await db.collection('users').doc(user.uid).set({
-                    name: name,
-                    email: email,
-                    role: role,
-                    createdAt: new Date().toISOString(),
-                    balance: 0,
-                    isActive: true
-                });
-                console.log('✅ Данные сохранены в Firestore');
-                
+            if (result.success) {
                 showMessage('Регистрация успешна! Перенаправление...', 'success');
-                
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 1500);
-                
-            } catch (error) {
-                console.error('❌ Ошибка:', error);
-                
-                if (error.code === 'auth/email-already-in-use') {
-                    showMessage('Этот email уже зарегистрирован', 'error');
-                } else if (error.code === 'auth/weak-password') {
-                    showMessage('Пароль слишком слабый. Используйте минимум 6 символов', 'error');
-                } else if (error.code === 'auth/invalid-email') {
-                    showMessage('Неверный формат email', 'error');
-                } else if (error.code === 'auth/operation-not-allowed') {
-                    showMessage('Ошибка: Email/Password authentication не включен в Firebase Console. Включите его в разделе Authentication.', 'error');
-                } else if (error.code === 'auth/unauthorized-domain') {
-                    showMessage('Ошибка: Домен не авторизован. Добавьте plslovekittens.github.io в Authorized domains в Firebase Console.', 'error');
-                } else {
-                    showMessage('Ошибка: ' + error.message, 'error');
-                }
+                setTimeout(() => window.location.href = 'login.html', 1500);
+            } else {
+                showMessage('Ошибка: ' + result.error, 'error');
             }
         });
         
-        const defaultRole = document.querySelector('.role-option[data-role="buyer"]');
-        if (defaultRole) defaultRole.classList.add('selected');
+        document.querySelector('.role-option[data-role="buyer"]').classList.add('selected');
     </script>
 </body>
 </html>
