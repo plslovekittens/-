@@ -7,18 +7,32 @@ window.registerUser = async function(name, email, password, role) {
         const user = userCredential.user;
         
         // Используем DB функцию для создания пользователя
-        const result = await window.DB.createUser(user.uid, {
-            name: name,
-            email: email,
-            role: role
-        });
-        
-        if (result.success) {
-            return { success: true, user };
+        if (window.DB && window.DB.createUser) {
+            const result = await window.DB.createUser(user.uid, {
+                name: name,
+                email: email,
+                role: role
+            });
+            
+            if (result.success) {
+                return { success: true, user };
+            } else {
+                throw new Error(result.error);
+            }
         } else {
-            throw new Error(result.error);
+            // Fallback если DB не загружен
+            await window.db.collection('users').doc(user.uid).set({
+                name: name,
+                email: email,
+                role: role,
+                createdAt: new Date().toISOString(),
+                balance: 0,
+                isActive: true
+            });
+            return { success: true, user };
         }
     } catch (error) {
+        console.error('Ошибка регистрации:', error);
         return { success: false, error: error.message };
     }
 };
@@ -29,11 +43,22 @@ window.loginUser = async function(email, password) {
         const userCredential = await window.auth.signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
         
-        // Используем DB функцию для получения данных пользователя
-        const result = await window.DB.getUser(user.uid);
+        let userData = null;
         
-        if (result.success) {
-            const userData = result.data;
+        if (window.DB && window.DB.getUser) {
+            const result = await window.DB.getUser(user.uid);
+            if (result.success) {
+                userData = result.data;
+            }
+        } else {
+            // Fallback если DB не загружен
+            const userDoc = await window.db.collection('users').doc(user.uid).get();
+            if (userDoc.exists) {
+                userData = userDoc.data();
+            }
+        }
+        
+        if (userData) {
             sessionStorage.setItem('currentUser', JSON.stringify({
                 id: user.uid,
                 name: userData.name,
@@ -42,33 +67,47 @@ window.loginUser = async function(email, password) {
             }));
             return { success: true, userData };
         } else {
-            throw new Error(result.error);
+            // Если пользователь есть в Auth, но нет в Firestore
+            sessionStorage.setItem('currentUser', JSON.stringify({
+                id: user.uid,
+                name: user.email.split('@')[0],
+                email: user.email,
+                role: 'buyer'
+            }));
+            return { success: true, userData: { name: user.email.split('@')[0], email: user.email, role: 'buyer' } };
         }
     } catch (error) {
+        console.error('Ошибка входа:', error);
         return { success: false, error: error.message };
     }
 };
 
 // Выход
 window.logoutUser = async function() {
-    await window.auth.signOut();
+    try {
+        await window.auth.signOut();
+    } catch (error) {
+        console.error('Ошибка выхода:', error);
+    }
     sessionStorage.removeItem('currentUser');
     window.location.href = 'index.html';
 };
 
-// Получение текущего пользователя
+// Получение текущего пользователя из sessionStorage
 window.getCurrentUser = function() {
     const user = sessionStorage.getItem('currentUser');
     return user ? JSON.parse(user) : null;
 };
 
-// Обновление интерфейса
+// Обновление интерфейса (показывает/скрывает кнопки входа/выхода)
 window.updateUserInterface = function() {
     const currentUser = window.getCurrentUser();
     const authButtons = document.getElementById('authButtons');
     const userInfo = document.getElementById('userInfo');
     const userName = document.getElementById('userName');
     const sellerLink = document.getElementById('sellerLink');
+    
+    console.log('updateUserInterface вызван, currentUser:', currentUser);
     
     if (currentUser) {
         if (authButtons) authButtons.style.display = 'none';
@@ -83,27 +122,62 @@ window.updateUserInterface = function() {
     }
 };
 
-// Отслеживание состояния авторизации
+// Отслеживание состояния авторизации (Firebase)
 window.auth.onAuthStateChanged(async (user) => {
+    console.log('onAuthStateChanged:', user ? `Пользователь ${user.email}` : 'Не авторизован');
+    
     if (user) {
-        const result = await window.DB.getUser(user.uid);
-        if (result.success) {
-            const userData = result.data;
+        // Пользователь авторизован в Firebase
+        try {
+            let userData = null;
+            
+            if (window.DB && window.DB.getUser) {
+                const result = await window.DB.getUser(user.uid);
+                if (result.success) {
+                    userData = result.data;
+                }
+            } else {
+                const userDoc = await window.db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    userData = userDoc.data();
+                }
+            }
+            
+            if (userData) {
+                sessionStorage.setItem('currentUser', JSON.stringify({
+                    id: user.uid,
+                    name: userData.name,
+                    email: user.email,
+                    role: userData.role
+                }));
+            } else {
+                sessionStorage.setItem('currentUser', JSON.stringify({
+                    id: user.uid,
+                    name: user.email.split('@')[0],
+                    email: user.email,
+                    role: 'buyer'
+                }));
+            }
+        } catch (error) {
+            console.error('Ошибка получения данных пользователя:', error);
             sessionStorage.setItem('currentUser', JSON.stringify({
                 id: user.uid,
-                name: userData.name,
+                name: user.email.split('@')[0],
                 email: user.email,
-                role: userData.role
+                role: 'buyer'
             }));
         }
     } else {
         sessionStorage.removeItem('currentUser');
     }
+    
     window.updateUserInterface();
 });
 
 // Обработчики форм
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM загружен, инициализация обработчиков форм');
+    
     window.updateUserInterface();
     
     // Регистрация
@@ -111,6 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (registerForm) {
         registerForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+            console.log('Форма регистрации отправлена');
             
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
@@ -138,6 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (loginForm) {
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+            console.log('Форма входа отправлена');
             
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
@@ -157,13 +233,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Глобальные функции
-window.logout = window.logoutUser;
-window.toggleUserDropdown = function() {
-    const dropdown = document.getElementById('userDropdown');
-    if (dropdown) dropdown.classList.toggle('show');
+// ==================== ГЛОБАЛЬНЫЕ ФУНКЦИИ ДЛЯ HTML ====================
+
+// Выход (вызывается из кнопки)
+window.logout = function() {
+    window.logoutUser();
 };
 
+// Переключение выпадающего меню пользователя
+window.toggleUserDropdown = function() {
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+        console.log('Dropdown toggled, classList:', dropdown.classList);
+    } else {
+        console.error('userDropdown не найден');
+    }
+};
+
+// Закрытие дропдауна при клике вне
 document.addEventListener('click', function(e) {
     const dropdown = document.getElementById('userDropdown');
     const userBtn = document.querySelector('.user-btn');
@@ -172,6 +260,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
+// Выбор роли при регистрации
 window.selectRole = function(role) {
     const roleInput = document.getElementById('regRole');
     if (roleInput) roleInput.value = role;
@@ -183,3 +272,5 @@ window.selectRole = function(role) {
         }
     });
 };
+
+console.log('auth.js загружен');
