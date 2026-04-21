@@ -16,9 +16,8 @@
         .order-card { background: #0a0a0f; border-radius: 16px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         .order-status { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .status-paid { background: #3b82f6; color: white; }
-        .status-completed { background: #10b981; color: white; }
-        .status-pending { background: #f59e0b; color: white; }
         .status-delivered { background: #8b5cf6; color: white; }
+        .status-completed { background: #10b981; color: white; }
         .navbar { background: rgba(10,10,15,0.95); backdrop-filter: blur(12px); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; border-bottom: 1px solid rgba(124,58,237,0.3); }
         .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
         .nav-content { display: flex; align-items: center; justify-content: space-between; height: 70px; }
@@ -31,8 +30,6 @@
         .dropdown-item { display: block; padding: 10px 15px; color: #a1a1aa; text-decoration: none; }
         .dropdown-item:hover { background: rgba(124,58,237,0.1); color: #7c3aed; }
         .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); border: none; border-radius: 12px; color: white; font-weight: 600; cursor: pointer; text-decoration: none; }
-        .loading { text-align: center; padding: 40px; color: #a1a1aa; }
-        .error-message { text-align: center; padding: 40px; color: #ef4444; }
     </style>
 </head>
 <body>
@@ -71,7 +68,7 @@
 
     <div class="profile-container">
         <div id="profileContent">
-            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка профиля...</div>
+            <div class="loading" style="text-align:center; padding:40px;"><i class="fas fa-spinner fa-spin"></i> Загрузка профиля...</div>
         </div>
     </div>
 
@@ -79,99 +76,44 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
     <script src="firebase-config.js"></script>
+    <script src="firebase-db.js"></script>
     <script src="auth.js"></script>
     <script>
-        // Глобальная функция для выхода
-        window.logout = function() {
-            window.auth.signOut().then(() => {
-                sessionStorage.removeItem('currentUser');
-                window.location.href = 'index.html';
-            });
-        };
-        
-        window.toggleUserDropdown = function() {
-            const dropdown = document.getElementById('userDropdown');
-            if (dropdown) dropdown.classList.toggle('show');
-        };
-        
-        document.addEventListener('click', function(e) {
-            const dropdown = document.getElementById('userDropdown');
-            const userBtn = document.querySelector('.user-btn');
-            if (dropdown && userBtn && !userBtn.contains(e.target) && !dropdown.contains(e.target)) {
-                dropdown.classList.remove('show');
-            }
-        });
-        
-        // Основная функция загрузки профиля
         async function loadProfile() {
             const container = document.getElementById('profileContent');
+            const currentUser = window.getCurrentUser();
             
-            // Ждём Firebase
-            if (!window.auth) {
-                setTimeout(loadProfile, 500);
-                return;
-            }
-            
-            const user = window.auth.currentUser;
-            
-            if (!user) {
+            if (!currentUser) {
                 container.innerHTML = `
-                    <div class="error-message">
-                        <i class="fas fa-exclamation-triangle"></i>
+                    <div style="text-align:center; padding:40px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size:48px; color:#ef4444;"></i>
                         <p>Вы не авторизованы</p>
-                        <a href="login.html" class="btn" style="margin-top: 20px;">Войти в аккаунт</a>
+                        <a href="login.html" class="btn">Войти</a>
                     </div>
                 `;
                 return;
             }
             
-            try {
-                // Получаем данные пользователя из Firestore
-                const userDoc = await window.db.collection('users').doc(user.uid).get();
-                const userData = userDoc.exists ? userDoc.data() : { name: user.email, email: user.email, role: 'buyer' };
-                
-                // Сохраняем в sessionStorage для других страниц
-                sessionStorage.setItem('currentUser', JSON.stringify({
-                    id: user.uid,
-                    name: userData.name || user.email,
-                    email: user.email,
-                    role: userData.role || 'buyer'
-                }));
-                
-                // Получаем заказы пользователя
-                const ordersSnapshot = await window.db.collection('orders').where('buyerId', '==', user.uid).get();
-                const orders = [];
-                ordersSnapshot.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
-                
-                // Отображаем профиль
-                container.innerHTML = `
-                    <div class="profile-header">
-                        <div class="profile-avatar"><i class="fas fa-user"></i></div>
-                        <div class="profile-info">
-                            <h2>${escapeHtml(userData.name || user.email)}</h2>
-                            <p>${user.email}</p>
-                            <p><span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px;">${userData.role === 'seller' ? 'Продавец' : 'Покупатель'}</span></p>
-                            <p>Дата регистрации: ${new Date(user.metadata.creationTime).toLocaleDateString('ru-RU')}</p>
-                        </div>
+            const userResult = await window.DB.getUser(currentUser.id);
+            const ordersResult = await window.DB.getUserOrders(currentUser.id);
+            
+            const userData = userResult.success ? userResult.data : { name: currentUser.name, email: currentUser.email, role: 'buyer' };
+            const orders = ordersResult.success ? ordersResult.data : [];
+            
+            container.innerHTML = `
+                <div class="profile-header">
+                    <div class="profile-avatar"><i class="fas fa-user"></i></div>
+                    <div class="profile-info">
+                        <h2>${escapeHtml(userData.name)}</h2>
+                        <p>${currentUser.email}</p>
+                        <p><span style="background:rgba(255,255,255,0.2); padding:4px 12px; border-radius:20px;">${userData.role === 'seller' ? 'Продавец' : 'Покупатель'}</span></p>
                     </div>
-                    <div style="background: #111118; border-radius: 20px; padding: 30px;">
-                        <h3 style="margin-bottom: 20px;">📦 Мои заказы (${orders.length})</h3>
-                        <div id="ordersContainer">${renderOrders(orders)}</div>
-                    </div>
-                `;
-                
-                updateUserInterface();
-                
-            } catch (error) {
-                console.error('Ошибка загрузки профиля:', error);
-                container.innerHTML = `
-                    <div class="error-message">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <p>Ошибка загрузки профиля: ${error.message}</p>
-                        <button onclick="location.reload()" class="btn" style="margin-top: 20px;">Обновить страницу</button>
-                    </div>
-                `;
-            }
+                </div>
+                <div style="background:#111118; border-radius:20px; padding:30px;">
+                    <h3 style="margin-bottom:20px;">📦 Мои заказы (${orders.length})</h3>
+                    <div id="ordersContainer">${renderOrders(orders)}</div>
+                </div>
+            `;
         }
         
         function renderOrders(orders) {
@@ -211,41 +153,23 @@
             return div.innerHTML;
         }
         
-        // Обновление интерфейса пользователя
-        function updateUserInterface() {
-            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-            const authButtons = document.getElementById('authButtons');
-            const userInfo = document.getElementById('userInfo');
-            const userName = document.getElementById('userName');
-            const sellerLink = document.getElementById('sellerLink');
-            
-            if (currentUser) {
-                if (authButtons) authButtons.style.display = 'none';
-                if (userInfo) userInfo.style.display = 'block';
-                if (userName) userName.innerHTML = `<i class="fas fa-user"></i> ${escapeHtml(currentUser.name)}`;
-                if (sellerLink && currentUser.role === 'seller') {
-                    sellerLink.style.display = 'block';
-                }
-            } else {
-                if (authButtons) authButtons.style.display = 'block';
-                if (userInfo) userInfo.style.display = 'none';
-            }
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) dropdown.classList.toggle('show');
         }
         
-        // Запускаем загрузку профиля после загрузки Firebase
-        window.auth.onAuthStateChanged((user) => {
-            if (user) {
-                loadProfile();
-            } else {
-                document.getElementById('profileContent').innerHTML = `
-                    <div class="error-message">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <p>Вы не авторизованы</p>
-                        <a href="login.html" class="btn" style="margin-top: 20px;">Войти в аккаунт</a>
-                    </div>
-                `;
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('userDropdown');
+            const userBtn = document.querySelector('.user-btn');
+            if (dropdown && userBtn && !userBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
             }
         });
+        
+        window.toggleUserDropdown = toggleUserDropdown;
+        
+        loadProfile();
+        window.updateUserInterface();
     </script>
 </body>
 </html>
