@@ -45,10 +45,6 @@
             color: white;
             font-size: 16px;
         }
-        .form-group input:focus {
-            outline: none;
-            border-color: #7c3aed;
-        }
         .btn-login {
             width: 100%;
             padding: 14px;
@@ -106,8 +102,8 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     
     <script>
         const firebaseConfig = {
@@ -119,8 +115,17 @@
             appId: "1:448908238147:web:d222f715cf13a3c83d23f6"
         };
         
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+        let auth;
+        
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            auth = firebase.auth();
+            console.log('✅ Firebase инициализирован');
+        } catch (error) {
+            console.error('❌ Ошибка:', error);
+        }
         
         function showMessage(message, type) {
             const messageArea = document.getElementById('messageArea');
@@ -145,24 +150,16 @@
             
             try {
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-                console.log('✅ Вход выполнен:', user.uid);
-                
+                console.log('✅ Вход выполнен:', userCredential.user.uid);
                 showMessage('Вход выполнен! Перенаправление...', 'success');
-                
                 setTimeout(() => {
                     window.location.href = 'index.html';
                 }, 1500);
-                
             } catch (error) {
-                console.error('❌ Ошибка входа:', error);
-                
                 if (error.code === 'auth/user-not-found') {
                     showMessage('Пользователь не найден', 'error');
                 } else if (error.code === 'auth/wrong-password') {
                     showMessage('Неверный пароль', 'error');
-                } else if (error.code === 'auth/invalid-email') {
-                    showMessage('Неверный формат email', 'error');
                 } else {
                     showMessage('Ошибка: ' + error.message, 'error');
                 }
