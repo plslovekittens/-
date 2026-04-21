@@ -155,7 +155,7 @@
         </div>
     </div>
 
-    <!-- Firebase SDK (совместимые версии для GitHub Pages) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -177,13 +177,13 @@
         let auth;
         
         try {
-            // Проверяем, инициализирован ли уже Firebase
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
             }
             db = firebase.firestore();
             auth = firebase.auth();
             console.log('✅ Firebase инициализирован');
+            console.log('✅ Текущий домен:', window.location.origin);
             showMessage('✅ Firebase подключен!', 'success');
         } catch (error) {
             console.error('❌ Ошибка:', error);
@@ -217,7 +217,6 @@
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Проверка, что Firebase загружен
             if (!auth) {
                 showMessage('Ошибка: Firebase не загружен. Проверьте подключение к интернету.', 'error');
                 return;
@@ -229,7 +228,6 @@
             const passwordConfirm = document.getElementById('regPasswordConfirm').value;
             const role = document.getElementById('regRole').value;
             
-            // Валидация
             if (!name || !email || !password) {
                 showMessage('Заполните все поля', 'error');
                 return;
@@ -253,13 +251,10 @@
             showMessage('Регистрация...', 'info');
             
             try {
-                // 1. Создаем пользователя в Firebase Auth
-                console.log('Создание пользователя:', email);
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
                 console.log('✅ Пользователь создан в Auth:', user.uid);
                 
-                // 2. Сохраняем данные в Firestore
                 await db.collection('users').doc(user.uid).set({
                     name: name,
                     email: email,
@@ -277,8 +272,7 @@
                 }, 1500);
                 
             } catch (error) {
-                console.error('❌ Ошибка регистрации:', error);
-                console.error('Код ошибки:', error.code);
+                console.error('❌ Ошибка:', error);
                 
                 if (error.code === 'auth/email-already-in-use') {
                     showMessage('Этот email уже зарегистрирован', 'error');
@@ -288,13 +282,14 @@
                     showMessage('Неверный формат email', 'error');
                 } else if (error.code === 'auth/operation-not-allowed') {
                     showMessage('Ошибка: Email/Password authentication не включен в Firebase Console. Включите его в разделе Authentication.', 'error');
+                } else if (error.code === 'auth/unauthorized-domain') {
+                    showMessage('Ошибка: Домен не авторизован. Добавьте plslovekittens.github.io в Authorized domains в Firebase Console.', 'error');
                 } else {
                     showMessage('Ошибка: ' + error.message, 'error');
                 }
             }
         });
         
-        // Устанавливаем начальную выбранную роль
         const defaultRole = document.querySelector('.role-option[data-role="buyer"]');
         if (defaultRole) defaultRole.classList.add('selected');
     </script>
