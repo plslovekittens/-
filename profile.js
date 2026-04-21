@@ -1,70 +1,82 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Личный кабинет - Volt Store</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .profile-container { max-width: 1200px; margin: 100px auto 60px; padding: 0 20px; }
-        .profile-header { background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); border-radius: 20px; padding: 40px; margin-bottom: 30px; display: flex; align-items: center; gap: 30px; flex-wrap: wrap; }
-        .profile-avatar { width: 100px; height: 100px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 48px; }
-        .profile-info h2 { font-size: 28px; margin-bottom: 10px; }
-        .profile-info p { opacity: 0.9; }
-        .profile-tabs { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
-        .profile-tab { padding: 12px 24px; background: #111118; border: 1px solid rgba(124,58,237,0.2); border-radius: 12px; color: white; cursor: pointer; transition: 0.3s; }
-        .profile-tab.active { background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); }
-        .tab-pane { display: none; background: #111118; border: 1px solid rgba(124,58,237,0.2); border-radius: 20px; padding: 30px; }
-        .tab-pane.active { display: block; }
-        .order-card { background: #0a0a0f; border-radius: 16px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .order-status { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .status-pending { background: #f59e0b; color: white; }
-        .status-paid { background: #3b82f6; color: white; }
-        .status-delivered { background: #8b5cf6; color: white; }
-        .status-completed { background: #10b981; color: white; }
-        .promo-card { background: linear-gradient(135deg, #7c3aed20 0%, #c084fc10 100%); border: 1px solid rgba(124,58,237,0.3); border-radius: 16px; padding: 20px; text-align: center; }
-        .promo-code { font-size: 24px; font-weight: bold; color: #7c3aed; margin: 15px 0; }
-        .support-chat { height: 400px; display: flex; flex-direction: column; }
-        .support-messages { flex: 1; overflow-y: auto; padding: 15px; background: #0a0a0f; border-radius: 12px; margin-bottom: 15px; }
-        .support-input { display: flex; gap: 10px; }
-        .support-input input { flex: 1; padding: 12px; background: #0a0a0f; border: 1px solid rgba(124,58,237,0.3); border-radius: 8px; color: white; }
-        .message { margin-bottom: 15px; padding: 10px 15px; border-radius: 12px; max-width: 80%; }
-        .message.user { background: #7c3aed; margin-left: auto; }
-        .message.support { background: #1e293b; }
-        .withdraw-btn { background: #10b981; color: white; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; }
-    </style>
-</head>
-<body>
-    <nav class="navbar"><div class="container"><div class="nav-content"><div class="logo"><i class="fas fa-bolt"></i> VOLT</div><ul class="nav-menu"><li><a href="index.html">Главная</a></li><li><a href="index.html#products">Товары</a></li><li><a href="seller-info.html">Продавцам</a></li><li><a href="rules.html">Правила</a></li></ul><div class="nav-actions"><div class="user-menu"><button class="user-btn" onclick="window.location.href='profile.html'"><i class="fas fa-user"></i></button></div></div></div></div></nav>
+// ==================== ЛИЧНЫЙ КАБИНЕТ ====================
 
-    <div class="profile-container">
-        <div class="profile-header" id="profileHeader">
+async function loadProfile() {
+    const container = document.getElementById('profileContent');
+    const currentUser = window.getCurrentUser();
+    
+    if (!currentUser) {
+        container.innerHTML = `
+            <div style="text-align:center; padding:40px;">
+                <i class="fas fa-exclamation-triangle" style="font-size:48px; color:#ef4444;"></i>
+                <p>Вы не авторизованы</p>
+                <a href="login.html" class="btn">Войти</a>
+            </div>
+        `;
+        return;
+    }
+    
+    // Получаем данные пользователя из коллекции users
+    const userResult = await window.DB.getUser(currentUser.id);
+    // Получаем заказы пользователя из коллекции orders
+    const ordersResult = await window.DB.getUserOrders(currentUser.id);
+    
+    const userData = userResult.success ? userResult.data : { name: currentUser.name, email: currentUser.email, role: 'buyer' };
+    const orders = ordersResult.success ? ordersResult.data : [];
+    
+    container.innerHTML = `
+        <div class="profile-header">
             <div class="profile-avatar"><i class="fas fa-user"></i></div>
-            <div class="profile-info"><h2 id="userNameDisplay">Загрузка...</h2><p id="userEmailDisplay"></p><p><span id="userRoleDisplay"></span> с <span id="userDateDisplay"></span></p></div>
+            <div class="profile-info">
+                <h2>${escapeHtml(userData.name)}</h2>
+                <p>${currentUser.email}</p>
+                <p><span style="background:rgba(255,255,255,0.2); padding:4px 12px; border-radius:20px;">${userData.role === 'seller' ? 'Продавец' : 'Покупатель'}</span></p>
+                <p>Баланс: ${(userData.balance || 0).toLocaleString()} ₽</p>
+            </div>
         </div>
-
-        <div class="profile-tabs">
-            <button class="profile-tab active" onclick="switchProfileTab('orders')">📦 Мои заказы</button>
-            <button class="profile-tab" onclick="switchProfileTab('promo')">🎁 Промокоды</button>
-            <button class="profile-tab" onclick="switchProfileTab('support')">💬 Поддержка</button>
-            <button class="profile-tab" id="sellerOrdersTab" style="display:none;" onclick="switchProfileTab('seller-orders')">📊 Поступление товаров</button>
-            <button class="profile-tab" id="sellerReviewsTab" style="display:none;" onclick="switchProfileTab('seller-reviews')">⭐ Отзывы</button>
-            <button class="profile-tab" id="sellerWithdrawTab" style="display:none;" onclick="switchProfileTab('seller-withdraw')">💰 Вывод средств</button>
+        <div style="background:#111118; border-radius:20px; padding:30px;">
+            <h3 style="margin-bottom:20px;">📦 Мои заказы (${orders.length})</h3>
+            <div id="ordersContainer">${renderOrders(orders)}</div>
         </div>
+    `;
+}
 
-        <div id="ordersPane" class="tab-pane active"><h3 style="margin-bottom:20px;">История заказов</h3><div id="ordersList"></div></div>
-        <div id="promoPane" class="tab-pane"><h3 style="margin-bottom:20px;">Мои промокоды</h3><div id="promoCodesList"></div></div>
-        <div id="supportPane" class="tab-pane"><h3 style="margin-bottom:20px;">Чат с администратором</h3><div class="support-chat"><div class="support-messages" id="supportMessages"><div class="message support">Здравствуйте! Чем могу помочь?</div></div><div class="support-input"><input type="text" id="supportInput" placeholder="Введите сообщение..."><button class="btn btn-primary" onclick="sendSupportMessage()">Отправить</button></div></div></div>
-        <div id="sellerOrdersPane" class="tab-pane"><h3 style="margin-bottom:20px;">Поступление товаров (заказы на ваши товары)</h3><div id="sellerIncomingOrders"></div></div>
-        <div id="sellerReviewsPane" class="tab-pane"><h3 style="margin-bottom:20px;">Отзывы о ваших товарах</h3><div id="sellerReviewsList"></div></div>
-        <div id="sellerWithdrawPane" class="tab-pane"><h3 style="margin-bottom:20px;">Вывод средств</h3><div style="background:#0a0a0f; border-radius:16px; padding:20px;"><p style="margin-bottom:15px;">Доступно для вывода: <strong id="availableBalance">0 ₽</strong></p><p style="margin-bottom:15px;">На удержании (ожидает подтверждения): <strong id="pendingBalance">0 ₽</strong></p><div style="margin-top:20px;"><input type="text" id="withdrawAmount" placeholder="Сумма вывода" style="padding:10px; background:#0a0a0f; border:1px solid #7c3aed; border-radius:8px; color:white; width:200px; margin-right:10px;"><button class="withdraw-btn" onclick="requestWithdraw()">Запросить вывод</button></div><p style="font-size:12px; color:#a1a1aa; margin-top:15px;">Вывод средств осуществляется в течение 3-5 рабочих дней на карту или QIWI</p></div></div>
-    </div>
+function renderOrders(orders) {
+    if (orders.length === 0) {
+        return '<div style="text-align:center; padding:40px; color:#a1a1aa;">У вас пока нет заказов</div>';
+    }
+    
+    return orders.map(order => `
+        <div class="order-card">
+            <div>
+                <strong>${escapeHtml(order.productName)}</strong><br>
+                Количество: ${order.quantity} шт.<br>
+                Сумма: ${order.total} ₽<br>
+                Дата: ${new Date(order.createdAt).toLocaleDateString('ru-RU')}
+            </div>
+            <div>
+                <span class="order-status status-${order.status}">${getStatusText(order.status)}</span>
+            </div>
+        </div>
+    `).join('');
+}
 
-    <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="database.js"></script>
-    <script type="module" src="auth.js"></script>
-    <script type="module" src="profile.js"></script>
-</body>
-</html>
+function getStatusText(status) {
+    const statuses = {
+        'pending': '⏳ Ожидает оплаты',
+        'paid': '✅ Оплачено',
+        'delivered': '📦 Доставлено',
+        'completed': '🎉 Завершен'
+    };
+    return statuses[status] || status;
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadProfile();
+});
