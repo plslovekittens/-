@@ -5,6 +5,7 @@ window.registerUser = async function(name, email, password, role) {
         const userCredential = await window.auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
         
+        // Сохраняем пользователя в коллекцию users
         const result = await window.DB.createUser(user.uid, {
             name: name,
             email: email,
@@ -12,6 +13,7 @@ window.registerUser = async function(name, email, password, role) {
         });
         
         if (result.success) {
+            console.log('✅ Пользователь сохранён в коллекцию users');
             return { success: true, user };
         } else {
             throw new Error(result.error);
