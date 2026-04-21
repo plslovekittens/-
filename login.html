@@ -4,42 +4,151 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход - Volt Store</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .auth-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
-        .auth-card { background: #1e293b; border-radius: 16px; padding: 40px; width: 100%; max-width: 400px; }
-        .auth-card h2 { text-align: center; margin-bottom: 30px; color: white; }
-        .form-group { margin-bottom: 20px; }
-        .form-group input { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; }
-        .btn-full { width: 100%; }
-        .auth-link { text-align: center; margin-top: 20px; color: #94a3b8; }
-        .auth-link a { color: #7c3aed; text-decoration: none; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .login-card {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+        .login-card h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #7c3aed;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .auth-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #94a3b8;
+        }
+        .auth-link a {
+            color: #7c3aed;
+            text-decoration: none;
+        }
+        .error-message {
+            background: rgba(239,68,68,0.2);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <div class="auth-container">
-        <div class="auth-card">
-            <h2>Вход в аккаунт</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <input type="email" id="loginEmail" placeholder="Email" required>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="loginPassword" placeholder="Пароль" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">Войти</button>
-            </form>
-            <div class="auth-link">
-                Нет аккаунта? <a href="register.html">Зарегистрироваться</a>
+    <div class="login-card">
+        <h2>🔐 Вход в аккаунт</h2>
+        <div id="messageArea"></div>
+        <form id="loginForm">
+            <div class="form-group">
+                <input type="email" id="loginEmail" placeholder="Email" required>
             </div>
+            <div class="form-group">
+                <input type="password" id="loginPassword" placeholder="Пароль" required>
+            </div>
+            <button type="submit" class="btn-login">Войти</button>
+        </form>
+        <div class="auth-link">
+            Нет аккаунта? <a href="register.html">Зарегистрироваться</a>
         </div>
     </div>
+
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="auth.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeWBgPT84RzljctkdpGO1xtmhVd2MdD1w",
+            authDomain: "diplom-57d78.firebaseapp.com",
+            projectId: "diplom-57d78",
+            storageBucket: "diplom-57d78.firebasestorage.app",
+            messagingSenderId: "448908238147",
+            appId: "1:448908238147:web:d222f715cf13a3c83d23f6"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        
+        function showMessage(message, type) {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.innerHTML = `<div class="${type}-message">${message}</div>`;
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 3000);
+        }
+        
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                showMessage('Вход выполнен! Перенаправление...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+                
+            } catch (error) {
+                if (error.code === 'auth/user-not-found') {
+                    showMessage('Пользователь не найден', 'error');
+                } else if (error.code === 'auth/wrong-password') {
+                    showMessage('Неверный пароль', 'error');
+                } else {
+                    showMessage('Ошибка: ' + error.message, 'error');
+                }
+            }
+        });
+    </script>
 </body>
 </html>
