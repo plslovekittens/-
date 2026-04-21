@@ -1,46 +1,35 @@
 /* ==================== ROOT ПЕРЕМЕННЫЕ ==================== */
 :root {
-    /* Основные цвета */
     --primary: #7c3aed;
     --primary-dark: #6d28d9;
     --primary-light: #a78bfa;
     --primary-glow: rgba(124, 58, 237, 0.4);
-    
-    /* Фоновые цвета */
     --bg-dark: #0a0a0f;
     --bg-card: #111118;
     --bg-card-hover: #1a1a24;
     --bg-elevated: #1e1e2a;
-    
-    /* Текст */
     --text-white: #ffffff;
     --text-gray: #a1a1aa;
     --text-gray-light: #d4d4d8;
-    
-    /* Акценты */
     --success: #10b981;
     --danger: #ef4444;
     --warning: #f59e0b;
     --info: #3b82f6;
-    
-    /* Градиенты */
     --gradient-primary: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
     --gradient-dark: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     --gradient-glow: radial-gradient(circle at 50% 50%, rgba(124, 58, 237, 0.15) 0%, transparent 100%);
-    
-    /* Тени */
     --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     --shadow-glow: 0 0 20px rgba(124, 58, 237, 0.3);
-    
-    /* Анимации */
     --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
     --transition-slow: 0.5s ease;
+    --telegram: #0088cc;
+    --discord: #5865f2;
+    --vk: #4a76a8;
 }
 
-/* ==================== БАЗОВЫЕ СТИЛИ ==================== */
 * {
     margin: 0;
     padding: 0;
@@ -99,7 +88,6 @@ body {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    position: relative;
 }
 
 .logo i {
@@ -152,14 +140,8 @@ body {
 }
 
 @keyframes slideIn {
-    from {
-        width: 0;
-        opacity: 0;
-    }
-    to {
-        width: 100%;
-        opacity: 1;
-    }
+    from { width: 0; opacity: 0; }
+    to { width: 100%; opacity: 1; }
 }
 
 .nav-actions {
@@ -210,7 +192,7 @@ body {
     justify-content: center;
 }
 
-/* User Menu */
+/* ==================== USER MENU (ВАЖНО ДЛЯ АВТОРИЗАЦИИ) ==================== */
 .user-menu {
     position: relative;
 }
@@ -218,6 +200,7 @@ body {
 .user-btn {
     background: var(--gradient-primary);
     border: none;
+    cursor: pointer;
 }
 
 .user-dropdown {
@@ -233,7 +216,7 @@ body {
     visibility: hidden;
     transform: translateY(-10px);
     transition: var(--transition-normal);
-    z-index: 100;
+    z-index: 1000;
 }
 
 .user-dropdown.show {
@@ -274,17 +257,6 @@ body {
     right: 0;
     bottom: 0;
     background: var(--gradient-glow);
-    pointer-events: none;
-}
-
-.hero::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(124, 58, 237, 0.05) 0%, transparent 70%);
     pointer-events: none;
 }
 
@@ -345,24 +317,6 @@ body {
     font-size: 16px;
     position: relative;
     overflow: hidden;
-}
-
-.btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-}
-
-.btn:hover::before {
-    width: 300px;
-    height: 300px;
 }
 
 .btn-primary {
@@ -575,13 +529,6 @@ body {
     overflow: hidden;
 }
 
-.product-image::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, transparent 0%, rgba(124, 58, 237, 0.1) 100%);
-}
-
 .product-badge {
     position: absolute;
     top: 12px;
@@ -628,23 +575,6 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-}
-
-.product-rating {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 16px;
-}
-
-.stars {
-    color: #fbbf24;
-    font-size: 13px;
-}
-
-.reviews {
-    color: var(--text-gray);
-    font-size: 12px;
 }
 
 .product-price {
@@ -726,11 +656,6 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-}
-
-.seller-info::before {
-    content: '👑';
-    font-size: 10px;
 }
 
 /* ==================== ПРЕИМУЩЕСТВА ==================== */
@@ -1181,14 +1106,8 @@ body {
 }
 
 @keyframes modalSlide {
-    from {
-        transform: translateY(-50px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 .modal-header {
@@ -1237,6 +1156,105 @@ body {
 
 .notification.error {
     border-color: var(--danger);
+}
+
+/* ==================== ПОИСК ==================== */
+.search-overlay {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: var(--bg-card);
+    padding: 20px;
+    transform: translateY(-100%);
+    transition: transform 0.3s;
+    z-index: 999;
+    border-bottom: 1px solid var(--border);
+}
+
+.search-overlay.active {
+    transform: translateY(0);
+}
+
+.search-container {
+    display: flex;
+    gap: 10px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.search-container input {
+    flex: 1;
+    padding: 12px;
+    background: var(--bg-dark);
+    border: 1px solid rgba(124, 58, 237, 0.3);
+    border-radius: 8px;
+    color: var(--text-white);
+    font-size: 16px;
+}
+
+.search-container button {
+    width: 48px;
+    background: var(--primary);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+}
+
+.search-results {
+    max-width: 600px;
+    margin: 20px auto 0;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px;
+    background: var(--bg-dark);
+    border: 1px solid rgba(124, 58, 237, 0.2);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.search-result-item:hover {
+    border-color: var(--primary);
+    transform: translateX(5px);
+}
+
+.search-result-item i {
+    width: 40px;
+    height: 40px;
+    background: var(--gradient-primary);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+}
+
+.search-result-item div {
+    flex: 1;
+}
+
+.search-result-item div div {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.search-result-item small {
+    color: var(--text-gray);
+    font-size: 12px;
+}
+
+.no-results, .search-info {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-gray);
 }
 
 /* ==================== АДАПТИВНОСТЬ ==================== */
