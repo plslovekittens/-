@@ -1,56 +1,70 @@
 // ==================== АВТОРИЗАЦИЯ ====================
 
 // Регистрация
-function registerUser(name, email, password, role) {
-    return window.auth.createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            return window.db.collection('users').doc(user.uid).set({
-                name: name,
-                email: email,
-                role: role,
-                createdAt: new Date().toISOString(),
-                balance: 0
-            }).then(() => user);
+window.registerUser = async function(name, email, password, role) {
+    try {
+        const userCredential = await window.auth.createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        
+        // Используем DB функцию для создания пользователя
+        const result = await window.DB.createUser(user.uid, {
+            name: name,
+            email: email,
+            role: role
         });
-}
+        
+        if (result.success) {
+            return { success: true, user };
+        } else {
+            throw new Error(result.error);
+        }
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+};
 
 // Вход
-function loginUser(email, password) {
-    return window.auth.signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            return window.db.collection('users').doc(user.uid).get()
-                .then((doc) => {
-                    const userData = doc.data();
-                    sessionStorage.setItem('currentUser', JSON.stringify({
-                        id: user.uid,
-                        name: userData.name,
-                        email: user.email,
-                        role: userData.role
-                    }));
-                    return userData;
-                });
-        });
-}
+window.loginUser = async function(email, password) {
+    try {
+        const userCredential = await window.auth.signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        
+        // Используем DB функцию для получения данных пользователя
+        const result = await window.DB.getUser(user.uid);
+        
+        if (result.success) {
+            const userData = result.data;
+            sessionStorage.setItem('currentUser', JSON.stringify({
+                id: user.uid,
+                name: userData.name,
+                email: user.email,
+                role: userData.role
+            }));
+            return { success: true, userData };
+        } else {
+            throw new Error(result.error);
+        }
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+};
 
 // Выход
-function logoutUser() {
-    return window.auth.signOut().then(() => {
-        sessionStorage.removeItem('currentUser');
-        window.location.href = 'index.html';
-    });
-}
+window.logoutUser = async function() {
+    await window.auth.signOut();
+    sessionStorage.removeItem('currentUser');
+    window.location.href = 'index.html';
+};
 
 // Получение текущего пользователя
-function getCurrentUser() {
+window.getCurrentUser = function() {
     const user = sessionStorage.getItem('currentUser');
     return user ? JSON.parse(user) : null;
-}
+};
 
 // Обновление интерфейса
-function updateUserInterface() {
-    const currentUser = getCurrentUser();
+window.updateUserInterface = function() {
+    const currentUser = window.getCurrentUser();
     const authButtons = document.getElementById('authButtons');
     const userInfo = document.getElementById('userInfo');
     const userName = document.getElementById('userName');
@@ -67,37 +81,35 @@ function updateUserInterface() {
         if (authButtons) authButtons.style.display = 'block';
         if (userInfo) userInfo.style.display = 'none';
     }
-}
+};
 
 // Отслеживание состояния авторизации
-window.auth.onAuthStateChanged((user) => {
+window.auth.onAuthStateChanged(async (user) => {
     if (user) {
-        window.db.collection('users').doc(user.uid).get().then((doc) => {
-            if (doc.exists) {
-                const userData = doc.data();
-                sessionStorage.setItem('currentUser', JSON.stringify({
-                    id: user.uid,
-                    name: userData.name,
-                    email: user.email,
-                    role: userData.role
-                }));
-                updateUserInterface();
-            }
-        });
+        const result = await window.DB.getUser(user.uid);
+        if (result.success) {
+            const userData = result.data;
+            sessionStorage.setItem('currentUser', JSON.stringify({
+                id: user.uid,
+                name: userData.name,
+                email: user.email,
+                role: userData.role
+            }));
+        }
     } else {
         sessionStorage.removeItem('currentUser');
-        updateUserInterface();
     }
+    window.updateUserInterface();
 });
 
 // Обработчики форм
 document.addEventListener('DOMContentLoaded', function() {
-    updateUserInterface();
+    window.updateUserInterface();
     
     // Регистрация
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
-        registerForm.addEventListener('submit', function(e) {
+        registerForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const name = document.getElementById('regName').value;
@@ -111,63 +123,45 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            registerUser(name, email, password, role)
-                .then(() => {
-                    alert('Регистрация успешна! Теперь вы можете войти.');
-                    window.location.href = 'login.html';
-                })
-                .catch((error) => {
-                    if (error.code === 'auth/email-already-in-use') {
-                        alert('Этот email уже зарегистрирован');
-                    } else if (error.code === 'auth/weak-password') {
-                        alert('Пароль должен содержать минимум 6 символов');
-                    } else {
-                        alert('Ошибка: ' + error.message);
-                    }
-                });
+            const result = await window.registerUser(name, email, password, role);
+            if (result.success) {
+                alert('Регистрация успешна! Теперь вы можете войти.');
+                window.location.href = 'login.html';
+            } else {
+                alert('Ошибка: ' + result.error);
+            }
         });
     }
     
     // Вход
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
+        loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             
-            loginUser(email, password)
-                .then((userData) => {
-                    alert(`Добро пожаловать, ${userData.name}!`);
-                    if (userData.role === 'seller') {
-                        window.location.href = 'seller-dashboard.html';
-                    } else {
-                        window.location.href = 'profile.html';
-                    }
-                })
-                .catch((error) => {
-                    if (error.code === 'auth/user-not-found') {
-                        alert('Пользователь не найден');
-                    } else if (error.code === 'auth/wrong-password') {
-                        alert('Неверный пароль');
-                    } else {
-                        alert('Ошибка: ' + error.message);
-                    }
-                });
+            const result = await window.loginUser(email, password);
+            if (result.success) {
+                alert(`Добро пожаловать, ${result.userData.name}!`);
+                if (result.userData.role === 'seller') {
+                    window.location.href = 'seller-dashboard.html';
+                } else {
+                    window.location.href = 'index.html';
+                }
+            } else {
+                alert('Ошибка: ' + result.error);
+            }
         });
     }
 });
 
 // Глобальные функции
-window.logout = logoutUser;
-window.getCurrentUser = getCurrentUser;
-
+window.logout = window.logoutUser;
 window.toggleUserDropdown = function() {
     const dropdown = document.getElementById('userDropdown');
-    if (dropdown) {
-        dropdown.classList.toggle('show');
-    }
+    if (dropdown) dropdown.classList.toggle('show');
 };
 
 document.addEventListener('click', function(e) {
