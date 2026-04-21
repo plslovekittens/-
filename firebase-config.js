@@ -10,8 +10,13 @@ const firebaseConfig = {
 };
 
 // Инициализация Firebase
-firebase.initializeApp(firebaseConfig);
-window.db = firebase.firestore();
-window.auth = firebase.auth();
-
-console.log('Firebase инициализирован');
+if (typeof firebase !== 'undefined') {
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    window.db = firebase.firestore();
+    window.auth = firebase.auth();
+    console.log('✅ Firebase инициализирован');
+} else {
+    console.error('❌ Firebase не загружен!');
+}
