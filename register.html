@@ -5,85 +5,279 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация - Volt Store</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #0f172a; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: #1e293b; padding: 40px; border-radius: 16px; width: 400px; }
-        h2 { color: white; text-align: center; margin-bottom: 30px; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; }
-        button { width: 100%; padding: 12px; background: #7c3aed; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
-        .role-selector { display: flex; gap: 10px; margin-bottom: 20px; }
-        .role { flex: 1; padding: 10px; text-align: center; background: #0f172a; border: 1px solid #334155; border-radius: 8px; cursor: pointer; color: white; }
-        .role.selected { border-color: #7c3aed; background: #7c3aed20; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .register-card {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+        .register-card h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 2px rgba(124,58,237,0.3);
+        }
+        .role-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .role-option {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: all 0.3s;
+        }
+        .role-option.selected {
+            border-color: #7c3aed;
+            background: #7c3aed20;
+            color: white;
+        }
+        .role-option i {
+            margin-right: 8px;
+        }
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn-register:hover {
+            transform: translateY(-2px);
+        }
+        .auth-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #94a3b8;
+        }
+        .auth-link a {
+            color: #7c3aed;
+            text-decoration: none;
+        }
+        .error-message {
+            background: rgba(239,68,68,0.2);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .success-message {
+            background: rgba(16,185,129,0.2);
+            border: 1px solid #10b981;
+            color: #10b981;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>Регистрация</h2>
-        <input type="text" id="name" placeholder="ФИО">
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Пароль">
-        <input type="password" id="confirm" placeholder="Подтверждение пароля">
-        <div class="role-selector">
-            <div class="role" onclick="selectRole('buyer', this)">Покупатель</div>
-            <div class="role" onclick="selectRole('seller', this)">Продавец</div>
+    <div class="register-card">
+        <h2>📝 Регистрация</h2>
+        <div id="messageArea"></div>
+        <form id="registerForm">
+            <div class="form-group">
+                <input type="text" id="regName" placeholder="ФИО" required>
+            </div>
+            <div class="form-group">
+                <input type="email" id="regEmail" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="regPassword" placeholder="Пароль (минимум 6 символов)" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="regPasswordConfirm" placeholder="Подтверждение пароля" required>
+            </div>
+            <div class="role-selector">
+                <div class="role-option" data-role="buyer" onclick="selectRole('buyer')">
+                    <i class="fas fa-user"></i> Покупатель
+                </div>
+                <div class="role-option" data-role="seller" onclick="selectRole('seller')">
+                    <i class="fas fa-store"></i> Продавец
+                </div>
+            </div>
+            <input type="hidden" id="regRole" value="buyer">
+            <button type="submit" class="btn-register">Зарегистрироваться</button>
+        </form>
+        <div class="auth-link">
+            Уже есть аккаунт? <a href="login.html">Войти</a>
         </div>
-        <button onclick="register()">Зарегистрироваться</button>
-        <p style="text-align: center; margin-top: 20px;"><a href="login.html" style="color: #7c3aed;">Уже есть аккаунт? Войти</a></p>
     </div>
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+    
     <script>
+        // Конфигурация Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAeWBgPT84RzljctkdpGO1xtmhVd2MdD1w",
             authDomain: "diplom-57d78.firebaseapp.com",
             projectId: "diplom-57d78",
             storageBucket: "diplom-57d78.firebasestorage.app",
             messagingSenderId: "448908238147",
-            appId: "1:448908238147:web:d222f715cf13a3c83d23f6"
+            appId: "1:448908238147:web:d222f715cf13a3c83d23f6",
+            measurementId: "G-T6F7KWP9RR"
         };
         
-        firebase.initializeApp(firebaseConfig);
+        // Инициализация Firebase
+        try {
+            firebase.initializeApp(firebaseConfig);
+            console.log('✅ Firebase инициализирован');
+        } catch (error) {
+            console.error('❌ Ошибка инициализации Firebase:', error);
+        }
+        
         const db = firebase.firestore();
         const auth = firebase.auth();
         
         let selectedRole = 'buyer';
         
-        function selectRole(role, element) {
+        function selectRole(role) {
             selectedRole = role;
-            document.querySelectorAll('.role').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
+            document.getElementById('regRole').value = role;
+            document.querySelectorAll('.role-option').forEach(opt => {
+                opt.classList.remove('selected');
+                if (opt.getAttribute('data-role') === role) {
+                    opt.classList.add('selected');
+                }
+            });
         }
         
-        async function register() {
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const confirm = document.getElementById('confirm').value;
+        function showMessage(message, type) {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.innerHTML = `<div class="${type}-message">${message}</div>`;
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 5000);
+        }
+        
+        // Обработчик формы
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
             
-            if (password !== confirm) {
-                alert('Пароли не совпадают');
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const passwordConfirm = document.getElementById('regPasswordConfirm').value;
+            const role = document.getElementById('regRole').value;
+            
+            // Валидация
+            if (!name || !email || !password) {
+                showMessage('Заполните все поля', 'error');
                 return;
             }
             
+            if (password !== passwordConfirm) {
+                showMessage('Пароли не совпадают', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showMessage('Пароль должен содержать минимум 6 символов', 'error');
+                return;
+            }
+            
+            if (!email.includes('@')) {
+                showMessage('Введите корректный email', 'error');
+                return;
+            }
+            
+            showMessage('Регистрация...', 'success');
+            
             try {
+                // Создаем пользователя в Firebase Auth
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
                 
+                // Сохраняем данные в Firestore
                 await db.collection('users').doc(user.uid).set({
                     name: name,
                     email: email,
-                    role: selectedRole,
+                    role: role,
                     createdAt: new Date().toISOString(),
-                    balance: 0
+                    balance: 0,
+                    isActive: true
                 });
                 
-                alert('Регистрация успешна!');
-                window.location.href = 'login.html';
+                console.log('✅ Пользователь создан:', user.uid);
+                showMessage('Регистрация успешна! Перенаправление...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+                
             } catch (error) {
-                alert('Ошибка: ' + error.message);
+                console.error('❌ Ошибка:', error);
+                
+                if (error.code === 'auth/email-already-in-use') {
+                    showMessage('Этот email уже зарегистрирован', 'error');
+                } else if (error.code === 'auth/weak-password') {
+                    showMessage('Пароль слишком слабый. Используйте минимум 6 символов', 'error');
+                } else if (error.code === 'auth/invalid-email') {
+                    showMessage('Неверный формат email', 'error');
+                } else {
+                    showMessage('Ошибка: ' + error.message, 'error');
+                }
             }
-        }
+        });
+        
+        // Устанавливаем начальную выбранную роль
+        document.querySelector('.role-option[data-role="buyer"]').classList.add('selected');
     </script>
 </body>
 </html>
