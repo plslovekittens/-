@@ -77,36 +77,6 @@ window.filterProducts = function(category) {
     });
 };
 
-window.searchProducts = function() {
-    const query = document.getElementById('searchInput').value.toLowerCase().trim();
-    const results = document.getElementById('searchResults');
-    if (!results) return;
-    if (query.length < 2) {
-        results.innerHTML = '';
-        return;
-    }
-    const filtered = allProducts.filter(p => p.name.toLowerCase().includes(query));
-    if (filtered.length === 0) {
-        results.innerHTML = '<div class="no-results">Ничего не найдено</div>';
-        return;
-    }
-    results.innerHTML = filtered.slice(0, 8).map(p => `
-        <div class="search-result-item" onclick="selectProduct('${p.id}')">
-            <i class="fas fa-${p.image || 'box'}"></i>
-            <div><div>${p.name}</div><small>${p.price} ₽</small></div>
-        </div>
-    `).join('');
-};
-
-window.selectProduct = function(productId) {
-    closeSearch();
-    const product = allProducts.find(p => p.id == productId);
-    if (product) {
-        showNotification(`Товар "${product.name}" найден!`, 'success');
-        document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
-    }
-};
-
 function getBadgeText(badge) {
     const badges = { 'popular': 'Популярное', 'new': 'Новинка', 'sale': 'Скидка' };
     return badges[badge] || badge;
@@ -129,13 +99,167 @@ function showNotification(message, type = 'success') {
     }
 }
 
+// Корзина
+function getCart() {
+    const cart = localStorage.getItem('volt_cart');
+    return cart ? JSON.parse(cart) : [];
+}
+
+function saveCart(cart) {
+    localStorage.setItem('volt_cart', JSON.stringify(cart));
+    updateCartCount();
+}
+
+function updateCartCount() {
+    const cart = getCart();
+    const count = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    const cartCount = document.getElementById('cartCount');
+    if (cartCount) cartCount.textContent = count;
+}
+
+window.addToCart = function(productId) {
+    const product = allProducts.find(p => p.id == productId);
+    if (!product) {
+        showNotification('Товар не найден', 'error');
+        return;
+    }
+    
+    let cart = getCart();
+    const existingItem = cart.find(item => item.id == productId);
+    
+    if (existingItem) {
+        existingItem.quantity = (existingItem.quantity || 1) + 1;
+    } else {
+        cart.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            quantity: 1,
+            sellerId: product.sellerId,
+            sellerName: product.sellerName,
+            key: product.key
+        });
+    }
+    
+    saveCart(cart);
+    displayCartItems();
+    showNotification(`${product.name} добавлен в корзину`, 'success');
+};
+
+window.removeFromCart = function(productId) {
+    let cart = getCart();
+    cart = cart.filter(item => item.id != productId);
+    saveCart(cart);
+    displayCartItems();
+    showNotification('Товар удалён', 'info');
+};
+
+function displayCartItems() {
+    const container = document.getElementById('cartItems');
+    const totalElement = document.getElementById('cartTotal');
+    
+    if (!container) return;
+    
+    const cart = getCart();
+    
+    if (cart.length === 0) {
+        container.innerHTML = '<div class="cart-empty">Корзина пуста</div>';
+        if (totalElement) totalElement.textContent = '0 ₽';
+        return;
+    }
+    
+    let html = '';
+    let total = 0;
+    
+    for (let item of cart) {
+        const qty = item.quantity || 1;
+        total += (item.price || 0) * qty;
+        html += `
+            <div class="cart-item">
+                <div class="cart-item-image"><i class="fas fa-${item.image || 'box'}"></i></div>
+                <div class="cart-item-info">
+                    <div class="cart-item-title">${item.name}</div>
+                    <div class="cart-item-price">${(item.price || 0).toLocaleString()} ₽</div>
+                    <div class="cart-item-quantity">
+                        <button onclick="updateCartQuantity('${item.id}', -1)">-</button>
+                        <span>${qty}</span>
+                        <button onclick="updateCartQuantity('${item.id}', 1)">+</button>
+                    </div>
+                </div>
+                <div class="cart-item-remove" onclick="removeFromCart('${item.id}')"><i class="fas fa-trash"></i></div>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = html;
+    if (totalElement) totalElement.textContent = `${total.toLocaleString()} ₽`;
+}
+
+window.updateCartQuantity = function(productId, change) {
+    let cart = getCart();
+    const item = cart.find(item => item.id == productId);
+    if (item) {
+        const newQty = (item.quantity || 1) + change;
+        if (newQty <= 0) {
+            window.removeFromCart(productId);
+        } else {
+            item.quantity = newQty;
+            saveCart(cart);
+            displayCartItems();
+        }
+    }
+};
+
+window.toggleCart = function() {
+    const sidebar = document.getElementById('cartSidebar');
+    if (sidebar) sidebar.classList.toggle('active');
+};
+
+window.checkout = async function() {
+    const cart = getCart();
+    const currentUser = window.getCurrentUser();
+    
+    if (cart.length === 0) {
+        showNotification('Корзина пуста', 'error');
+        return;
+    }
+    
+    if (!currentUser) {
+        showNotification('Войдите в аккаунт', 'error');
+        setTimeout(() => window.location.href = 'login.html', 1500);
+        return;
+    }
+    
+    for (let item of cart) {
+        await window.DB.createOrder({
+            buyerId: currentUser.id,
+            buyerName: currentUser.name,
+            sellerId: item.sellerId || 'admin',
+            sellerName: item.sellerName || 'Volt Official',
+            productId: item.id,
+            productName: item.name,
+            quantity: item.quantity || 1,
+            price: item.price,
+            total: (item.price || 0) * (item.quantity || 1),
+            productKey: item.key
+        });
+    }
+    
+    alert('✅ Заказ оформлен! Товары отправлены на email.');
+    localStorage.setItem('volt_cart', JSON.stringify([]));
+    updateCartCount();
+    displayCartItems();
+    window.toggleCart();
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     const checkFirebase = setInterval(() => {
         if (window.db && window.DB) {
             clearInterval(checkFirebase);
             loadProducts();
-            if (window.updateCartCountDisplay) window.updateCartCountDisplay();
-            if (window.displayCartItems) window.displayCartItems();
+            updateCartCount();
+            displayCartItems();
             window.updateUserInterface();
         }
     }, 500);
