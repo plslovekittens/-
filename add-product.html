@@ -4,171 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Добавление товара - Volt Store</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .add-product-container { max-width: 800px; margin: 120px auto 60px; padding: 0 20px; }
-        .add-product-card { background: #111118; border: 1px solid rgba(124,58,237,0.2); border-radius: 20px; padding: 40px; }
-        .add-product-card h2 { text-align: center; margin-bottom: 30px; background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 100px 20px;
+        }
+        .container { max-width: 600px; margin: 0 auto; }
+        .card {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+        h2 { color: white; text-align: center; margin-bottom: 30px; }
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; color: #a1a1aa; font-weight: 500; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 16px; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #7c3aed; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .btn-submit { width: 100%; padding: 14px; font-size: 16px; margin-top: 20px; }
-        .success-message { background: #10b981; color: white; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
-        .error-message { background: #ef4444; color: white; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
-        .navbar { background: rgba(10,10,15,0.95); backdrop-filter: blur(12px); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; border-bottom: 1px solid rgba(124,58,237,0.3); }
-        .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
-        .nav-content { display: flex; align-items: center; justify-content: space-between; height: 70px; }
-        .logo { display: flex; align-items: center; gap: 10px; font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .nav-menu { display: flex; gap: 32px; list-style: none; }
-        .nav-menu a { color: #a1a1aa; text-decoration: none; }
+        label { display: block; color: #94a3b8; margin-bottom: 8px; }
+        input, select, textarea {
+            width: 100%; padding: 12px; background: #0f172a;
+            border: 1px solid #334155; border-radius: 8px; color: white;
+        }
+        .btn {
+            width: 100%; padding: 14px; background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
+            border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;
+        }
+        .message { padding: 12px; border-radius: 10px; margin-bottom: 20px; text-align: center; }
+        .success { background: rgba(16,185,129,0.2); border: 1px solid #10b981; color: #10b981; }
+        .error { background: rgba(239,68,68,0.2); border: 1px solid #ef4444; color: #ef4444; }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-content">
-                <div class="logo"><i class="fas fa-bolt"></i> VOLT</div>
-                <ul class="nav-menu">
-                    <li><a href="index.html">Главная</a></li>
-                    <li><a href="index.html#products">Товары</a></li>
-                    <li><a href="seller-info.html">Продавцам</a></li>
-                    <li><a href="rules.html">Правила</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <div class="add-product-container">
-        <div class="add-product-card">
-            <h2><i class="fas fa-plus-circle"></i> Добавление товара</h2>
+    <div class="container">
+        <div class="card">
+            <h2>➕ Добавление товара</h2>
             <div id="messageArea"></div>
             <form id="addProductForm">
-                <div class="form-group">
-                    <label>Название товара *</label>
-                    <input type="text" id="productName" required placeholder="Например: Cyberpunk 2077">
+                <div class="form-group"><label>Название *</label><input type="text" id="name" required></div>
+                <div class="form-group"><label>Категория *</label>
+                    <select id="category" required>
+                        <option value="games">Игры</option>
+                        <option value="software">Программы</option>
+                        <option value="subscriptions">Подписки</option>
+                    </select>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Категория *</label>
-                        <select id="productCategory" required>
-                            <option value="games">🎮 Игры</option>
-                            <option value="software">💻 Программы</option>
-                            <option value="subscriptions">📱 Подписки</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Цена (₽) *</label>
-                        <input type="number" id="productPrice" required placeholder="1990">
-                    </div>
+                <div class="form-group"><label>Цена *</label><input type="number" id="price" required></div>
+                <div class="form-group"><label>Описание *</label><textarea id="description" rows="3" required></textarea></div>
+                <div class="form-group"><label>Ключ активации *</label><input type="text" id="key" required></div>
+                <div class="form-group"><label>Иконка</label>
+                    <select id="image">
+                        <option value="gamepad">Gamepad</option>
+                        <option value="laptop-code">Laptop Code</option>
+                        <option value="crown">Crown</option>
+                    </select>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Старая цена (₽)</label>
-                        <input type="number" id="productOldPrice" placeholder="2990">
-                    </div>
-                    <div class="form-group">
-                        <label>Скидка (%)</label>
-                        <input type="number" id="productDiscount" placeholder="33">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Описание товара *</label>
-                    <textarea id="productDescription" rows="3" required placeholder="Подробное описание товара..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Цифровой ключ / ссылка на файл *</label>
-                    <input type="text" id="productKey" required placeholder="XXXX-XXXX-XXXX-XXXX">
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Иконка товара</label>
-                        <select id="productImage">
-                            <option value="gamepad">🎮 Gamepad</option>
-                            <option value="laptop-code">💻 Laptop Code</option>
-                            <option value="crown">👑 Crown</option>
-                            <option value="shield-alt">🛡️ Shield</option>
-                            <option value="discord">💬 Discord</option>
-                            <option value="telegram">📱 Telegram</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Бейдж (метка)</label>
-                        <select id="productBadge">
-                            <option value="">Нет</option>
-                            <option value="popular">🔥 Популярное</option>
-                            <option value="new">🆕 Новинка</option>
-                            <option value="sale">🏷️ Скидка</option>
-                        </select>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary btn-submit"><i class="fas fa-cloud-upload-alt"></i> Добавить товар</button>
+                <button type="submit" class="btn">Добавить товар</button>
             </form>
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="firebase-config.js"></script>
     <script src="firebase-db.js"></script>
     <script src="auth.js"></script>
     
     <script>
-        function showMessage(message, type) {
-            const messageArea = document.getElementById('messageArea');
-            messageArea.innerHTML = `<div class="${type}-message">${message}</div>`;
-            setTimeout(() => { messageArea.innerHTML = ''; }, 3000);
+        function showMessage(msg, type) {
+            const area = document.getElementById('messageArea');
+            area.innerHTML = `<div class="${type}">${msg}</div>`;
+            setTimeout(() => area.innerHTML = '', 3000);
         }
         
         document.getElementById('addProductForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const currentUser = window.getCurrentUser();
+            const user = window.getCurrentUser();
             
-            if (!currentUser) {
-                showMessage('Пожалуйста, войдите в аккаунт', 'error');
-                setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+            if (!user || user.role !== 'seller') {
+                showMessage('Доступ только для продавцов', 'error');
                 return;
             }
             
-            if (currentUser.role !== 'seller') {
-                showMessage('Доступ запрещён. Только для продавцов.', 'error');
-                return;
-            }
-            
-            const productData = {
-                name: document.getElementById('productName').value,
-                category: document.getElementById('productCategory').value,
-                price: parseInt(document.getElementById('productPrice').value),
-                oldPrice: document.getElementById('productOldPrice').value ? parseInt(document.getElementById('productOldPrice').value) : null,
-                discount: document.getElementById('productDiscount').value ? parseInt(document.getElementById('productDiscount').value) : null,
-                description: document.getElementById('productDescription').value,
-                key: document.getElementById('productKey').value,
-                image: document.getElementById('productImage').value,
-                badge: document.getElementById('productBadge').value || null,
-                sellerId: currentUser.id,
-                sellerName: currentUser.name
+            const product = {
+                name: document.getElementById('name').value,
+                category: document.getElementById('category').value,
+                price: parseInt(document.getElementById('price').value),
+                description: document.getElementById('description').value,
+                key: document.getElementById('key').value,
+                image: document.getElementById('image').value,
+                sellerId: user.id,
+                sellerName: user.name
             };
             
-            if (!productData.name || !productData.price || !productData.description || !productData.key) {
-                showMessage('Заполните все обязательные поля', 'error');
-                return;
-            }
-            
-            showMessage('Добавление товара...', 'info');
-            const result = await window.DB.addProduct(productData);
-            
+            const result = await window.DB.addProduct(product);
             if (result.success) {
-                showMessage('✅ Товар успешно добавлен в коллекцию products!', 'success');
-                document.getElementById('addProductForm').reset();
-                
-                // Обновляем список товаров на главной странице
-                if (window.loadProducts) window.loadProducts();
+                showMessage('Товар добавлен!', 'success');
+                this.reset();
             } else {
-                showMessage('❌ Ошибка: ' + result.error, 'error');
+                showMessage('Ошибка: ' + result.error, 'error');
             }
         });
     </script>
