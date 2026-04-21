@@ -44,12 +44,10 @@
             border-radius: 10px;
             color: white;
             font-size: 16px;
-            transition: all 0.3s;
         }
         .form-group input:focus {
             outline: none;
             border-color: #7c3aed;
-            box-shadow: 0 0 0 2px rgba(124,58,237,0.3);
         }
         .role-selector {
             display: flex;
@@ -99,27 +97,25 @@
             color: #7c3aed;
             text-decoration: none;
         }
-        .error-message {
+        .message {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .message.error {
             background: rgba(239,68,68,0.2);
             border: 1px solid #ef4444;
             color: #ef4444;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 14px;
         }
-        .success-message {
+        .message.success {
             background: rgba(16,185,129,0.2);
             border: 1px solid #10b981;
             color: #10b981;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 14px;
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="register-card">
@@ -154,10 +150,6 @@
         </div>
     </div>
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
@@ -175,15 +167,20 @@
         };
         
         // Инициализация Firebase
+        let app;
+        let db;
+        let auth;
+        
         try {
-            firebase.initializeApp(firebaseConfig);
+            app = firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            auth = firebase.auth();
             console.log('✅ Firebase инициализирован');
+            console.log('✅ Auth доступен:', !!auth);
         } catch (error) {
             console.error('❌ Ошибка инициализации Firebase:', error);
+            document.getElementById('messageArea').innerHTML = '<div class="message error">Ошибка подключения к Firebase. Проверьте консоль.</div>';
         }
-        
-        const db = firebase.firestore();
-        const auth = firebase.auth();
         
         let selectedRole = 'buyer';
         
@@ -200,15 +197,23 @@
         
         function showMessage(message, type) {
             const messageArea = document.getElementById('messageArea');
-            messageArea.innerHTML = `<div class="${type}-message">${message}</div>`;
+            messageArea.innerHTML = `<div class="message ${type}">${message}</div>`;
             setTimeout(() => {
-                messageArea.innerHTML = '';
+                if (messageArea.innerHTML === `<div class="message ${type}">${message}</div>`) {
+                    messageArea.innerHTML = '';
+                }
             }, 5000);
         }
         
         // Обработчик формы
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            // Проверка, что Firebase загружен
+            if (!auth) {
+                showMessage('Ошибка: Firebase не загружен. Проверьте подключение к интернету.', 'error');
+                return;
+            }
             
             const name = document.getElementById('regName').value.trim();
             const email = document.getElementById('regEmail').value.trim();
@@ -240,11 +245,13 @@
             showMessage('Регистрация...', 'success');
             
             try {
-                // Создаем пользователя в Firebase Auth
+                // 1. Создаем пользователя в Firebase Auth
+                console.log('Создание пользователя:', email);
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
+                console.log('✅ Пользователь создан в Auth:', user.uid);
                 
-                // Сохраняем данные в Firestore
+                // 2. Сохраняем данные в Firestore
                 await db.collection('users').doc(user.uid).set({
                     name: name,
                     email: email,
@@ -253,8 +260,8 @@
                     balance: 0,
                     isActive: true
                 });
+                console.log('✅ Данные сохранены в Firestore');
                 
-                console.log('✅ Пользователь создан:', user.uid);
                 showMessage('Регистрация успешна! Перенаправление...', 'success');
                 
                 setTimeout(() => {
@@ -262,7 +269,9 @@
                 }, 1500);
                 
             } catch (error) {
-                console.error('❌ Ошибка:', error);
+                console.error('❌ Ошибка регистрации:', error);
+                console.error('Код ошибки:', error.code);
+                console.error('Сообщение:', error.message);
                 
                 if (error.code === 'auth/email-already-in-use') {
                     showMessage('Этот email уже зарегистрирован', 'error');
@@ -270,6 +279,8 @@
                     showMessage('Пароль слишком слабый. Используйте минимум 6 символов', 'error');
                 } else if (error.code === 'auth/invalid-email') {
                     showMessage('Неверный формат email', 'error');
+                } else if (error.code === 'auth/operation-not-allowed') {
+                    showMessage('Ошибка: Email/Password authentication не включен в Firebase Console. Включите его в разделе Authentication.', 'error');
                 } else {
                     showMessage('Ошибка: ' + error.message, 'error');
                 }
@@ -277,7 +288,8 @@
         });
         
         // Устанавливаем начальную выбранную роль
-        document.querySelector('.role-option[data-role="buyer"]').classList.add('selected');
+        const defaultRole = document.querySelector('.role-option[data-role="buyer"]');
+        if (defaultRole) defaultRole.classList.add('selected');
     </script>
 </body>
 </html>
