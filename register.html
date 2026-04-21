@@ -114,6 +114,11 @@
             border: 1px solid #10b981;
             color: #10b981;
         }
+        .message.info {
+            background: rgba(59,130,246,0.2);
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -150,9 +155,10 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+    <!-- Firebase SDK (совместимые версии для GitHub Pages) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     
     <script>
         // Конфигурация Firebase
@@ -167,19 +173,21 @@
         };
         
         // Инициализация Firebase
-        let app;
         let db;
         let auth;
         
         try {
-            app = firebase.initializeApp(firebaseConfig);
+            // Проверяем, инициализирован ли уже Firebase
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
             db = firebase.firestore();
             auth = firebase.auth();
             console.log('✅ Firebase инициализирован');
-            console.log('✅ Auth доступен:', !!auth);
+            showMessage('✅ Firebase подключен!', 'success');
         } catch (error) {
-            console.error('❌ Ошибка инициализации Firebase:', error);
-            document.getElementById('messageArea').innerHTML = '<div class="message error">Ошибка подключения к Firebase. Проверьте консоль.</div>';
+            console.error('❌ Ошибка:', error);
+            showMessage('Ошибка подключения к Firebase: ' + error.message, 'error');
         }
         
         let selectedRole = 'buyer';
@@ -242,7 +250,7 @@
                 return;
             }
             
-            showMessage('Регистрация...', 'success');
+            showMessage('Регистрация...', 'info');
             
             try {
                 // 1. Создаем пользователя в Firebase Auth
@@ -271,7 +279,6 @@
             } catch (error) {
                 console.error('❌ Ошибка регистрации:', error);
                 console.error('Код ошибки:', error.code);
-                console.error('Сообщение:', error.message);
                 
                 if (error.code === 'auth/email-already-in-use') {
                     showMessage('Этот email уже зарегистрирован', 'error');
