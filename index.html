@@ -65,9 +65,9 @@
                     <a href="seller-info.html" class="btn btn-secondary">Продавать <i class="fas fa-store"></i></a>
                 </div>
                 <div class="hero-stats">
-                    <div class="stat-item"><span class="stat-number" id="productsCount">0</span><span class="stat-label">Товаров</span></div>
-                    <div class="stat-item"><span class="stat-number" id="sellersCount">0</span><span class="stat-label">Продавцов</span></div>
-                    <div class="stat-item"><span class="stat-number" id="usersCount">0</span><span class="stat-label">Покупателей</span></div>
+                    <div class="stat-item"><span class="stat-number">5000+</span><span class="stat-label">Товаров</span></div>
+                    <div class="stat-item"><span class="stat-number">500+</span><span class="stat-label">Продавцов</span></div>
+                    <div class="stat-item"><span class="stat-number">50k+</span><span class="stat-label">Покупателей</span></div>
                 </div>
             </div>
         </div>
@@ -136,14 +136,22 @@
 
     <div class="notification" id="notification"></div>
 
-    <!-- Firebase и скрипты (ПРАВИЛЬНЫЙ ПОРЯДОК) -->
+    <!-- ========== ПРАВИЛЬНЫЙ ПОРЯДОК ПОДКЛЮЧЕНИЯ СКРИПТОВ ========== -->
+    <!-- 1. Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+    
+    <!-- 2. Конфигурация Firebase -->
     <script src="firebase-config.js"></script>
-    <script src="init-firebase.js"></script>
+    
+    <!-- 3. Работа с БД -->
+    <script src="firebase-db.js"></script>
+    
+    <!-- 4. Авторизация -->
     <script src="auth.js"></script>
-    <script src="cart.js"></script>
+    
+    <!-- 5. Корзина и основной функционал -->
     <script src="main.js"></script>
     
     <script>
@@ -184,10 +192,6 @@
         function closeSearch() {
             const overlay = document.getElementById('searchOverlay');
             if (overlay) overlay.classList.remove('active');
-            const input = document.getElementById('searchInput');
-            if (input) input.value = '';
-            const results = document.getElementById('searchResults');
-            if (results) results.innerHTML = '';
         }
     </script>
 </body>
