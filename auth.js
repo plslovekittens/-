@@ -1,33 +1,20 @@
 // ==================== АВТОРИЗАЦИЯ ====================
 
-// Регистрация
 window.registerUser = async function(name, email, password, role) {
     try {
         const userCredential = await window.auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
         
-        if (window.DB && window.DB.createUser) {
-            const result = await window.DB.createUser(user.uid, {
-                name: name,
-                email: email,
-                role: role
-            });
-            
-            if (result.success) {
-                return { success: true, user };
-            } else {
-                throw new Error(result.error);
-            }
-        } else {
-            await window.db.collection('users').doc(user.uid).set({
-                name: name,
-                email: email,
-                role: role,
-                createdAt: new Date().toISOString(),
-                balance: 0,
-                isActive: true
-            });
+        const result = await window.DB.createUser(user.uid, {
+            name: name,
+            email: email,
+            role: role
+        });
+        
+        if (result.success) {
             return { success: true, user };
+        } else {
+            throw new Error(result.error);
         }
     } catch (error) {
         console.error('Ошибка регистрации:', error);
@@ -35,27 +22,15 @@ window.registerUser = async function(name, email, password, role) {
     }
 };
 
-// Вход
 window.loginUser = async function(email, password) {
     try {
         const userCredential = await window.auth.signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
         
-        let userData = null;
+        const result = await window.DB.getUser(user.uid);
         
-        if (window.DB && window.DB.getUser) {
-            const result = await window.DB.getUser(user.uid);
-            if (result.success) {
-                userData = result.data;
-            }
-        } else {
-            const userDoc = await window.db.collection('users').doc(user.uid).get();
-            if (userDoc.exists) {
-                userData = userDoc.data();
-            }
-        }
-        
-        if (userData) {
+        if (result.success) {
+            const userData = result.data;
             sessionStorage.setItem('currentUser', JSON.stringify({
                 id: user.uid,
                 name: userData.name,
@@ -78,7 +53,6 @@ window.loginUser = async function(email, password) {
     }
 };
 
-// Выход
 window.logoutUser = async function() {
     try {
         await window.auth.signOut();
@@ -89,13 +63,11 @@ window.logoutUser = async function() {
     window.location.href = 'index.html';
 };
 
-// Получение текущего пользователя
 window.getCurrentUser = function() {
     const user = sessionStorage.getItem('currentUser');
     return user ? JSON.parse(user) : null;
 };
 
-// Обновление интерфейса
 window.updateUserInterface = function() {
     const currentUser = window.getCurrentUser();
     const authButtons = document.getElementById('authButtons');
@@ -116,40 +88,17 @@ window.updateUserInterface = function() {
     }
 };
 
-// Отслеживание состояния авторизации
 window.auth.onAuthStateChanged(async (user) => {
     if (user) {
-        try {
-            let userData = null;
-            if (window.DB && window.DB.getUser) {
-                const result = await window.DB.getUser(user.uid);
-                if (result.success) {
-                    userData = result.data;
-                }
-            } else {
-                const userDoc = await window.db.collection('users').doc(user.uid).get();
-                if (userDoc.exists) {
-                    userData = userDoc.data();
-                }
-            }
-            
-            if (userData) {
-                sessionStorage.setItem('currentUser', JSON.stringify({
-                    id: user.uid,
-                    name: userData.name,
-                    email: user.email,
-                    role: userData.role
-                }));
-            } else {
-                sessionStorage.setItem('currentUser', JSON.stringify({
-                    id: user.uid,
-                    name: user.email.split('@')[0],
-                    email: user.email,
-                    role: 'buyer'
-                }));
-            }
-        } catch (error) {
-            console.error('Ошибка получения данных пользователя:', error);
+        const result = await window.DB.getUser(user.uid);
+        if (result.success) {
+            const userData = result.data;
+            sessionStorage.setItem('currentUser', JSON.stringify({
+                id: user.uid,
+                name: userData.name,
+                email: user.email,
+                role: userData.role
+            }));
         }
     } else {
         sessionStorage.removeItem('currentUser');
@@ -157,7 +106,6 @@ window.auth.onAuthStateChanged(async (user) => {
     window.updateUserInterface();
 });
 
-// Глобальные функции
 window.logout = window.logoutUser;
 
 console.log('auth.js загружен');
