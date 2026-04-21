@@ -41,7 +41,6 @@
                 <button class="auth-modal-close" onclick="closeAuthModal()">&times;</button>
             </div>
             <div class="auth-modal-body">
-                <!-- Форма входа -->
                 <form id="loginFormModal" class="auth-form active">
                     <div class="form-group">
                         <input type="email" id="modalLoginEmail" placeholder="Email" required>
@@ -53,7 +52,6 @@
                     <p class="auth-switch">Нет аккаунта? <a href="#" onclick="switchAuthForm('register')">Зарегистрироваться</a></p>
                 </form>
                 
-                <!-- Форма регистрации -->
                 <form id="registerFormModal" class="auth-form">
                     <div class="form-group">
                         <input type="text" id="modalRegName" placeholder="ФИО" required>
@@ -172,7 +170,6 @@
 
     <div class="notification" id="notification"></div>
 
-    <!-- Стили для модального окна -->
     <style>
         .auth-modal {
             display: none;
@@ -210,6 +207,7 @@
         }
         .auth-modal-header h3 {
             color: white;
+            margin: 0;
         }
         .auth-modal-close {
             background: none;
@@ -274,13 +272,35 @@
         .auth-switch a {
             color: #7c3aed;
             text-decoration: none;
+            cursor: pointer;
         }
         .btn-full {
             width: 100%;
         }
+        .user-btn {
+            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        .user-btn:hover {
+            transform: scale(1.05);
+        }
+        .user-btn.logged-in {
+            width: auto;
+            padding: 0 15px;
+            border-radius: 20px;
+            gap: 8px;
+        }
     </style>
 
-    <!-- Скрипты -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
@@ -326,7 +346,7 @@
             });
         }
         
-        // Обработчик входа через модальное окно
+        // Обработчик входа
         document.getElementById('loginFormModal').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('modalLoginEmail').value;
@@ -336,13 +356,14 @@
             if (result.success) {
                 alert(`Добро пожаловать, ${result.userData.name}!`);
                 closeAuthModal();
+                updateUserButton();
                 window.location.reload();
             } else {
                 alert('Ошибка: ' + result.error);
             }
         });
         
-        // Обработчик регистрации через модальное окно
+        // Обработчик регистрации
         document.getElementById('registerFormModal').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -370,12 +391,34 @@
             }
         });
         
-        // Закрытие модального окна по клику вне
+        // Закрытие модального окна при клике на фон
         document.getElementById('authModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeAuthModal();
             }
         });
+        
+        // Закрытие по Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeAuthModal();
+            }
+        });
+        
+        // Обновление кнопки пользователя
+        function updateUserButton() {
+            const currentUser = window.getCurrentUser();
+            const userBtn = document.querySelector('.user-btn');
+            if (userBtn) {
+                if (currentUser) {
+                    userBtn.innerHTML = `<i class="fas fa-user"></i> ${currentUser.name.split(' ')[0]}`;
+                    userBtn.classList.add('logged-in');
+                } else {
+                    userBtn.innerHTML = `<i class="fas fa-user"></i>`;
+                    userBtn.classList.remove('logged-in');
+                }
+            }
+        }
         
         // Чат поддержки
         function toggleChat() {
@@ -415,33 +458,6 @@
             const overlay = document.getElementById('searchOverlay');
             if (overlay) overlay.classList.remove('active');
         }
-        
-        // Обновление интерфейса пользователя (показываем имя вместо иконки)
-        function updateUserButton() {
-            const currentUser = window.getCurrentUser();
-            const userBtn = document.querySelector('.user-btn');
-            if (userBtn) {
-                if (currentUser) {
-                    userBtn.innerHTML = `<i class="fas fa-user"></i> ${currentUser.name.split(' ')[0]}`;
-                    userBtn.style.width = 'auto';
-                    userBtn.style.padding = '0 15px';
-                    userBtn.style.borderRadius = '20px';
-                    userBtn.style.gap = '8px';
-                } else {
-                    userBtn.innerHTML = `<i class="fas fa-user"></i>`;
-                    userBtn.style.width = '40px';
-                    userBtn.style.padding = '0';
-                    userBtn.style.borderRadius = '50%';
-                }
-            }
-        }
-        
-        // Переопределяем updateUserInterface
-        const originalUpdateUI = window.updateUserInterface;
-        window.updateUserInterface = function() {
-            if (originalUpdateUI) originalUpdateUI();
-            updateUserButton();
-        };
         
         // Запуск
         document.addEventListener('DOMContentLoaded', function() {
