@@ -4,138 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация - Volt Store</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .auth-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
-        .auth-card { background: #1e293b; border-radius: 16px; padding: 40px; width: 100%; max-width: 500px; }
-        .auth-card h2 { text-align: center; margin-bottom: 30px; color: white; }
-        .form-group { margin-bottom: 20px; }
-        .form-group input { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 16px; }
-        .role-selector { display: flex; gap: 20px; margin-bottom: 20px; }
-        .role-option { flex: 1; padding: 12px; text-align: center; background: #0f172a; border: 1px solid #334155; border-radius: 8px; cursor: pointer; color: white; transition: 0.3s; }
-        .role-option.selected { border-color: #7c3aed; background: #7c3aed20; }
-        .btn-full { width: 100%; }
-        .auth-link { text-align: center; margin-top: 20px; color: #94a3b8; }
-        .auth-link a { color: #7c3aed; text-decoration: none; }
+        body { font-family: Arial, sans-serif; background: #0f172a; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: #1e293b; padding: 40px; border-radius: 16px; width: 400px; }
+        h2 { color: white; text-align: center; margin-bottom: 30px; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; }
+        button { width: 100%; padding: 12px; background: #7c3aed; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
+        .role-selector { display: flex; gap: 10px; margin-bottom: 20px; }
+        .role { flex: 1; padding: 10px; text-align: center; background: #0f172a; border: 1px solid #334155; border-radius: 8px; cursor: pointer; color: white; }
+        .role.selected { border-color: #7c3aed; background: #7c3aed20; }
     </style>
 </head>
 <body>
-    <div class="auth-container">
-        <div class="auth-card">
-            <h2>Регистрация</h2>
-            <form id="registerForm">
-                <div class="form-group">
-                    <input type="text" id="regName" placeholder="ФИО" required>
-                </div>
-                <div class="form-group">
-                    <input type="email" id="regEmail" placeholder="Email" required>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="regPassword" placeholder="Пароль (минимум 6 символов)" required>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="regPasswordConfirm" placeholder="Подтверждение пароля" required>
-                </div>
-                <div class="role-selector">
-                    <div class="role-option" data-role="buyer" onclick="selectRole('buyer')">
-                        <i class="fas fa-user"></i> Покупатель
-                    </div>
-                    <div class="role-option" data-role="seller" onclick="selectRole('seller')">
-                        <i class="fas fa-store"></i> Продавец
-                    </div>
-                </div>
-                <input type="hidden" id="regRole" value="buyer">
-                <button type="submit" class="btn btn-primary btn-full">Зарегистрироваться</button>
-            </form>
-            <div class="auth-link">
-                Уже есть аккаунт? <a href="login.html">Войти</a>
-            </div>
+    <div class="card">
+        <h2>Регистрация</h2>
+        <input type="text" id="name" placeholder="ФИО">
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Пароль">
+        <input type="password" id="confirm" placeholder="Подтверждение пароля">
+        <div class="role-selector">
+            <div class="role" onclick="selectRole('buyer', this)">Покупатель</div>
+            <div class="role" onclick="selectRole('seller', this)">Продавец</div>
         </div>
+        <button onclick="register()">Зарегистрироваться</button>
+        <p style="text-align: center; margin-top: 20px;"><a href="login.html" style="color: #7c3aed;">Уже есть аккаунт? Войти</a></p>
     </div>
 
-    <!-- ПОДКЛЮЧАЕМ СКРИПТЫ В ПРАВИЛЬНОМ ПОРЯДКЕ -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="firebase-db.js"></script>
-    <script src="auth.js"></script>
-    
     <script>
-        // Функция выбора роли
-        function selectRole(role) {
-            document.getElementById('regRole').value = role;
-            document.querySelectorAll('.role-option').forEach(opt => {
-                opt.classList.remove('selected');
-                if (opt.getAttribute('data-role') === role) {
-                    opt.classList.add('selected');
-                }
-            });
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeWBgPT84RzljctkdpGO1xtmhVd2MdD1w",
+            authDomain: "diplom-57d78.firebaseapp.com",
+            projectId: "diplom-57d78",
+            storageBucket: "diplom-57d78.firebasestorage.app",
+            messagingSenderId: "448908238147",
+            appId: "1:448908238147:web:d222f715cf13a3c83d23f6"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        
+        let selectedRole = 'buyer';
+        
+        function selectRole(role, element) {
+            selectedRole = role;
+            document.querySelectorAll('.role').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
         }
         
-        // Обработчик формы регистрации
-        document.getElementById('registerForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        async function register() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirm').value;
             
-            const name = document.getElementById('regName').value;
-            const email = document.getElementById('regEmail').value;
-            const password = document.getElementById('regPassword').value;
-            const role = document.getElementById('regRole').value;
-            const passwordConfirm = document.getElementById('regPasswordConfirm').value;
-            
-            // Проверка паролей
-            if (password !== passwordConfirm) {
+            if (password !== confirm) {
                 alert('Пароли не совпадают');
                 return;
             }
             
-            // Проверка длины пароля
-            if (password.length < 6) {
-                alert('Пароль должен содержать минимум 6 символов');
-                return;
-            }
-            
-            // Проверка, что Firebase загружен
-            if (!window.auth) {
-                alert('Ошибка: Firebase не загружен. Проверьте подключение к интернету.');
-                console.error('window.auth не определен');
-                return;
-            }
-            
-            console.log('Регистрация пользователя:', email);
-            
             try {
-                // Регистрация через Firebase Auth
-                const userCredential = await window.auth.createUserWithEmailAndPassword(email, password);
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
                 
-                // Сохранение данных пользователя в Firestore
-                await window.db.collection('users').doc(user.uid).set({
+                await db.collection('users').doc(user.uid).set({
                     name: name,
                     email: email,
-                    role: role,
+                    role: selectedRole,
                     createdAt: new Date().toISOString(),
-                    balance: 0,
-                    isActive: true
+                    balance: 0
                 });
                 
-                console.log('Пользователь зарегистрирован:', user.uid);
-                alert('Регистрация успешна! Теперь вы можете войти.');
+                alert('Регистрация успешна!');
                 window.location.href = 'login.html';
-                
             } catch (error) {
-                console.error('Ошибка регистрации:', error);
-                if (error.code === 'auth/email-already-in-use') {
-                    alert('Этот email уже зарегистрирован');
-                } else if (error.code === 'auth/weak-password') {
-                    alert('Пароль слишком слабый. Используйте минимум 6 символов');
-                } else {
-                    alert('Ошибка: ' + error.message);
-                }
+                alert('Ошибка: ' + error.message);
             }
-        });
+        }
     </script>
 </body>
 </html>
