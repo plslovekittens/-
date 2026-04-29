@@ -3,62 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Продавайте на Volt - Преимущества для продавцов</title>
+    <title>Продавайте на Volt - Volt Store</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .seller-hero { background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); padding: 120px 0 80px; text-align: center; color: white; }
+        .seller-hero {
+            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
+            padding: 120px 0 80px;
+            text-align: center;
+            color: white;
+        }
         .seller-hero h1 { font-size: 48px; margin-bottom: 20px; }
         .seller-hero p { font-size: 18px; opacity: 0.95; }
         .benefits-section { padding: 80px 0; }
-        .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; margin-bottom: 60px; }
-        .benefit-card { background: #111118; border: 1px solid rgba(124,58,237,0.2); border-radius: 20px; padding: 40px 30px; text-align: center; transition: 0.3s; }
-        .benefit-card:hover { transform: translateY(-5px); border-color: #7c3aed; box-shadow: 0 0 30px rgba(124,58,237,0.2); }
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        .benefit-card {
+            background: #111118;
+            border: 1px solid rgba(124,58,237,0.2);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .benefit-card:hover { transform: translateY(-5px); border-color: #7c3aed; }
         .benefit-card i { font-size: 48px; color: #7c3aed; margin-bottom: 20px; }
         .benefit-card h3 { font-size: 24px; margin-bottom: 15px; color: white; }
         .benefit-card p { color: #a1a1aa; }
-        .commission-table, .requirements { background: #111118; border: 1px solid rgba(124,58,237,0.2); border-radius: 20px; padding: 40px; margin-bottom: 60px; }
-        .commission-table h3, .requirements h3 { text-align: center; font-size: 28px; margin-bottom: 30px; color: white; }
-        .commission-row { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .commission-table, .requirements {
+            background: #111118;
+            border: 1px solid rgba(124,58,237,0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 60px;
+        }
+        .commission-table h3, .requirements h3 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: white;
+        }
+        .commission-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
         .commission-row span:first-child { color: #a1a1aa; }
         .commission-row span:last-child { color: white; font-weight: 600; }
         .requirements ul { list-style: none; max-width: 500px; margin: 0 auto; }
-        .requirements li { padding: 12px 0; padding-left: 30px; position: relative; color: #a1a1aa; }
-        .requirements li:before { content: "✓"; position: absolute; left: 0; color: #10b981; font-weight: bold; font-size: 18px; }
-        .start-selling { text-align: center; padding: 40px; background: linear-gradient(135deg, rgba(124,58,237,0.1) 0%, rgba(192,132,252,0.05) 100%); border-radius: 20px; }
+        .requirements li {
+            padding: 12px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #a1a1aa;
+        }
+        .requirements li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .start-selling {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(124,58,237,0.1) 0%, rgba(192,132,252,0.05) 100%);
+            border-radius: 20px;
+        }
         .start-selling h2 { font-size: 32px; margin-bottom: 20px; color: white; }
         .start-selling p { color: #a1a1aa; margin-bottom: 30px; }
         .btn-large { padding: 16px 48px; font-size: 18px; }
+        .navbar {
+            background: rgba(10,10,15,0.95);
+            backdrop-filter: blur(12px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(124,58,237,0.3);
+        }
+        .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+        .nav-content { display: flex; align-items: center; justify-content: space-between; height: 70px; }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-menu { display: flex; gap: 32px; list-style: none; }
+        .nav-menu a { color: #a1a1aa; text-decoration: none; }
+        .footer { background: #0f172a; padding: 40px 0; text-align: center; border-top: 1px solid #334155; margin-top: 60px; }
+        .footer .logo { justify-content: center; }
     </style>
 </head>
 <body>
-    <nav class="navbar"><div class="container"><div class="nav-content"><div class="logo"><i class="fas fa-bolt"></i> VOLT</div><ul class="nav-menu"><li><a href="index.html">Главная</a></li><li><a href="index.html#products">Товары</a></li><li><a href="seller-info.html" class="active">Продавцам</a></li><li><a href="rules.html">Правила</a></li></ul><div class="nav-actions"><div class="user-menu"><button class="user-btn" onclick="window.location.href='login.html'"><i class="fas fa-user"></i></button></div></div></div></div></nav>
-
-    <section class="seller-hero"><div class="container"><h1>Почему стоит продавать на Volt?</h1><p>Присоединяйтесь к крупнейшей платформе для продажи цифровых товаров</p></div></section>
-
-    <section class="benefits-section"><div class="container">
-        <div class="benefits-grid">
-            <div class="benefit-card"><i class="fas fa-chart-line"></i><h3>Низкая комиссия</h3><p>Всего 5% с каждой продажи — самая низкая комиссия на рынке</p></div>
-            <div class="benefit-card"><i class="fas fa-upload"></i><h3>Легкая загрузка</h3><p>Загружайте товары за 2 минуты: название, описание, файл или ключ</p></div>
-            <div class="benefit-card"><i class="fas fa-shield-alt"></i><h3>Защита продавцов</h3><p>Система escrow гарантирует выплату после передачи товара</p></div>
-            <div class="benefit-card"><i class="fas fa-users"></i><h3>Огромная аудитория</h3><p>Более 50 000 активных покупателей ежемесячно</p></div>
-            <div class="benefit-card"><i class="fas fa-robot"></i><h3>Автоматическая доставка</h3><p>Система сама отправляет ключи после оплаты</p></div>
-            <div class="benefit-card"><i class="fas fa-headset"></i><h3>Поддержка 24/7</h3><p>Споры решает наша команда, вы всегда под защитой</p></div>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo"><i class="fas fa-bolt"></i> VOLT</div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Главная</a></li>
+                    <li><a href="index.html#products">Товары</a></li>
+                    <li><a href="seller-info.html" class="active">Продавцам</a></li>
+                    <li><a href="rules.html">Правила</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <a href="login.html" class="user-btn" style="color: white; text-decoration: none;"><i class="fas fa-user"></i></a>
+                </div>
+            </div>
         </div>
+    </nav>
 
-        <div class="commission-table"><h3>Тарифы и комиссии</h3>
-            <div class="commission-row"><span>Продажи до 100 000 ₽ в месяц</span><span><strong>5%</strong> комиссия</span></div>
-            <div class="commission-row"><span>Продажи от 100 000 ₽ до 500 000 ₽</span><span><strong>4%</strong> комиссия</span></div>
-            <div class="commission-row"><span>Продажи от 500 000 ₽</span><span><strong>3%</strong> комиссия</span></div>
-            <div class="commission-row"><span>Вывод средств</span><span><strong>0%</strong> — без комиссии</span></div>
+    <section class="seller-hero">
+        <div class="container">
+            <h1>Почему стоит продавать на Volt?</h1>
+            <p>Присоединяйтесь к крупнейшей платформе для продажи цифровых товаров</p>
         </div>
+    </section>
 
-        <div class="requirements"><h3>Требования к продавцам</h3><ul><li>Наличие подтвержденного аккаунта на площадке</li><li>Реальные цифровые товары (ключи, аккаунты, подписки)</li><li>Ответственность за качество товара</li><li>Своевременная доставка после оплаты</li><li>Соблюдение правил площадки</li></ul></div>
+    <section class="benefits-section">
+        <div class="container">
+            <div class="benefits-grid">
+                <div class="benefit-card"><i class="fas fa-chart-line"></i><h3>Низкая комиссия</h3><p>Всего 5% с каждой продажи — самая низкая комиссия на рынке</p></div>
+                <div class="benefit-card"><i class="fas fa-upload"></i><h3>Легкая загрузка</h3><p>Загружайте товары за 2 минуты: название, описание, файл или ключ</p></div>
+                <div class="benefit-card"><i class="fas fa-shield-alt"></i><h3>Защита продавцов</h3><p>Система escrow гарантирует выплату после передачи товара</p></div>
+                <div class="benefit-card"><i class="fas fa-users"></i><h3>Огромная аудитория</h3><p>Более 50 000 активных покупателей ежемесячно</p></div>
+                <div class="benefit-card"><i class="fas fa-robot"></i><h3>Автоматическая доставка</h3><p>Система сама отправляет ключи после оплаты</p></div>
+                <div class="benefit-card"><i class="fas fa-headset"></i><h3>Поддержка 24/7</h3><p>Споры решает наша команда, вы всегда под защитой</p></div>
+            </div>
 
-        <div class="start-selling"><h2>Готовы начать зарабатывать?</h2><p>Присоединяйтесь к тысячам продавцов уже сегодня</p><a href="register.html?role=seller" class="btn btn-primary btn-large"><i class="fas fa-store"></i> Начать продавать</a></div>
-    </div></section>
+            <div class="commission-table">
+                <h3>Тарифы и комиссии</h3>
+                <div class="commission-row"><span>Продажи до 100 000 ₽ в месяц</span><span><strong>5%</strong> комиссия</span></div>
+                <div class="commission-row"><span>Продажи от 100 000 ₽ до 500 000 ₽</span><span><strong>4%</strong> комиссия</span></div>
+                <div class="commission-row"><span>Продажи от 500 000 ₽</span><span><strong>3%</strong> комиссия</span></div>
+                <div class="commission-row"><span>Вывод средств</span><span><strong>0%</strong> — без комиссии</span></div>
+            </div>
 
-    <footer class="footer"><div class="container"><div class="footer-content"><div class="footer-section"><div class="logo"><i class="fas fa-bolt"></i> VOLT</div><p>Цифровой маркетплейс. Покупайте и продавайте безопасно.</p></div><div class="footer-section"><h4>Контакты</h4><a href="https://t.me/plslovekittens" target="_blank" class="contact-btn"><i class="fab fa-telegram"></i> Telegram</a><a href="https://discord.gg/willka" target="_blank" class="contact-btn"><i class="fab fa-discord"></i> Discord</a><a href="https://vk.com/ssaattaaann" target="_blank" class="contact-btn"><i class="fab fa-vk"></i> VK</a></div></div><div class="footer-bottom"><p>&copy; 2024 Volt Store. Безопасная сделка — гарантия качества.</p></div></div></footer>
+            <div class="requirements">
+                <h3>Требования к продавцам</h3>
+                <ul>
+                    <li>Наличие подтвержденного аккаунта на площадке</li>
+                    <li>Реальные цифровые товары (ключи, аккаунты, подписки)</li>
+                    <li>Ответственность за качество товара</li>
+                    <li>Своевременная доставка после оплаты</li>
+                    <li>Соблюдение правил площадки</li>
+                </ul>
+            </div>
+
+            <div class="start-selling">
+                <h2>Готовы начать зарабатывать?</h2>
+                <p>Присоединяйтесь к тысячам продавцов уже сегодня</p>
+                <a href="register.html?role=seller" class="btn btn-primary btn-large"><i class="fas fa-store"></i> Начать продавать</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo"><i class="fas fa-bolt"></i> VOLT</div>
+                <p>Цифровой маркетплейс. Покупайте и продавайте безопасно.</p>
+                <div class="social-links" style="margin-top: 20px;">
+                    <a href="https://t.me/plslovekittens" target="_blank" style="color: #a1a1aa; margin: 0 10px;"><i class="fab fa-telegram"></i></a>
+                    <a href="https://vk.com/ssaattaaann" target="_blank" style="color: #a1a1aa; margin: 0 10px;"><i class="fab fa-vk"></i></a>
+                </div>
+            </div>
+            <div class="footer-bottom" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #334155;">
+                <p>&copy; 2024 Volt Store. Безопасная сделка — гарантия качества.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="database.js"></script>
+    <script src="auth.js"></script>
 </body>
 </html>
