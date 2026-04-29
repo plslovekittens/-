@@ -1,6 +1,6 @@
 // ==================== АВТОРИЗАЦИЯ ====================
 
-// Регистрация (localStorage версия)
+// Регистрация
 window.registerUser = function(name, email, password, role) {
     const users = JSON.parse(localStorage.getItem('users'));
     
@@ -58,13 +58,14 @@ window.getCurrentUser = function() {
     return user ? JSON.parse(user) : null;
 };
 
-// Обновление интерфейса
+// Обновление интерфейса (показываем имя пользователя на иконке)
 window.updateUserInterface = function() {
     const currentUser = window.getCurrentUser();
     const authButtons = document.getElementById('authButtons');
     const userInfo = document.getElementById('userInfo');
     const userName = document.getElementById('userName');
     const sellerLink = document.getElementById('sellerLink');
+    const userBtn = document.querySelector('.user-btn');
     
     if (currentUser) {
         if (authButtons) authButtons.style.display = 'none';
@@ -73,9 +74,24 @@ window.updateUserInterface = function() {
         if (sellerLink && currentUser.role === 'seller') {
             sellerLink.style.display = 'block';
         }
+        // Изменяем иконку пользователя на имя
+        if (userBtn) {
+            userBtn.innerHTML = `<i class="fas fa-user"></i> ${currentUser.name}`;
+            userBtn.style.width = 'auto';
+            userBtn.style.padding = '0 15px';
+            userBtn.style.borderRadius = '20px';
+            userBtn.style.gap = '8px';
+        }
     } else {
         if (authButtons) authButtons.style.display = 'block';
         if (userInfo) userInfo.style.display = 'none';
+        // Возвращаем иконку пользователя
+        if (userBtn) {
+            userBtn.innerHTML = `<i class="fas fa-user"></i>`;
+            userBtn.style.width = '40px';
+            userBtn.style.padding = '0';
+            userBtn.style.borderRadius = '50%';
+        }
     }
 };
 
@@ -122,11 +138,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = window.loginUser(email, password);
             if (result.success) {
                 alert(`Добро пожаловать, ${result.userData.name}!`);
-                if (result.userData.role === 'seller') {
-                    window.location.href = 'seller-dashboard.html';
-                } else {
-                    window.location.href = 'index.html';
-                }
+                // ПЕРЕНАПРАВЛЕНИЕ В ЛИЧНЫЙ КАБИНЕТ
+                window.location.href = 'profile.html';
             } else {
                 alert('Ошибка: ' + result.error);
             }
@@ -136,6 +149,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Глобальные функции
 window.logout = window.logoutUser;
+
+// Функция для кнопки пользователя - ведёт в личный кабинет
+window.goToProfile = function() {
+    const currentUser = window.getCurrentUser();
+    if (currentUser) {
+        window.location.href = 'profile.html';
+    } else {
+        window.location.href = 'login.html';
+    }
+};
 
 window.toggleUserDropdown = function() {
     const dropdown = document.getElementById('userDropdown');
