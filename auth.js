@@ -58,23 +58,12 @@ window.getCurrentUser = function() {
     return user ? JSON.parse(user) : null;
 };
 
-// Обновление интерфейса (показываем имя пользователя на иконке)
+// Обновление интерфейса
 window.updateUserInterface = function() {
     const currentUser = window.getCurrentUser();
-    const authButtons = document.getElementById('authButtons');
-    const userInfo = document.getElementById('userInfo');
-    const userName = document.getElementById('userName');
-    const sellerLink = document.getElementById('sellerLink');
     const userBtn = document.querySelector('.user-btn');
     
     if (currentUser) {
-        if (authButtons) authButtons.style.display = 'none';
-        if (userInfo) userInfo.style.display = 'block';
-        if (userName) userName.innerHTML = `<i class="fas fa-user"></i> ${currentUser.name}`;
-        if (sellerLink && currentUser.role === 'seller') {
-            sellerLink.style.display = 'block';
-        }
-        // Изменяем иконку пользователя на имя
         if (userBtn) {
             userBtn.innerHTML = `<i class="fas fa-user"></i> ${currentUser.name}`;
             userBtn.style.width = 'auto';
@@ -83,9 +72,6 @@ window.updateUserInterface = function() {
             userBtn.style.gap = '8px';
         }
     } else {
-        if (authButtons) authButtons.style.display = 'block';
-        if (userInfo) userInfo.style.display = 'none';
-        // Возвращаем иконку пользователя
         if (userBtn) {
             userBtn.innerHTML = `<i class="fas fa-user"></i>`;
             userBtn.style.width = '40px';
@@ -138,8 +124,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = window.loginUser(email, password);
             if (result.success) {
                 alert(`Добро пожаловать, ${result.userData.name}!`);
-                // ПЕРЕНАПРАВЛЕНИЕ В ЛИЧНЫЙ КАБИНЕТ
-                window.location.href = 'profile.html';
+                // ПЕРЕНАПРАВЛЕНИЕ В ЗАВИСИМОСТИ ОТ РОЛИ
+                if (result.userData.role === 'seller') {
+                    window.location.href = 'seller-dashboard.html';
+                } else {
+                    window.location.href = 'profile.html';
+                }
             } else {
                 alert('Ошибка: ' + result.error);
             }
@@ -147,40 +137,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Глобальные функции
 window.logout = window.logoutUser;
-
-// Функция для кнопки пользователя - ведёт в личный кабинет
-window.goToProfile = function() {
-    const currentUser = window.getCurrentUser();
-    if (currentUser) {
-        window.location.href = 'profile.html';
-    } else {
-        window.location.href = 'login.html';
-    }
-};
-
-window.toggleUserDropdown = function() {
-    const dropdown = document.getElementById('userDropdown');
-    if (dropdown) dropdown.classList.toggle('show');
-};
-
-document.addEventListener('click', function(e) {
-    const dropdown = document.getElementById('userDropdown');
-    const userBtn = document.querySelector('.user-btn');
-    if (dropdown && userBtn && !userBtn.contains(e.target) && !dropdown.contains(e.target)) {
-        dropdown.classList.remove('show');
-    }
-});
-
-window.selectRole = function(role) {
-    const roleInput = document.getElementById('regRole');
-    if (roleInput) roleInput.value = role;
-    
-    document.querySelectorAll('.role-option').forEach(opt => {
-        opt.classList.remove('selected');
-        if (opt.getAttribute('data-role') === role) {
-            opt.classList.add('selected');
-        }
-    });
-};
