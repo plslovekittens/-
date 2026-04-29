@@ -2,18 +2,14 @@
 
 function toggleChat() {
     const chatWindow = document.getElementById('chatWindow');
-    if (chatWindow) {
-        chatWindow.classList.toggle('active');
-    }
+    if (chatWindow) chatWindow.classList.toggle('active');
 }
 
 function openChat() {
     const chatWidget = document.getElementById('chatWidget');
     if (chatWidget) {
         const chatWindow = document.getElementById('chatWindow');
-        if (chatWindow) {
-            chatWindow.classList.add('active');
-        }
+        if (chatWindow) chatWindow.classList.add('active');
     }
 }
 
@@ -47,6 +43,8 @@ function sendMessage() {
             response = 'Возврат возможен в течение 14 дней, если ключ не был активирован.';
         } else if (lowerMsg.includes('продавец')) {
             response = 'Все продавцы проходят верификацию. Ваши деньги под защитой!';
+        } else if (lowerMsg.includes('оплат') || lowerMsg.includes('деньг')) {
+            response = 'Оплата происходит через СБП. Деньги замораживаются до получения товара.';
         } else {
             response = 'Спасибо за обращение! Наш специалист свяжется с вами в ближайшее время.';
         }
@@ -58,7 +56,7 @@ function sendMessage() {
         
         // Прокрутка вниз
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }, 500);
+    }, 800);
     
     // Прокрутка вниз
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
