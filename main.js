@@ -264,3 +264,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 500);
 });
+function displayProducts(productsToShow) {
+    const grid = document.getElementById('productsGrid');
+    if (!grid) return;
+    
+    if (productsToShow.length === 0) {
+        grid.innerHTML = '<div class="no-products">Товары не найдены</div>';
+        return;
+    }
+    
+    grid.innerHTML = productsToShow.map(product => `
+        <div class="product-card">
+            <div class="product-image">
+                ${product.imageData ? 
+                    `<img src="${product.imageData}" style="width:100%; height:100%; object-fit:cover;">` : 
+                    `<i class="fas fa-${product.image || 'box'}"></i>`
+                }
+                ${product.badge ? `<span class="product-badge ${product.badge}">${product.badge}</span>` : ''}
+            </div>
+            <div class="product-content">
+                <h3 class="product-title">${product.name}</h3>
+                <div class="product-category">${getCategoryName(product.category)}</div>
+                <div class="product-price">
+                    <span class="current-price">${product.price} ₽</span>
+                    ${product.oldPrice ? `<span class="old-price">${product.oldPrice} ₽</span>` : ''}
+                    ${product.discount ? `<span class="discount-badge">-${product.discount}%</span>` : ''}
+                </div>
+                <button class="add-to-cart" onclick="addToCart('${product.id}')">В корзину</button>
+                <div class="seller-info">Продавец: ${product.sellerName || 'Volt Official'}</div>
+            </div>
+        </div>
+    `).join('');
+}
