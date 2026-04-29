@@ -147,6 +147,34 @@
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
+        .image-upload-area {
+            border: 2px dashed #334155;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .image-upload-area:hover {
+            border-color: #7c3aed;
+            background: rgba(124,58,237,0.05);
+        }
+        .image-upload-area i {
+            font-size: 48px;
+            color: #7c3aed;
+            margin-bottom: 10px;
+        }
+        .image-preview {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+        }
+        .image-preview img {
+            max-width: 150px;
+            max-height: 150px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
         .btn {
             display: inline-flex;
             align-items: center;
@@ -159,9 +187,6 @@
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
-        }
-        .btn-secondary {
-            background: #334155;
         }
         .delete-btn, .edit-btn {
             padding: 5px 10px;
@@ -189,6 +214,12 @@
         }
         th {
             color: #7c3aed;
+        }
+        .product-image-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
         }
         .message {
             padding: 12px;
@@ -316,9 +347,23 @@
                         <label>Цифровой ключ *</label>
                         <input type="text" id="productKey" placeholder="XXXX-XXXX-XXXX-XXXX" required>
                     </div>
+                    
+                    <!-- Загрузка фотографии -->
+                    <div class="form-group">
+                        <label>Фотография товара *</label>
+                        <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('productImageFile').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Нажмите для загрузки фото</p>
+                            <p style="font-size: 12px; color: #a1a1aa;">Поддерживаются JPG, PNG, GIF</p>
+                        </div>
+                        <input type="file" id="productImageFile" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                        <div class="image-preview" id="imagePreview"></div>
+                        <input type="hidden" id="productImageData" value="">
+                    </div>
+                    
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Иконка</label>
+                            <label>Иконка (для отображения, если нет фото)</label>
                             <select id="productImage">
                                 <option value="gamepad">🎮 Gamepad</option>
                                 <option value="laptop-code">💻 Laptop Code</option>
@@ -346,7 +391,7 @@
                 <div style="overflow-x: auto;">
                     <table>
                         <thead>
-                            <tr><th>Название</th><th>Цена</th><th>Категория</th><th>Продано</th><th>Действия</th></tr>
+                            <tr><th>Фото</th><th>Название</th><th>Цена</th><th>Категория</th><th>Продано</th><th>Действия</th></tr>
                         </thead>
                         <tbody id="sellerProductsList"></tbody>
                     </table>
@@ -436,7 +481,7 @@
             return false;
         }
         
-        // ==================== ЗАГРУЗКА ДАННЫХ ====================
+        // ==================== ЗАГРУЗКА И ОТОБРАЖЕНИЕ ====================
         
         function loadSellerData() {
             const currentUser = getCurrentUser();
@@ -469,21 +514,22 @@
             if (!tbody) return;
             
             if (products.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">У вас пока нет товаров</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;">У вас пока нет товаров</td></tr>';
                 return;
             }
             
             tbody.innerHTML = products.map(p => `
                 <tr>
+                    <td><img src="${p.imageData || p.imageUrl || 'https://via.placeholder.com/50x50?text=No+Image'}" class="product-image-preview" onerror="this.src='https://via.placeholder.com/50x50?text=No+Image'"></td>
                     <td><strong>${escapeHtml(p.name)}</strong></td>
                     <td>${p.price.toLocaleString()} ₽</td>
                     <td>${getCategoryName(p.category)}</td>
                     <td>${p.soldCount || 0}</td>
                     <td>
-                        <button class="edit-btn" onclick="editProduct('${p.id}')"><i class="fas fa-edit"></i> Edit</button>
-                        <button class="delete-btn" onclick="deleteProductConfirm('${p.id}')"><i class="fas fa-trash"></i> Del</button>
+                        <button class="edit-btn" onclick="editProduct('${p.id}')"><i class="fas fa-edit"></i></button>
+                        <button class="delete-btn" onclick="deleteProductConfirm('${p.id}')"><i class="fas fa-trash"></i></button>
                     </td>
-                 </tr>
+                </tr>
             `).join('');
         }
         
@@ -504,13 +550,28 @@
                     <td>${getStatusText(o.status)}</td>
                     <td>
                         ${o.status === 'paid' ? `<button class="edit-btn" onclick="sendProductKey('${o.id}', '${o.productKey}')">Отправить ключ</button>` : ''}
-                        ${o.status === 'delivered' ? '<span style="color:#f59e0b;">⏳ Ожидает подтверждения</span>' : ''}
+                        ${o.status === 'delivered' ? '<span style="color:#f59e0b;">⏳ Ожидает</span>' : ''}
                     </td>
-                 </tr>
+                </tr>
             `).join('');
         }
         
-        // ==================== ДЕЙСТВИЯ ====================
+        // ==================== ОБРАБОТКА ИЗОБРАЖЕНИЙ ====================
+        
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                    document.getElementById('productImageData').value = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // ==================== ДЕЙСТВИЯ С ТОВАРАМИ ====================
         
         function showMessage(message, type) {
             const messageArea = document.getElementById('formMessage');
@@ -530,6 +591,12 @@
                 return;
             }
             
+            const imageData = document.getElementById('productImageData').value;
+            if (!imageData) {
+                showMessage('Пожалуйста, добавьте фотографию товара', 'error');
+                return;
+            }
+            
             const productData = {
                 name: document.getElementById('productName').value,
                 category: document.getElementById('productCategory').value,
@@ -539,6 +606,7 @@
                 description: document.getElementById('productDescription').value,
                 key: document.getElementById('productKey').value,
                 image: document.getElementById('productImage').value,
+                imageData: imageData,
                 badge: document.getElementById('productBadge').value || null,
                 sellerId: currentUser.id,
                 sellerName: currentUser.name
@@ -552,6 +620,8 @@
             addProduct(productData);
             showMessage('✅ Товар успешно добавлен!', 'success');
             document.getElementById('addProductForm').reset();
+            document.getElementById('imagePreview').innerHTML = '';
+            document.getElementById('productImageData').value = '';
             loadSellerData();
         });
         
@@ -642,11 +712,13 @@
             loadSellerData();
         });
         
+        // Глобальные функции для onclick
         window.switchTab = switchTab;
         window.editProduct = editProduct;
         window.deleteProductConfirm = deleteProductConfirm;
         window.sendProductKey = sendProductKey;
         window.goToProfile = goToProfile;
+        window.previewImage = previewImage;
     </script>
 </body>
 </html>
