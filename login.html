@@ -4,213 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход - Volt Store</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .login-card {
-            background: #1e293b;
-            border-radius: 20px;
-            padding: 40px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-        }
-        .login-card h2 {
-            color: white;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 28px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 14px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 10px;
-            color: white;
-            font-size: 16px;
-        }
-        .btn-login {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .auth-link {
-            text-align: center;
-            margin-top: 20px;
-            color: #94a3b8;
-        }
-        .auth-link a {
-            color: #7c3aed;
-            text-decoration: none;
-        }
-        .message {
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 14px;
-        }
-        .message.error {
-            background: rgba(239,68,68,0.2);
-            border: 1px solid #ef4444;
-            color: #ef4444;
-        }
-        .message.success {
-            background: rgba(16,185,129,0.2);
-            border: 1px solid #10b981;
-            color: #10b981;
-        }
-        .loading {
-            background: rgba(59,130,246,0.2);
-            border: 1px solid #3b82f6;
-            color: #3b82f6;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="login-card">
-        <h2>🔐 Вход в аккаунт</h2>
-        <div id="messageArea"></div>
-        <form id="loginForm">
-            <div class="form-group">
-                <input type="email" id="loginEmail" placeholder="Email" required>
+    <div class="auth-container" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px;">
+        <div class="auth-card" style="background: #1e293b; border-radius: 16px; padding: 40px; width: 100%; max-width: 400px;">
+            <h2 style="text-align: center; margin-bottom: 30px; color: white;">Вход в аккаунт</h2>
+            <form id="loginForm">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <input type="email" id="loginEmail" placeholder="Email" required style="width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white;">
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <input type="password" id="loginPassword" placeholder="Пароль" required style="width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white;">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full" style="width: 100%; padding: 12px; background: #7c3aed; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;">Войти</button>
+            </form>
+            <div class="auth-link" style="text-align: center; margin-top: 20px; color: #94a3b8;">
+                Нет аккаунта? <a href="register.html" style="color: #7c3aed; text-decoration: none;">Зарегистрироваться</a>
             </div>
-            <div class="form-group">
-                <input type="password" id="loginPassword" placeholder="Пароль" required>
-            </div>
-            <button type="submit" class="btn-login" id="submitBtn">Войти</button>
-        </form>
-        <div class="auth-link">
-            Нет аккаунта? <a href="register.html">Зарегистрироваться</a>
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAeWBgPT84RzljctkdpGO1xtmhVd2MdD1w",
-            authDomain: "diplom-57d78.firebaseapp.com",
-            projectId: "diplom-57d78",
-            storageBucket: "diplom-57d78.firebasestorage.app",
-            messagingSenderId: "448908238147",
-            appId: "1:448908238147:web:d222f715cf13a3c83d23f6"
-        };
-        
-        let auth;
-        let firebaseReady = false;
-        
-        function showMessage(message, type) {
-            const messageArea = document.getElementById('messageArea');
-            messageArea.innerHTML = `<div class="message ${type}">${message}</div>`;
-            setTimeout(() => {
-                if (messageArea.innerHTML === `<div class="message ${type}">${message}</div>`) {
-                    messageArea.innerHTML = '';
-                }
-            }, 3000);
-        }
-        
-        async function initFirebase() {
-            showMessage('Подключение к Firebase...', 'loading');
-            
-            let attempts = 0;
-            const interval = setInterval(() => {
-                attempts++;
-                if (typeof firebase !== 'undefined') {
-                    clearInterval(interval);
-                    try {
-                        if (!firebase.apps.length) {
-                            firebase.initializeApp(firebaseConfig);
-                        }
-                        auth = firebase.auth();
-                        firebaseReady = true;
-                        console.log('✅ Firebase инициализирован');
-                        showMessage('✅ Firebase готов!', 'success');
-                        document.getElementById('submitBtn').disabled = false;
-                    } catch (error) {
-                        console.error('Ошибка:', error);
-                        showMessage('Ошибка: ' + error.message, 'error');
-                    }
-                } else if (attempts > 50) {
-                    clearInterval(interval);
-                    showMessage('❌ Firebase не загрузился', 'error');
-                }
-            }, 100);
-        }
-        
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            if (!firebaseReady || !auth) {
-                showMessage('Подождите, Firebase загружается...', 'loading');
-                return;
-            }
-            
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            if (!email || !password) {
-                showMessage('Заполните все поля', 'error');
-                return;
-            }
-            
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.textContent = 'Вход...';
-            
-            try {
-                const userCredential = await auth.signInWithEmailAndPassword(email, password);
-                console.log('✅ Вход выполнен:', userCredential.user.uid);
-                
-                sessionStorage.setItem('currentUser', JSON.stringify({
-                    id: userCredential.user.uid,
-                    email: email
-                }));
-                
-                showMessage('Вход выполнен! Перенаправление...', 'success');
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1500);
-            } catch (error) {
-                btn.disabled = false;
-                btn.textContent = 'Войти';
-                
-                if (error.code === 'auth/user-not-found') {
-                    showMessage('Пользователь не найден', 'error');
-                } else if (error.code === 'auth/wrong-password') {
-                    showMessage('Неверный пароль', 'error');
-                } else {
-                    showMessage('Ошибка: ' + error.message, 'error');
-                }
-            }
-        });
-        
-        // Запускаем инициализацию
-        initFirebase();
-        document.getElementById('submitBtn').disabled = true;
-    </script>
+    <script src="database.js"></script>
+    <script src="auth.js"></script>
 </body>
 </html>
