@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавление товара - Панель продавца</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            color: #ffffff;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .navbar {
+            background: rgba(10,10,15,0.95);
+            backdrop-filter: blur(12px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(124,58,237,0.3);
+            padding: 15px 0;
+        }
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #7c3aed, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        .nav-menu a {
+            color: #a1a1aa;
+            text-decoration: none;
+        }
+        .user-btn {
+            background: linear-gradient(135deg, #7c3aed, #c084fc);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+        }
+        .add-product-container {
+            max-width: 800px;
+            margin: 120px auto 60px;
+            padding: 0 20px;
+        }
+        .add-product-card {
+            background: #111118;
+            border: 1px solid rgba(124,58,237,0.2);
+            border-radius: 20px;
+            padding: 40px;
+        }
+        .add-product-card h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #7c3aed, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a1a1aa;
+            font-weight: 500;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #7c3aed;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #7c3aed, #c084fc);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(124,58,237,0.4);
+        }
+        .preview-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #0f172a;
+            border-radius: 12px;
+        }
+        .preview-section h4 {
+            margin-bottom: 15px;
+            color: #7c3aed;
+        }
+        .product-preview {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .preview-image {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #7c3aed, #c084fc);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+        }
+        .preview-info h5 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        .preview-info p {
+            color: #a1a1aa;
+            font-size: 14px;
+        }
+        .preview-price {
+            color: #7c3aed;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .message.success {
+            background: rgba(16,185,129,0.2);
+            border: 1px solid #10b981;
+            color: #10b981;
+        }
+        .message.error {
+            background: rgba(239,68,68,0.2);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+        }
+        .footer {
+            background: #0f172a;
+            padding: 40px 0;
+            text-align: center;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo"><i class="fas fa-bolt"></i> VOLT</div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Главная</a></li>
+                    <li><a href="index.html#products">Товары</a></li>
+                    <li><a href="seller-info.html">Продавцам</a></li>
+                    <li><a href="rules.html">Правила</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <button class="user-btn" onclick="goToProfile()">
+                        <i class="fas fa-user"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="add-product-container">
+        <div class="add-product-card">
+            <h2><i class="fas fa-plus-circle"></i> Добавление товара</h2>
+            <div id="messageArea"></div>
+            
+            <form id="addProductForm">
+                <div class="form-group">
+                    <label>Название товара *</label>
+                    <input type="text" id="productName" placeholder="Например: Cyberpunk 2077" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Категория *</label>
+                        <select id="productCategory" required>
+                            <option value="games">🎮 Игры</option>
+                            <option value="software">💻 Программы</option>
+                            <option value="subscriptions">📱 Подписки</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Цена (₽) *</label>
+                        <input type="number" id="productPrice" placeholder="1990" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Старая цена (₽)</label>
+                        <input type="number" id="productOldPrice" placeholder="2990">
+                    </div>
+                    <div class="form-group">
+                        <label>Скидка (%)</label>
+                        <input type="number" id="productDiscount" placeholder="33">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Описание товара *</label>
+                    <textarea id="productDescription" rows="3" placeholder="Подробное описание товара..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Цифровой ключ / ссылка на файл *</label>
+                    <input type="text" id="productKey" placeholder="XXXX-XXXX-XXXX-XXXX" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Иконка товара</label>
+                        <select id="productImage">
+                            <option value="gamepad">🎮 Gamepad</option>
+                            <option value="dragon">🐉 Dragon</option>
+                            <option value="horse">🐴 Horse</option>
+                            <option value="crown">👑 Crown</option>
+                            <option value="gun">🔫 Gun</option>
+                            <option value="car">🚗 Car</option>
+                            <option value="laptop-code">💻 Laptop Code</option>
+                            <option value="file-alt">📄 File Alt</option>
+                            <option value="paint-brush">🎨 Paint Brush</option>
+                            <option value="video">🎬 Video</option>
+                            <option value="discord">💬 Discord</option>
+                            <option value="telegram">📱 Telegram</option>
+                            <option value="shield-alt">🛡️ Shield</option>
+                            <option value="box">📦 Box</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Бейдж (метка)</label>
+                        <select id="productBadge">
+                            <option value="">Нет</option>
+                            <option value="popular">🔥 Популярное</option>
+                            <option value="new">🆕 Новинка</option>
+                            <option value="sale">🏷️ Скидка</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>URL изображения *</label>
+                    <input type="url" id="productImageUrl" placeholder="https://example.com/image.jpg" required>
+                </div>
+                
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-cloud-upload-alt"></i> Добавить товар
+                </button>
+            </form>
+            
+            <div class="preview-section" id="previewSection" style="display: none;">
+                <h4>Предпросмотр товара</h4>
+                <div class="product-preview">
+                    <div class="preview-image" id="previewImage">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <div class="preview-info">
+                        <h5 id="previewName">Название товара</h5>
+                        <p id="previewCategory">Категория: Игры</p>
+                        <div class="preview-price" id="previewPrice">0 ₽</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Volt Store. Безопасная сделка — гарантия качества.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        // Firebase конфигурация
+        const firebaseConfig = {
+            apiKey: "AIzaSyCTDnE9LPdO2W5GSr6KrKIMkPYcun4Z3SE",
+            authDomain: "kursovaya-30ea8.firebaseapp.com",
+            projectId: "kursovaya-30ea8",
+            storageBucket: "kursovaya-30ea8.firebasestorage.app",
+            messagingSenderId: "1079038592956",
+            appId: "1:1079038592956:web:d05b5a7a63d52487b88db9",
+            measurementId: "G-6RFFEKXTP1"
+        };
+        
+        // Инициализация Firebase
+        let db, auth;
+        
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            db = firebase.firestore();
+            auth = firebase.auth();
+            console.log('✅ Firebase инициализирован');
+        } catch (error) {
+            console.error('❌ Ошибка:', error);
+        }
+        
+        // Получение текущего пользователя
+        function getCurrentUser() {
+            const user = sessionStorage.getItem('currentUser');
+            return user ? JSON.parse(user) : null;
+        }
+        
+        function showMessage(message, type) {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.innerHTML = `<div class="message ${type}">${message}</div>`;
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 5000);
+        }
+        
+        // Обновление предпросмотра
+        function updatePreview() {
+            const name = document.getElementById('productName').value;
+            const category = document.getElementById('productCategory').value;
+            const price = document.getElementById('productPrice').value;
+            const image = document.getElementById('productImage').value;
+            const previewSection = document.getElementById('previewSection');
+            
+            if (name || price) {
+                previewSection.style.display = 'block';
+                document.getElementById('previewName').textContent = name || 'Название товара';
+                document.getElementById('previewCategory').textContent = `Категория: ${getCategoryName(category)}`;
+                document.getElementById('previewPrice').textContent = (price ? parseInt(price).toLocaleString() : 0) + ' ₽';
+                document.getElementById('previewImage').innerHTML = `<i class="fas fa-${image || 'box'}"></i>`;
+            }
+        }
+        
+        function getCategoryName(category) {
+            const names = { 'games': 'Игры', 'software': 'Программы', 'subscriptions': 'Подписки' };
+            return names[category] || category;
+        }
+        
+        // Добавление товара в Firestore
+        async function addProductToFirebase(productData) {
+            try {
+                const docRef = await db.collection('products').add({
+                    ...productData,
+                    createdAt: new Date().toISOString(),
+                    soldCount: 0,
+                    rating: 0,
+                    reviewsCount: 0,
+                    isActive: true
+                });
+                console.log('✅ Товар добавлен, ID:', docRef.id);
+                return { success: true, id: docRef.id };
+            } catch (error) {
+                console.error('❌ Ошибка:', error);
+                return { success: false, error: error.message };
+            }
+        }
+        
+        // Обработчик формы
+        document.getElementById('addProductForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const currentUser = getCurrentUser();
+            
+            // Проверка авторизации
+            if (!currentUser) {
+                showMessage('Пожалуйста, войдите в аккаунт', 'error');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+                return;
+            }
+            
+            // Проверка роли (только продавцы)
+            if (currentUser.role !== 'seller') {
+                showMessage('Доступ запрещён. Только для продавцов.', 'error');
+                return;
+            }
+            
+            // Сбор данных из формы
+            const productData = {
+                name: document.getElementById('productName').value.trim(),
+                category: document.getElementById('productCategory').value,
+                price: parseInt(document.getElementById('productPrice').value),
+                oldPrice: document.getElementById('productOldPrice').value ? parseInt(document.getElementById('productOldPrice').value) : null,
+                discount: document.getElementById('productDiscount').value ? parseInt(document.getElementById('productDiscount').value) : null,
+                description: document.getElementById('productDescription').value.trim(),
+                key: document.getElementById('productKey').value.trim(),
+                image: document.getElementById('productImage').value,
+                badge: document.getElementById('productBadge').value || null,
+                imageUrl: document.getElementById('productImageUrl').value.trim(),
+                sellerId: currentUser.id,
+                sellerName: currentUser.name
+            };
+            
+            // Валидация
+            if (!productData.name || !productData.price || !productData.description || !productData.key || !productData.imageUrl) {
+                showMessage('Заполните все обязательные поля', 'error');
+                return;
+            }
+            
+            if (productData.price <= 0) {
+                showMessage('Цена должна быть больше 0', 'error');
+                return;
+            }
+            
+            // Проверка URL изображения
+            try {
+                new URL(productData.imageUrl);
+            } catch (e) {
+                showMessage('Введите корректный URL изображения', 'error');
+                return;
+            }
+            
+            showMessage('Добавление товара...', 'success');
+            
+            const result = await addProductToFirebase(productData);
+            
+            if (result.success) {
+                showMessage('✅ Товар успешно добавлен!', 'success');
+                document.getElementById('addProductForm').reset();
+                document.getElementById('previewSection').style.display = 'none';
+                
+                // Обновляем список товаров на главной странице
+                if (window.loadProducts) {
+                    window.loadProducts();
+                }
+                
+                // Перенаправление через 2 секунды
+                setTimeout(() => {
+                    window.location.href = 'seller-dashboard.html';
+                }, 2000);
+            } else {
+                showMessage('❌ Ошибка: ' + result.error, 'error');
+            }
+        });
+        
+        // Слушатели для предпросмотра
+        document.getElementById('productName').addEventListener('input', updatePreview);
+        document.getElementById('productCategory').addEventListener('change', updatePreview);
+        document.getElementById('productPrice').addEventListener('input', updatePreview);
+        document.getElementById('productImage').addEventListener('change', updatePreview);
+        
+        function goToProfile() {
+            const currentUser = getCurrentUser();
+            if (currentUser) {
+                window.location.href = 'profile.html';
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>
