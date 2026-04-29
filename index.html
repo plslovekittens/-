@@ -25,61 +25,13 @@
                         <i class="fas fa-shopping-cart"></i>
                         <span class="cart-count" id="cartCount">0</span>
                     </button>
-                    <button class="user-btn" onclick="openAuthModal()">
+                    <button class="user-btn" onclick="goToProfile()">
                         <i class="fas fa-user"></i>
                     </button>
                 </div>
             </div>
         </div>
     </nav>
-
-    <!-- Модальное окно авторизации -->
-    <div class="auth-modal" id="authModal">
-        <div class="auth-modal-content">
-            <div class="auth-modal-header">
-                <h3 id="authModalTitle">Вход в аккаунт</h3>
-                <button class="auth-modal-close" onclick="closeAuthModal()">&times;</button>
-            </div>
-            <div class="auth-modal-body">
-                <form id="loginFormModal" class="auth-form active">
-                    <div class="form-group">
-                        <input type="email" id="modalLoginEmail" placeholder="Email" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" id="modalLoginPassword" placeholder="Пароль" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-full">Войти</button>
-                    <p class="auth-switch">Нет аккаунта? <a href="#" onclick="switchAuthForm('register')">Зарегистрироваться</a></p>
-                </form>
-                
-                <form id="registerFormModal" class="auth-form">
-                    <div class="form-group">
-                        <input type="text" id="modalRegName" placeholder="ФИО" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="email" id="modalRegEmail" placeholder="Email" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" id="modalRegPassword" placeholder="Пароль (мин. 6 символов)" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" id="modalRegPasswordConfirm" placeholder="Подтверждение пароля" required>
-                    </div>
-                    <div class="role-selector">
-                        <div class="role-option" data-role="buyer" onclick="selectModalRole('buyer')">
-                            <i class="fas fa-user"></i> Покупатель
-                        </div>
-                        <div class="role-option" data-role="seller" onclick="selectModalRole('seller')">
-                            <i class="fas fa-store"></i> Продавец
-                        </div>
-                    </div>
-                    <input type="hidden" id="modalRegRole" value="buyer">
-                    <button type="submit" class="btn btn-primary btn-full">Зарегистрироваться</button>
-                    <p class="auth-switch">Уже есть аккаунт? <a href="#" onclick="switchAuthForm('login')">Войти</a></p>
-                </form>
-            </div>
-        </div>
-    </div>
 
     <div class="search-overlay" id="searchOverlay">
         <div class="search-container">
@@ -161,7 +113,7 @@
             <div class="footer-content">
                 <div class="footer-section"><div class="logo"><i class="fas fa-bolt"></i> VOLT</div><p>Цифровой маркетплейс. Покупайте и продавайте безопасно.</p><div class="payment-methods"><i class="fab fa-cc-visa"></i><i class="fab fa-cc-mastercard"></i><i class="fas fa-qrcode"></i></div></div>
                 <div class="footer-section"><h4>Для покупателей</h4><ul><li><a href="#">Как купить</a></li><li><a href="rules.html">Защита сделки</a></li><li><a href="#">Возврат</a></li></ul></div>
-                <div class="footer-section"><h4>Для продавцов</h4><ul><li><a href="seller-info.html">Начать продавать</a></li><li><a href="add-product.html">Добавить товар</a></li><li><a href="#">Комиссия 5%</a></li><li><a href="rules.html">Правила площадки</a></li></ul></div>
+                <div class="footer-section"><h4>Для продавцов</h4><ul><li><a href="seller-info.html">Начать продавать</a></li><li><a href="#">Комиссия 5%</a></li><li><a href="rules.html">Правила площадки</a></li></ul></div>
                 <div class="footer-section"><h4>Контакты</h4><div class="contact-buttons"><a href="https://t.me/plslovekittens" target="_blank" class="contact-btn telegram"><i class="fab fa-telegram"></i> Telegram</a><a href="https://discord.gg/willka" target="_blank" class="contact-btn discord"><i class="fab fa-discord"></i> Discord</a><a href="https://vk.com/ssaattaaann" target="_blank" class="contact-btn vk"><i class="fab fa-vk"></i> VK</a></div></div>
             </div>
             <div class="footer-bottom"><p>&copy; 2024 Volt Store. Безопасная сделка — гарантия качества.</p></div>
@@ -170,174 +122,24 @@
 
     <div class="notification" id="notification"></div>
 
-    <style>
-        .auth-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(8px);
-            z-index: 10000;
-            align-items: center;
-            justify-content: center;
-        }
-        .auth-modal.active { display: flex; }
-        .auth-modal-content {
-            background: #1e293b;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 450px;
-            animation: modalFadeIn 0.3s ease;
-        }
-        @keyframes modalFadeIn {
-            from { transform: translateY(-30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .auth-modal-header {
-            padding: 20px;
-            border-bottom: 1px solid #334155;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .auth-modal-header h3 { color: white; margin: 0; }
-        .auth-modal-close {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 28px;
-            cursor: pointer;
-        }
-        .auth-modal-close:hover { color: #ef4444; }
-        .auth-modal-body { padding: 30px; }
-        .auth-form { display: none; }
-        .auth-form.active { display: block; }
-        .form-group { margin-bottom: 20px; }
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            color: white;
-            font-size: 16px;
-        }
-        .form-group input:focus { outline: none; border-color: #7c3aed; }
-        .role-selector { display: flex; gap: 15px; margin-bottom: 20px; }
-        .role-option {
-            flex: 1;
-            padding: 10px;
-            text-align: center;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            cursor: pointer;
-            color: white;
-            transition: 0.3s;
-        }
-        .role-option.selected { border-color: #7c3aed; background: #7c3aed20; }
-        .auth-switch { text-align: center; margin-top: 20px; color: #94a3b8; }
-        .auth-switch a { color: #7c3aed; text-decoration: none; cursor: pointer; }
-        .btn-full { width: 100%; }
-        .user-btn {
-            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s;
-        }
-        .user-btn:hover { transform: scale(1.05); }
-    </style>
-
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="firebase-db.js"></script>
+    <script src="database.js"></script>
     <script src="auth.js"></script>
     <script src="cart.js"></script>
     <script src="main.js"></script>
     
     <script>
-        function openAuthModal() {
-            document.getElementById('authModal').classList.add('active');
-            switchAuthForm('login');
+        function toggleSearch() {
+            const overlay = document.getElementById('searchOverlay');
+            if (overlay) overlay.classList.toggle('active');
         }
-        function closeAuthModal() {
-            document.getElementById('authModal').classList.remove('active');
+        function closeSearch() {
+            const overlay = document.getElementById('searchOverlay');
+            if (overlay) overlay.classList.remove('active');
         }
-        function switchAuthForm(form) {
-            const loginForm = document.getElementById('loginFormModal');
-            const registerForm = document.getElementById('registerFormModal');
-            const title = document.getElementById('authModalTitle');
-            if (form === 'login') {
-                loginForm.classList.add('active');
-                registerForm.classList.remove('active');
-                title.textContent = 'Вход в аккаунт';
-            } else {
-                loginForm.classList.remove('active');
-                registerForm.classList.add('active');
-                title.textContent = 'Регистрация';
-            }
+        function toggleCart() {
+            const sidebar = document.getElementById('cartSidebar');
+            if (sidebar) sidebar.classList.toggle('active');
         }
-        function selectModalRole(role) {
-            document.getElementById('modalRegRole').value = role;
-            document.querySelectorAll('#registerFormModal .role-option').forEach(opt => {
-                opt.classList.remove('selected');
-                if (opt.getAttribute('data-role') === role) opt.classList.add('selected');
-            });
-        }
-        document.getElementById('loginFormModal').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const email = document.getElementById('modalLoginEmail').value;
-            const password = document.getElementById('modalLoginPassword').value;
-            const result = await window.loginUser(email, password);
-            if (result.success) {
-                alert(`Добро пожаловать, ${result.userData.name}!`);
-                closeAuthModal();
-                window.location.reload();
-            } else {
-                alert('Ошибка: ' + result.error);
-            }
-        });
-        document.getElementById('registerFormModal').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const name = document.getElementById('modalRegName').value;
-            const email = document.getElementById('modalRegEmail').value;
-            const password = document.getElementById('modalRegPassword').value;
-            const role = document.getElementById('modalRegRole').value;
-            const passwordConfirm = document.getElementById('modalRegPasswordConfirm').value;
-            if (password !== passwordConfirm) {
-                alert('Пароли не совпадают');
-                return;
-            }
-            const result = await window.registerUser(name, email, password, role);
-            if (result.success) {
-                alert('Регистрация успешна! Теперь вы можете войти.');
-                switchAuthForm('login');
-                document.getElementById('modalRegName').value = '';
-                document.getElementById('modalRegEmail').value = '';
-                document.getElementById('modalRegPassword').value = '';
-                document.getElementById('modalRegPasswordConfirm').value = '';
-            } else {
-                alert('Ошибка: ' + result.error);
-            }
-        });
-        document.getElementById('authModal').addEventListener('click', function(e) {
-            if (e.target === this) closeAuthModal();
-        });
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeAuthModal();
-        });
         function toggleChat() {
             const chatWindow = document.getElementById('chatWindow');
             if (chatWindow) chatWindow.classList.toggle('active');
@@ -361,13 +163,13 @@
             }, 500);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
-        function toggleSearch() {
-            const overlay = document.getElementById('searchOverlay');
-            if (overlay) overlay.classList.toggle('active');
-        }
-        function closeSearch() {
-            const overlay = document.getElementById('searchOverlay');
-            if (overlay) overlay.classList.remove('active');
+        function goToProfile() {
+            const currentUser = window.getCurrentUser();
+            if (currentUser) {
+                window.location.href = 'profile.html';
+            } else {
+                window.location.href = 'login.html';
+            }
         }
     </script>
 </body>
