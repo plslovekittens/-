@@ -8,21 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #0a0a0f;
-            color: #ffffff;
-        }
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0f; color: #ffffff; }
+        .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
         .navbar {
             background: rgba(10,10,15,0.95);
             backdrop-filter: blur(12px);
@@ -34,119 +22,27 @@
             border-bottom: 1px solid rgba(124,58,237,0.3);
             padding: 15px 0;
         }
-        .nav-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .logo {
-            font-size: 24px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .nav-menu {
-            display: flex;
-            gap: 30px;
-            list-style: none;
-        }
-        .nav-menu a {
-            color: #a1a1aa;
-            text-decoration: none;
-        }
-        .user-btn {
-            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            color: white;
-            cursor: pointer;
-        }
-        .dashboard-header {
-            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
-            padding: 100px 0 60px;
-            color: white;
-            text-align: center;
-        }
-        .dashboard-header h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        .dashboard-content {
-            padding: 60px 0;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-        .stat-card {
-            background: #111118;
-            border: 1px solid rgba(124,58,237,0.2);
-            border-radius: 16px;
-            padding: 25px;
-            text-align: center;
-        }
-        .stat-card h3 {
-            font-size: 36px;
-            color: #7c3aed;
-            margin-bottom: 10px;
-        }
-        .stat-card p {
-            color: #a1a1aa;
-        }
-        .tab-buttons {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-        .tab-btn {
-            padding: 12px 24px;
-            background: #111118;
-            border: 1px solid rgba(124,58,237,0.2);
-            border-radius: 12px;
-            color: white;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .tab-btn.active {
-            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
-        }
-        .tab-content {
-            display: none;
-            background: #111118;
-            border: 1px solid rgba(124,58,237,0.2);
-            border-radius: 20px;
-            padding: 30px;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #a1a1aa;
-        }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            color: white;
-        }
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
+        .nav-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: 800; background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-menu { display: flex; gap: 30px; list-style: none; }
+        .nav-menu a { color: #a1a1aa; text-decoration: none; }
+        .user-btn { background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); border: none; width: 40px; height: 40px; border-radius: 50%; color: white; cursor: pointer; }
+        .dashboard-header { background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); padding: 100px 0 60px; color: white; text-align: center; }
+        .dashboard-header h1 { font-size: 48px; margin-bottom: 20px; }
+        .dashboard-content { padding: 60px 0; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .stat-card { background: #111118; border: 1px solid rgba(124,58,237,0.2); border-radius: 16px; padding: 25px; text-align: center; }
+        .stat-card h3 { font-size: 36px; color: #7c3aed; margin-bottom: 10px; }
+        .stat-card p { color: #a1a1aa; }
+        .tab-buttons { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+        .tab-btn { padding: 12px 24px; background: #111118; border: 1px solid rgba(124,58,237,0.2); border-radius: 12px; color: white; cursor: pointer; transition: 0.3s; }
+        .tab-btn.active { background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); }
+        .tab-content { display: none; background: #111118; border: 1px solid rgba(124,58,237,0.2); border-radius: 20px; padding: 30px; }
+        .tab-content.active { display: block; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #a1a1aa; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .image-upload-area {
             border: 2px dashed #334155;
             border-radius: 12px;
@@ -155,99 +51,23 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-        .image-upload-area:hover {
-            border-color: #7c3aed;
-            background: rgba(124,58,237,0.05);
-        }
-        .image-upload-area i {
-            font-size: 48px;
-            color: #7c3aed;
-            margin-bottom: 10px;
-        }
-        .image-preview {
-            margin-top: 15px;
-            display: flex;
-            justify-content: center;
-        }
-        .image-preview img {
-            max-width: 150px;
-            max-height: 150px;
-            border-radius: 12px;
-            object-fit: cover;
-        }
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .delete-btn, .edit-btn {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-right: 5px;
-        }
-        .edit-btn {
-            background: #f59e0b;
-            color: white;
-        }
-        .delete-btn {
-            background: #ef4444;
-            color: white;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        th {
-            color: #7c3aed;
-        }
-        .product-image-preview {
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-        .message {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .message.success {
-            background: rgba(16,185,129,0.2);
-            border: 1px solid #10b981;
-            color: #10b981;
-        }
-        .message.error {
-            background: rgba(239,68,68,0.2);
-            border: 1px solid #ef4444;
-            color: #ef4444;
-        }
-        .footer {
-            background: #0f172a;
-            padding: 40px 0;
-            text-align: center;
-            margin-top: 60px;
-        }
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
+        .image-upload-area:hover { border-color: #7c3aed; background: rgba(124,58,237,0.05); }
+        .image-upload-area i { font-size: 48px; color: #7c3aed; margin-bottom: 10px; }
+        .image-preview { margin-top: 15px; display: flex; justify-content: center; }
+        .image-preview img { max-width: 150px; max-height: 150px; border-radius: 12px; object-fit: cover; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); border: none; border-radius: 12px; color: white; font-weight: 600; cursor: pointer; text-decoration: none; }
+        .delete-btn, .edit-btn { padding: 5px 10px; border: none; border-radius: 6px; cursor: pointer; margin-right: 5px; }
+        .edit-btn { background: #f59e0b; color: white; }
+        .delete-btn { background: #ef4444; color: white; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        th { color: #7c3aed; }
+        .product-image-preview { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
+        .message { padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+        .message.success { background: rgba(16,185,129,0.2); border: 1px solid #10b981; color: #10b981; }
+        .message.error { background: rgba(239,68,68,0.2); border: 1px solid #ef4444; color: #ef4444; }
+        .footer { background: #0f172a; padding: 40px 0; text-align: center; margin-top: 60px; }
+        @media (max-width: 768px) { .form-row { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -281,22 +101,10 @@
         <div class="container">
             <!-- Статистика -->
             <div class="stats-grid" id="statsGrid">
-                <div class="stat-card">
-                    <h3 id="totalProducts">0</h3>
-                    <p>Товаров</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="totalSales">0</h3>
-                    <p>Продаж</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="totalEarnings">0 ₽</h3>
-                    <p>Заработано</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="pendingBalance">0 ₽</h3>
-                    <p>Ожидает выплаты</p>
-                </div>
+                <div class="stat-card"><h3 id="totalProducts">0</h3><p>Товаров</p></div>
+                <div class="stat-card"><h3 id="totalSales">0</h3><p>Продаж</p></div>
+                <div class="stat-card"><h3 id="totalEarnings">0 ₽</h3><p>Заработано</p></div>
+                <div class="stat-card"><h3 id="pendingBalance">0 ₽</h3><p>Ожидает выплаты</p></div>
             </div>
 
             <!-- Вкладки -->
@@ -351,7 +159,7 @@
                     <!-- Загрузка фотографии -->
                     <div class="form-group">
                         <label>Фотография товара *</label>
-                        <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('productImageFile').click()">
+                        <div class="image-upload-area" onclick="document.getElementById('productImageFile').click()">
                             <i class="fas fa-cloud-upload-alt"></i>
                             <p>Нажмите для загрузки фото</p>
                             <p style="font-size: 12px; color: #a1a1aa;">Поддерживаются JPG, PNG, GIF</p>
@@ -363,7 +171,7 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Иконка (для отображения, если нет фото)</label>
+                            <label>Иконка (если нет фото)</label>
                             <select id="productImage">
                                 <option value="gamepad">🎮 Gamepad</option>
                                 <option value="laptop-code">💻 Laptop Code</option>
@@ -390,9 +198,7 @@
                 <h3 style="margin-bottom: 20px;">Мои товары</h3>
                 <div style="overflow-x: auto;">
                     <table>
-                        <thead>
-                            <tr><th>Фото</th><th>Название</th><th>Цена</th><th>Категория</th><th>Продано</th><th>Действия</th></tr>
-                        </thead>
+                        <thead><tr><th>Фото</th><th>Название</th><th>Цена</th><th>Категория</th><th>Продано</th><th>Действия</th></tr></thead>
                         <tbody id="sellerProductsList"></tbody>
                     </table>
                 </div>
@@ -403,9 +209,7 @@
                 <h3 style="margin-bottom: 20px;">Заказы</h3>
                 <div style="overflow-x: auto;">
                     <table>
-                        <thead>
-                            <tr><th>Товар</th><th>Покупатель</th><th>Сумма</th><th>Статус</th><th>Действие</th></tr>
-                        </thead>
+                        <thead><tr><th>Товар</th><th>Покупатель</th><th>Сумма</th><th>Статус</th><th>Действие</th></tr></thead>
                         <tbody id="sellerOrdersList"></tbody>
                     </table>
                 </div>
@@ -420,13 +224,13 @@
     </footer>
 
     <script>
-        // ==================== ФУНКЦИИ ДЛЯ РАБОТЫ С ДАННЫМИ ====================
-        
+        // Получение текущего пользователя
         function getCurrentUser() {
             const user = sessionStorage.getItem('currentUser');
             return user ? JSON.parse(user) : null;
         }
         
+        // Получение всех товаров
         function getAllProducts() {
             return JSON.parse(localStorage.getItem('products')) || [];
         }
@@ -481,8 +285,7 @@
             return false;
         }
         
-        // ==================== ЗАГРУЗКА И ОТОБРАЖЕНИЕ ====================
-        
+        // Загрузка данных
         function loadSellerData() {
             const currentUser = getCurrentUser();
             if (!currentUser || currentUser.role !== 'seller') {
@@ -494,33 +297,25 @@
             const products = getSellerProducts(currentUser.id);
             const orders = getSellerOrders(currentUser.id);
             
-            updateStats(products, orders);
-            displayProducts(products);
-            displayOrders(orders);
-        }
-        
-        function updateStats(products, orders) {
-            const totalEarned = orders.filter(o => o.status === 'completed').reduce((sum, o) => sum + o.total, 0);
-            const pendingAmount = orders.filter(o => o.status === 'delivered').reduce((sum, o) => sum + o.total, 0);
-            
             document.getElementById('totalProducts').textContent = products.length;
             document.getElementById('totalSales').textContent = orders.length;
-            document.getElementById('totalEarnings').textContent = totalEarned.toLocaleString() + ' ₽';
-            document.getElementById('pendingBalance').textContent = pendingAmount.toLocaleString() + ' ₽';
+            document.getElementById('totalEarnings').textContent = orders.filter(o => o.status === 'completed').reduce((sum, o) => sum + o.total, 0).toLocaleString() + ' ₽';
+            document.getElementById('pendingBalance').textContent = orders.filter(o => o.status === 'delivered').reduce((sum, o) => sum + o.total, 0).toLocaleString() + ' ₽';
+            
+            displayProducts(products);
+            displayOrders(orders);
         }
         
         function displayProducts(products) {
             const tbody = document.getElementById('sellerProductsList');
             if (!tbody) return;
-            
             if (products.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;">У вас пока нет товаров</td></tr>';
                 return;
             }
-            
             tbody.innerHTML = products.map(p => `
                 <tr>
-                    <td><img src="${p.imageData || p.imageUrl || 'https://via.placeholder.com/50x50?text=No+Image'}" class="product-image-preview" onerror="this.src='https://via.placeholder.com/50x50?text=No+Image'"></td>
+                    <td><img src="${p.imageData || 'https://via.placeholder.com/50x50?text=No+Image'}" class="product-image-preview" onerror="this.src='https://via.placeholder.com/50x50?text=No+Image'"></td>
                     <td><strong>${escapeHtml(p.name)}</strong></td>
                     <td>${p.price.toLocaleString()} ₽</td>
                     <td>${getCategoryName(p.category)}</td>
@@ -536,49 +331,39 @@
         function displayOrders(orders) {
             const tbody = document.getElementById('sellerOrdersList');
             if (!tbody) return;
-            
             if (orders.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">Нет заказов</td></tr>';
                 return;
             }
-            
             tbody.innerHTML = orders.map(o => `
                 <tr>
                     <td><strong>${escapeHtml(o.productName)}</strong></td>
                     <td>${escapeHtml(o.buyerName)}</td>
                     <td>${o.total.toLocaleString()} ₽</td>
                     <td>${getStatusText(o.status)}</td>
-                    <td>
-                        ${o.status === 'paid' ? `<button class="edit-btn" onclick="sendProductKey('${o.id}', '${o.productKey}')">Отправить ключ</button>` : ''}
-                        ${o.status === 'delivered' ? '<span style="color:#f59e0b;">⏳ Ожидает</span>' : ''}
-                    </td>
+                    <td>${o.status === 'paid' ? `<button class="edit-btn" onclick="sendProductKey('${o.id}', '${o.productKey}')">Отправить ключ</button>` : ''}</td>
                 </tr>
             `).join('');
         }
         
-        // ==================== ОБРАБОТКА ИЗОБРАЖЕНИЙ ====================
-        
+        // Предпросмотр фото
         function previewImage(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const preview = document.getElementById('imagePreview');
-                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                    document.getElementById('imagePreview').innerHTML = `<img src="${e.target.result}" alt="Preview">`;
                     document.getElementById('productImageData').value = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
         }
         
-        // ==================== ДЕЙСТВИЯ С ТОВАРАМИ ====================
-        
+        // Сообщения
         function showMessage(message, type) {
             const messageArea = document.getElementById('formMessage');
             messageArea.innerHTML = `<div class="message ${type}">${message}</div>`;
-            setTimeout(() => {
-                messageArea.innerHTML = '';
-            }, 3000);
+            setTimeout(() => { messageArea.innerHTML = ''; }, 3000);
         }
         
         // Добавление товара
@@ -656,16 +441,11 @@
             }
         }
         
-        // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
-        
         function switchTab(tab) {
-            const tabs = ['add', 'products', 'orders'];
-            tabs.forEach(t => {
-                const el = document.getElementById(`${t}Tab`);
-                if (el) el.classList.remove('active');
-            });
+            document.getElementById('addTab').classList.remove('active');
+            document.getElementById('productsTab').classList.remove('active');
+            document.getElementById('ordersTab').classList.remove('active');
             document.getElementById(`${tab}Tab`).classList.add('active');
-            
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
         }
@@ -676,12 +456,7 @@
         }
         
         function getStatusText(status) {
-            const statuses = {
-                'pending': '⏳ Ожидает оплаты',
-                'paid': '✅ Оплачено',
-                'delivered': '📦 Ключ отправлен',
-                'completed': '🎉 Завершен'
-            };
+            const statuses = { 'pending': '⏳ Ожидает оплаты', 'paid': '✅ Оплачено', 'delivered': '📦 Ключ отправлен', 'completed': '🎉 Завершен' };
             return statuses[status] || status;
         }
         
@@ -700,19 +475,12 @@
         // Инициализация
         document.addEventListener('DOMContentLoaded', function() {
             const user = getCurrentUser();
-            if (!user) {
-                window.location.href = 'login.html';
-                return;
-            }
-            if (user.role !== 'seller') {
-                alert('Доступ запрещен');
-                window.location.href = 'index.html';
-                return;
-            }
+            if (!user) { window.location.href = 'login.html'; return; }
+            if (user.role !== 'seller') { alert('Доступ запрещен'); window.location.href = 'index.html'; return; }
             loadSellerData();
         });
         
-        // Глобальные функции для onclick
+        // Глобальные функции
         window.switchTab = switchTab;
         window.editProduct = editProduct;
         window.deleteProductConfirm = deleteProductConfirm;
