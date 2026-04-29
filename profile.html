@@ -8,25 +8,189 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .profile-container { max-width: 1200px; margin: 100px auto 60px; padding: 0 20px; }
-        .profile-header { background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); border-radius: 20px; padding: 40px; margin-bottom: 30px; display: flex; align-items: center; gap: 30px; flex-wrap: wrap; }
-        .profile-avatar { width: 100px; height: 100px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 48px; }
-        .profile-info h2 { font-size: 28px; margin-bottom: 10px; }
-        .profile-info p { opacity: 0.9; }
-        .order-card { background: #0a0a0f; border-radius: 16px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .order-status { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .status-paid { background: #3b82f6; color: white; }
-        .status-delivered { background: #8b5cf6; color: white; }
-        .status-completed { background: #10b981; color: white; }
-        .navbar { background: rgba(10,10,15,0.95); backdrop-filter: blur(12px); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; border-bottom: 1px solid rgba(124,58,237,0.3); }
-        .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
-        .nav-content { display: flex; align-items: center; justify-content: space-between; height: 70px; }
-        .logo { display: flex; align-items: center; gap: 10px; font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .nav-menu { display: flex; gap: 32px; list-style: none; }
-        .nav-menu a { color: #a1a1aa; text-decoration: none; }
-        .user-btn { background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); border: none; width: 40px; height: 40px; border-radius: 50%; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
-        .user-btn:hover { transform: scale(1.05); }
-        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); border: none; border-radius: 12px; color: white; font-weight: 600; cursor: pointer; text-decoration: none; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            color: #ffffff;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .navbar {
+            background: rgba(10,10,15,0.95);
+            backdrop-filter: blur(12px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(124,58,237,0.3);
+            padding: 15px 0;
+        }
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        .nav-menu a {
+            color: #a1a1aa;
+            text-decoration: none;
+        }
+        .user-btn {
+            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+        }
+        .profile-container {
+            max-width: 1200px;
+            margin: 100px auto 60px;
+            padding: 0 20px;
+        }
+        .profile-header {
+            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+        .profile-info h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .profile-info p {
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        .section-card {
+            background: #111118;
+            border: 1px solid rgba(124,58,237,0.2);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #7c3aed;
+        }
+        .order-card {
+            background: #0a0a0f;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .order-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-pending {
+            background: #f59e0b;
+            color: white;
+        }
+        .status-paid {
+            background: #3b82f6;
+            color: white;
+        }
+        .status-delivered {
+            background: #8b5cf6;
+            color: white;
+        }
+        .status-completed {
+            background: #10b981;
+            color: white;
+        }
+        .promo-card {
+            background: linear-gradient(135deg, #7c3aed20 0%, #c084fc10 100%);
+            border: 1px solid rgba(124,58,237,0.3);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+        .promo-code {
+            font-size: 24px;
+            font-weight: bold;
+            color: #7c3aed;
+            margin: 15px 0;
+            background: #0a0a0f;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .btn-secondary {
+            background: #334155;
+        }
+        .footer {
+            background: #0f172a;
+            padding: 40px 0;
+            text-align: center;
+            margin-top: 60px;
+        }
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .order-card {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -49,78 +213,58 @@
         </div>
     </nav>
 
-    <div class="profile-container">
-        <div class="profile-header">
-            <div class="profile-avatar"><i class="fas fa-user"></i></div>
-            <div class="profile-info">
-                <h2 id="userNameDisplay">Загрузка...</h2>
-                <p id="userEmailDisplay"></p>
-                <p><span id="userRoleDisplay"></span></p>
-                <p>ID пользователя: <span id="userIdDisplay"></span></p>
-            </div>
-        </div>
-        <div style="background: #111118; border-radius: 20px; padding: 30px;">
-            <h3 style="margin-bottom: 20px;">📦 Мои заказы</h3>
-            <div id="ordersContainer"></div>
+    <div class="profile-container" id="profileContainer">
+        <!-- Контент будет загружен через JavaScript -->
+        <div style="text-align: center; padding: 60px;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 48px; color: #7c3aed;"></i>
+            <p>Загрузка профиля...</p>
         </div>
     </div>
 
-    <script src="database.js"></script>
-    <script src="auth.js"></script>
-    
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Volt Store. Безопасная сделка — гарантия качества.</p>
+        </div>
+    </footer>
+
     <script>
-        function displayUserInfo() {
-            const currentUser = window.getCurrentUser();
-            
-            if (!currentUser) {
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            document.getElementById('userNameDisplay').textContent = currentUser.name;
-            document.getElementById('userEmailDisplay').textContent = currentUser.email;
-            document.getElementById('userRoleDisplay').textContent = currentUser.role === 'seller' ? 'Продавец 👑' : 'Покупатель 🛍️';
-            document.getElementById('userIdDisplay').textContent = currentUser.id;
-            
-            // Загружаем заказы пользователя
-            const orders = JSON.parse(localStorage.getItem('orders')) || [];
-            const userOrders = orders.filter(o => o.buyerId == currentUser.id);
-            const container = document.getElementById('ordersContainer');
-            
-            if (userOrders.length === 0) {
-                container.innerHTML = '<div style="text-align:center; padding:40px; color:#a1a1aa;">У вас пока нет заказов</div>';
-                return;
-            }
-            
-            container.innerHTML = userOrders.map(order => `
-                <div class="order-card">
-                    <div>
-                        <strong>${order.productName}</strong><br>
-                        Количество: ${order.quantity} шт.<br>
-                        Сумма: ${order.total} ₽<br>
-                        Дата: ${new Date(order.createdAt).toLocaleDateString('ru-RU')}
-                    </div>
-                    <div>
-                        <span class="order-status status-${order.status}">${getStatusText(order.status)}</span>
-                        ${order.status === 'delivered' ? `<button class="btn" style="margin-top:10px; padding:5px 15px;" onclick="confirmReceipt(${order.id})">✅ Подтвердить получение</button>` : ''}
-                    </div>
-                </div>
-            `).join('');
+        // Получение текущего пользователя
+        function getCurrentUser() {
+            const user = sessionStorage.getItem('currentUser');
+            return user ? JSON.parse(user) : null;
         }
         
+        // Получение заказов
+        function getUserOrders(userId) {
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            return orders.filter(o => o.buyerId == userId);
+        }
+        
+        // Обновление статуса заказа
+        function updateOrderStatus(orderId, status) {
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            const index = orders.findIndex(o => o.id == orderId);
+            if (index !== -1) {
+                orders[index].status = status;
+                localStorage.setItem('orders', JSON.stringify(orders));
+                return true;
+            }
+            return false;
+        }
+        
+        // Подтверждение получения товара
         function confirmReceipt(orderId) {
             if (confirm('Подтвердить получение товара? Деньги будут переведены продавцу.')) {
-                const orders = JSON.parse(localStorage.getItem('orders')) || [];
-                const orderIndex = orders.findIndex(o => o.id == orderId);
-                if (orderIndex !== -1) {
-                    orders[orderIndex].status = 'completed';
-                    localStorage.setItem('orders', JSON.stringify(orders));
-                    alert('Спасибо за подтверждение!');
-                    displayUserInfo();
+                if (updateOrderStatus(orderId, 'completed')) {
+                    alert('✅ Спасибо за подтверждение! Деньги переведены продавцу.');
+                    displayProfile();
+                } else {
+                    alert('❌ Ошибка при подтверждении');
                 }
             }
         }
         
+        // Получение текста статуса
         function getStatusText(status) {
             const statuses = {
                 'pending': '⏳ Ожидает оплаты',
@@ -131,12 +275,148 @@
             return statuses[status] || status;
         }
         
-        function goToProfile() {
-            window.location.href = 'profile.html';
+        // Escape HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
         
-        displayUserInfo();
-        window.updateUserInterface();
+        // Отображение профиля
+        function displayProfile() {
+            const currentUser = getCurrentUser();
+            
+            // Проверка авторизации
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Если продавец - перенаправляем в панель продавца
+            if (currentUser.role === 'seller') {
+                window.location.href = 'seller-dashboard.html';
+                return;
+            }
+            
+            const orders = getUserOrders(currentUser.id);
+            const container = document.getElementById('profileContainer');
+            
+            // Статистика заказов
+            const totalOrders = orders.length;
+            const completedOrders = orders.filter(o => o.status === 'completed').length;
+            const totalSpent = orders.reduce((sum, o) => sum + o.total, 0);
+            
+            // Промокоды
+            const promoCodes = [
+                { code: "WELCOME10", discount: 10, used: false },
+                { code: "VOLT20", discount: 20, used: false }
+            ];
+            
+            container.innerHTML = `
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="profile-info">
+                        <h2>${escapeHtml(currentUser.name)}</h2>
+                        <p><i class="fas fa-envelope"></i> ${escapeHtml(currentUser.email)}</p>
+                        <p><i class="fas fa-tag"></i> ${currentUser.role === 'seller' ? 'Продавец 👑' : 'Покупатель 🛍️'}</p>
+                        <p><i class="fas fa-calendar"></i> ID: ${currentUser.id}</p>
+                    </div>
+                </div>
+                
+                <div class="section-card">
+                    <h3 class="section-title"><i class="fas fa-chart-line"></i> Статистика</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px;">
+                        <div style="text-align: center; padding: 15px; background: #0a0a0f; border-radius: 12px;">
+                            <div style="font-size: 32px; font-weight: bold; color: #7c3aed;">${totalOrders}</div>
+                            <div style="color: #a1a1aa;">Всего заказов</div>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: #0a0a0f; border-radius: 12px;">
+                            <div style="font-size: 32px; font-weight: bold; color: #10b981;">${completedOrders}</div>
+                            <div style="color: #a1a1aa;">Завершено</div>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: #0a0a0f; border-radius: 12px;">
+                            <div style="font-size: 32px; font-weight: bold; color: #f59e0b;">${totalSpent.toLocaleString()} ₽</div>
+                            <div style="color: #a1a1aa;">Потрачено</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section-card">
+                    <h3 class="section-title"><i class="fas fa-box"></i> Мои заказы (${totalOrders})</h3>
+                    <div id="ordersContainer">
+                        ${renderOrders(orders)}
+                    </div>
+                </div>
+                
+                <div class="section-card">
+                    <h3 class="section-title"><i class="fas fa-gift"></i> Промокоды</h3>
+                    <div class="promo-card">
+                        <h4>Доступные промокоды</h4>
+                        ${promoCodes.map(p => `
+                            <div class="promo-code">
+                                ${p.code} - скидка ${p.discount}%
+                                <button class="btn btn-secondary" style="margin-left: 10px; padding: 5px 15px;" onclick="copyPromoCode('${p.code}')">
+                                    <i class="fas fa-copy"></i> Скопировать
+                                </button>
+                            </div>
+                        `).join('')}
+                        <p style="margin-top: 15px; font-size: 12px; color: #a1a1aa;">* Промокоды действуют на первый заказ</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderOrders(orders) {
+            if (orders.length === 0) {
+                return '<div style="text-align:center; padding:40px; color:#a1a1aa;">У вас пока нет заказов</div>';
+            }
+            
+            return orders.map(order => `
+                <div class="order-card">
+                    <div>
+                        <strong>${escapeHtml(order.productName)}</strong><br>
+                        <span style="color: #a1a1aa; font-size: 14px;">Количество: ${order.quantity} шт.</span><br>
+                        <span style="color: #a1a1aa; font-size: 14px;">Сумма: ${order.total.toLocaleString()} ₽</span><br>
+                        <span style="color: #a1a1aa; font-size: 12px;">Дата: ${new Date(order.createdAt).toLocaleDateString('ru-RU')}</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="order-status status-${order.status}">${getStatusText(order.status)}</span>
+                        ${order.status === 'delivered' ? `<button class="btn" style="margin-top: 10px; padding: 5px 15px;" onclick="confirmReceipt(${order.id})"><i class="fas fa-check"></i> Подтвердить получение</button>` : ''}
+                        ${order.status === 'paid' ? '<div style="margin-top: 10px; font-size: 12px; color: #f59e0b;">⏳ Ожидает отправки от продавца</div>' : ''}
+                        ${order.status === 'completed' ? '<div style="margin-top: 10px; font-size: 12px; color: #10b981;">✅ Товар получен</div>' : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function copyPromoCode(code) {
+            navigator.clipboard.writeText(code);
+            alert(`Промокод ${code} скопирован!`);
+        }
+        
+        function goToProfile() {
+            const user = getCurrentUser();
+            if (user && user.role === 'seller') {
+                window.location.href = 'seller-dashboard.html';
+            } else if (user) {
+                window.location.href = 'profile.html';
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            displayProfile();
+        });
+        
+        // Глобальные функции для onclick
+        window.confirmReceipt = confirmReceipt;
+        window.copyPromoCode = copyPromoCode;
+        window.goToProfile = goToProfile;
     </script>
 </body>
 </html>
