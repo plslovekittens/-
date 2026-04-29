@@ -24,11 +24,8 @@
         .logo { display: flex; align-items: center; gap: 10px; font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .nav-menu { display: flex; gap: 32px; list-style: none; }
         .nav-menu a { color: #a1a1aa; text-decoration: none; }
-        .user-menu { position: relative; }
-        .user-dropdown { position: absolute; top: 50px; right: 0; width: 220px; background: #1e293b; border: 1px solid rgba(124,58,237,0.2); border-radius: 12px; padding: 8px; opacity: 0; visibility: hidden; transition: 0.3s; z-index: 100; }
-        .user-dropdown.show { opacity: 1; visibility: visible; }
-        .dropdown-item { display: block; padding: 10px 15px; color: #a1a1aa; text-decoration: none; }
-        .dropdown-item:hover { background: rgba(124,58,237,0.1); color: #7c3aed; }
+        .user-btn { background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); border: none; width: 40px; height: 40px; border-radius: 50%; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
+        .user-btn:hover { transform: scale(1.05); }
         .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); border: none; border-radius: 12px; color: white; font-weight: 600; cursor: pointer; text-decoration: none; }
     </style>
 </head>
@@ -44,131 +41,101 @@
                     <li><a href="rules.html">Правила</a></li>
                 </ul>
                 <div class="nav-actions">
-                    <div class="user-menu" id="userMenu">
-                        <button class="user-btn" onclick="toggleUserDropdown()">
-                            <i class="fas fa-user"></i>
-                        </button>
-                        <div class="user-dropdown" id="userDropdown">
-                            <div id="authButtons">
-                                <a href="login.html" class="dropdown-item">Вход</a>
-                                <a href="register.html" class="dropdown-item">Регистрация</a>
-                            </div>
-                            <div id="userInfo" style="display:none;">
-                                <div class="dropdown-item" id="userName"></div>
-                                <a href="profile.html" class="dropdown-item">Личный кабинет</a>
-                                <a href="#" class="dropdown-item" onclick="logout()">Выйти</a>
-                                <a href="seller-dashboard.html" class="dropdown-item" id="sellerLink" style="display:none;">Панель продавца</a>
-                            </div>
-                        </div>
-                    </div>
+                    <button class="user-btn" onclick="goToProfile()">
+                        <i class="fas fa-user"></i>
+                    </button>
                 </div>
             </div>
         </div>
     </nav>
 
     <div class="profile-container">
-        <div id="profileContent">
-            <div class="loading" style="text-align:center; padding:40px;"><i class="fas fa-spinner fa-spin"></i> Загрузка профиля...</div>
+        <div class="profile-header">
+            <div class="profile-avatar"><i class="fas fa-user"></i></div>
+            <div class="profile-info">
+                <h2 id="userNameDisplay">Загрузка...</h2>
+                <p id="userEmailDisplay"></p>
+                <p><span id="userRoleDisplay"></span></p>
+                <p>ID пользователя: <span id="userIdDisplay"></span></p>
+            </div>
+        </div>
+        <div style="background: #111118; border-radius: 20px; padding: 30px;">
+            <h3 style="margin-bottom: 20px;">📦 Мои заказы</h3>
+            <div id="ordersContainer"></div>
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="firebase-db.js"></script>
+    <script src="database.js"></script>
     <script src="auth.js"></script>
+    
     <script>
-        async function loadProfile() {
-            const container = document.getElementById('profileContent');
+        function displayUserInfo() {
             const currentUser = window.getCurrentUser();
             
             if (!currentUser) {
-                container.innerHTML = `
-                    <div style="text-align:center; padding:40px;">
-                        <i class="fas fa-exclamation-triangle" style="font-size:48px; color:#ef4444;"></i>
-                        <p>Вы не авторизованы</p>
-                        <a href="login.html" class="btn">Войти</a>
-                    </div>
-                `;
+                window.location.href = 'login.html';
                 return;
             }
             
-            const userResult = await window.DB.getUser(currentUser.id);
-            const ordersResult = await window.DB.getUserOrders(currentUser.id);
+            document.getElementById('userNameDisplay').textContent = currentUser.name;
+            document.getElementById('userEmailDisplay').textContent = currentUser.email;
+            document.getElementById('userRoleDisplay').textContent = currentUser.role === 'seller' ? 'Продавец 👑' : 'Покупатель 🛍️';
+            document.getElementById('userIdDisplay').textContent = currentUser.id;
             
-            const userData = userResult.success ? userResult.data : { name: currentUser.name, email: currentUser.email, role: 'buyer' };
-            const orders = ordersResult.success ? ordersResult.data : [];
+            // Загружаем заказы пользователя
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            const userOrders = orders.filter(o => o.buyerId == currentUser.id);
+            const container = document.getElementById('ordersContainer');
             
-            container.innerHTML = `
-                <div class="profile-header">
-                    <div class="profile-avatar"><i class="fas fa-user"></i></div>
-                    <div class="profile-info">
-                        <h2>${escapeHtml(userData.name)}</h2>
-                        <p>${currentUser.email}</p>
-                        <p><span style="background:rgba(255,255,255,0.2); padding:4px 12px; border-radius:20px;">${userData.role === 'seller' ? 'Продавец' : 'Покупатель'}</span></p>
-                    </div>
-                </div>
-                <div style="background:#111118; border-radius:20px; padding:30px;">
-                    <h3 style="margin-bottom:20px;">📦 Мои заказы (${orders.length})</h3>
-                    <div id="ordersContainer">${renderOrders(orders)}</div>
-                </div>
-            `;
-        }
-        
-        function renderOrders(orders) {
-            if (orders.length === 0) {
-                return '<div style="text-align:center; padding:40px; color:#a1a1aa;">У вас пока нет заказов</div>';
+            if (userOrders.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:40px; color:#a1a1aa;">У вас пока нет заказов</div>';
+                return;
             }
             
-            return orders.map(order => `
+            container.innerHTML = userOrders.map(order => `
                 <div class="order-card">
                     <div>
-                        <strong>${escapeHtml(order.productName)}</strong><br>
+                        <strong>${order.productName}</strong><br>
                         Количество: ${order.quantity} шт.<br>
                         Сумма: ${order.total} ₽<br>
                         Дата: ${new Date(order.createdAt).toLocaleDateString('ru-RU')}
                     </div>
                     <div>
                         <span class="order-status status-${order.status}">${getStatusText(order.status)}</span>
+                        ${order.status === 'delivered' ? `<button class="btn" style="margin-top:10px; padding:5px 15px;" onclick="confirmReceipt(${order.id})">✅ Подтвердить получение</button>` : ''}
                     </div>
                 </div>
             `).join('');
         }
         
+        function confirmReceipt(orderId) {
+            if (confirm('Подтвердить получение товара? Деньги будут переведены продавцу.')) {
+                const orders = JSON.parse(localStorage.getItem('orders')) || [];
+                const orderIndex = orders.findIndex(o => o.id == orderId);
+                if (orderIndex !== -1) {
+                    orders[orderIndex].status = 'completed';
+                    localStorage.setItem('orders', JSON.stringify(orders));
+                    alert('Спасибо за подтверждение!');
+                    displayUserInfo();
+                }
+            }
+        }
+        
         function getStatusText(status) {
             const statuses = {
                 'pending': '⏳ Ожидает оплаты',
-                'paid': '✅ Оплачено',
-                'delivered': '📦 Доставлено',
+                'paid': '✅ Оплачено (деньги на удержании)',
+                'delivered': '📦 Товар отправлен, ожидает подтверждения',
                 'completed': '🎉 Завершен'
             };
             return statuses[status] || status;
         }
         
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+        function goToProfile() {
+            window.location.href = 'profile.html';
         }
         
-        function toggleUserDropdown() {
-            const dropdown = document.getElementById('userDropdown');
-            if (dropdown) dropdown.classList.toggle('show');
-        }
-        
-        document.addEventListener('click', function(e) {
-            const dropdown = document.getElementById('userDropdown');
-            const userBtn = document.querySelector('.user-btn');
-            if (dropdown && userBtn && !userBtn.contains(e.target) && !dropdown.contains(e.target)) {
-                dropdown.classList.remove('show');
-            }
-        });
-        
-        window.toggleUserDropdown = toggleUserDropdown;
-        
-        loadProfile();
+        displayUserInfo();
         window.updateUserInterface();
     </script>
 </body>
