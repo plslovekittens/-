@@ -1,34 +1,37 @@
 // ==================== КОРЗИНА ====================
 
+let allProducts = [];
+
+// Получение корзины
 function getCart() {
-    const cart = localStorage.getItem('volt_cart');
+    const cart = localStorage.getItem('cart');
     return cart ? JSON.parse(cart) : [];
 }
 
+// Сохранение корзины
 function saveCart(cart) {
-    localStorage.setItem('volt_cart', JSON.stringify(cart));
+    localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCountDisplay();
 }
 
+// Обновление счетчика
 function updateCartCountDisplay() {
     const cart = getCart();
-    const count = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
     const cartCount = document.getElementById('cartCount');
     if (cartCount) cartCount.textContent = count;
 }
 
+// Добавление в корзину
 window.addToCart = function(productId) {
-    const product = window.allProducts ? window.allProducts.find(p => p.id == productId) : null;
-    if (!product) {
-        showNotification('Товар не найден', 'error');
-        return;
-    }
+    const product = allProducts.find(p => p.id == productId);
+    if (!product) return;
     
     let cart = getCart();
     const existingItem = cart.find(item => item.id == productId);
     
     if (existingItem) {
-        existingItem.quantity = (existingItem.quantity || 1) + 1;
+        existingItem.quantity++;
     } else {
         cart.push({
             id: product.id,
@@ -44,7 +47,7 @@ window.addToCart = function(productId) {
     
     saveCart(cart);
     displayCartItems();
-    showNotification(`${product.name} добавлен в корзину`, 'success');
+    showNotification('Товар добавлен в корзину', 'success');
     
     const cartBtn = document.querySelector('.cart-btn');
     if (cartBtn) {
@@ -53,29 +56,31 @@ window.addToCart = function(productId) {
     }
 };
 
+// Удаление из корзины
 window.removeFromCart = function(productId) {
     let cart = getCart();
     cart = cart.filter(item => item.id != productId);
     saveCart(cart);
     displayCartItems();
-    showNotification('Товар удалён из корзины', 'info');
+    showNotification('Товар удален из корзины', 'success');
 };
 
+// Обновление количества
 window.updateCartQuantity = function(productId, change) {
     let cart = getCart();
     const item = cart.find(item => item.id == productId);
     if (item) {
-        const newQty = (item.quantity || 1) + change;
-        if (newQty <= 0) {
-            window.removeFromCart(productId);
+        item.quantity += change;
+        if (item.quantity <= 0) {
+            removeFromCart(productId);
         } else {
-            item.quantity = newQty;
             saveCart(cart);
             displayCartItems();
         }
     }
 };
 
+// Отображение корзины
 function displayCartItems() {
     const container = document.getElementById('cartItems');
     const totalElement = document.getElementById('cartTotal');
@@ -94,36 +99,36 @@ function displayCartItems() {
     let total = 0;
     
     for (let item of cart) {
-        const qty = item.quantity || 1;
-        total += (item.price || 0) * qty;
+        total += item.price * item.quantity;
         html += `
             <div class="cart-item">
-                <div class="cart-item-image"><i class="fas fa-${item.image || 'box'}"></i></div>
+                <div class="cart-item-image"><i class="fas fa-${item.image}"></i></div>
                 <div class="cart-item-info">
                     <div class="cart-item-title">${item.name}</div>
-                    <div class="cart-item-price">${(item.price || 0).toLocaleString()} ₽</div>
+                    <div class="cart-item-price">${item.price} ₽</div>
                     <div class="cart-item-quantity">
-                        <button onclick="updateCartQuantity('${item.id}', -1)">-</button>
-                        <span>${qty}</span>
-                        <button onclick="updateCartQuantity('${item.id}', 1)">+</button>
+                        <button onclick="updateCartQuantity(${item.id}, -1)">-</button>
+                        <span>${item.quantity}</span>
+                        <button onclick="updateCartQuantity(${item.id}, 1)">+</button>
                     </div>
                 </div>
-                <div class="cart-item-remove" onclick="removeFromCart('${item.id}')"><i class="fas fa-trash"></i></div>
+                <div class="cart-item-remove" onclick="removeFromCart(${item.id})"><i class="fas fa-trash"></i></div>
             </div>
         `;
     }
     
     container.innerHTML = html;
-    if (totalElement) totalElement.textContent = `${total.toLocaleString()} ₽`;
+    if (totalElement) totalElement.textContent = `${total} ₽`;
 }
 
+// Переключение корзины
 window.toggleCart = function() {
-    const sidebar = document.getElementById('cartSidebar');
-    if (sidebar) sidebar.classList.toggle('active');
+    const cartSidebar = document.getElementById('cartSidebar');
+    if (cartSidebar) cartSidebar.classList.toggle('active');
 };
 
-// Оформление заказа с сохранением в коллекцию orders
-window.checkout = async function() {
+// Оформление заказа
+window.checkout = function() {
     const cart = getCart();
     const currentUser = window.getCurrentUser();
     
@@ -133,54 +138,43 @@ window.checkout = async function() {
     }
     
     if (!currentUser) {
-        showNotification('Войдите в аккаунт', 'error');
-        setTimeout(() => window.location.href = 'login.html', 1500);
+        showNotification('Войдите в аккаунт для оформления заказа', 'error');
+        setTimeout(() => window.location.href = 'login.html', 2000);
         return;
     }
     
-    const total = cart.reduce((sum, item) => sum + ((item.price || 0) * (item.quantity || 1)), 0);
-    
-    // Создаём заказы в коллекции orders
-    let allSuccess = true;
+    let keysMessage = "✅ ЗАКАЗ ОФОРМЛЕН!\n\nВаши цифровые товары:\n\n";
     for (let item of cart) {
-        const orderResult = await window.DB.createOrder({
-            buyerId: currentUser.id,
-            buyerName: currentUser.name,
-            sellerId: item.sellerId || 'admin',
-            sellerName: item.sellerName || 'Volt Official',
+        keysMessage += `📦 ${item.name} x${item.quantity}\n🔑 Ключ: ${item.key}\n\n`;
+        
+        let orders = JSON.parse(localStorage.getItem('orders')) || [];
+        orders.push({
             productId: item.id,
             productName: item.name,
-            quantity: item.quantity || 1,
+            quantity: item.quantity,
             price: item.price,
-            total: (item.price || 0) * (item.quantity || 1),
-            productKey: item.key || 'Ключ будет отправлен на email'
+            total: item.price * item.quantity,
+            buyerId: currentUser.id,
+            buyerName: currentUser.name,
+            sellerId: item.sellerId,
+            sellerName: item.sellerName,
+            productKey: item.key,
+            status: 'paid',
+            createdAt: new Date().toISOString()
         });
-        
-        if (!orderResult.success) {
-            allSuccess = false;
-            console.error('Ошибка создания заказа:', orderResult.error);
-        }
+        localStorage.setItem('orders', JSON.stringify(orders));
     }
     
-    if (allSuccess) {
-        let message = "✅ ЗАКАЗ ОФОРМЛЕН!\n\nВаши товары:\n\n";
-        for (let item of cart) {
-            message += `📦 ${item.name} x${item.quantity || 1} - ${((item.price || 0) * (item.quantity || 1)).toLocaleString()} ₽\n`;
-        }
-        message += `\n💰 Итого: ${total.toLocaleString()} ₽\n📧 Товары отправлены на email: ${currentUser.email}`;
-        
-        alert(message);
-        
-        localStorage.setItem('volt_cart', JSON.stringify([]));
-        updateCartCountDisplay();
-        displayCartItems();
-        window.toggleCart();
-        showNotification('Заказ оформлен!', 'success');
-    } else {
-        showNotification('Ошибка при оформлении заказа', 'error');
-    }
+    alert(keysMessage);
+    
+    localStorage.setItem('cart', JSON.stringify([]));
+    updateCartCountDisplay();
+    displayCartItems();
+    toggleCart();
+    showNotification('Заказ оформлен! Товары отправлены на email', 'success');
 };
 
+// Уведомления
 function showNotification(message, type = 'success') {
     const notification = document.getElementById('notification');
     if (notification) {
@@ -193,7 +187,14 @@ function showNotification(message, type = 'success') {
     }
 }
 
+// Загрузка товаров из localStorage
+function loadProductsForCart() {
+    allProducts = JSON.parse(localStorage.getItem('products')) || [];
+}
+
+// Инициализация
 document.addEventListener('DOMContentLoaded', function() {
+    loadProductsForCart();
     updateCartCountDisplay();
     displayCartItems();
 });
