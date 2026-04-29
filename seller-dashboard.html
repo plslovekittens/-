@@ -23,7 +23,6 @@
             margin: 0 auto;
             padding: 0 24px;
         }
-        /* Навигация */
         .navbar {
             background: rgba(10,10,15,0.95);
             backdrop-filter: blur(12px);
@@ -55,10 +54,6 @@
         .nav-menu a {
             color: #a1a1aa;
             text-decoration: none;
-            transition: 0.3s;
-        }
-        .nav-menu a:hover {
-            color: white;
         }
         .user-btn {
             background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
@@ -68,9 +63,7 @@
             border-radius: 50%;
             color: white;
             cursor: pointer;
-            font-size: 18px;
         }
-        /* Панель продавца */
         .dashboard-header {
             background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
             padding: 100px 0 60px;
@@ -80,10 +73,6 @@
         .dashboard-header h1 {
             font-size: 48px;
             margin-bottom: 20px;
-        }
-        .dashboard-header p {
-            font-size: 18px;
-            opacity: 0.95;
         }
         .dashboard-content {
             padding: 60px 0;
@@ -100,11 +89,6 @@
             border-radius: 16px;
             padding: 25px;
             text-align: center;
-            transition: transform 0.3s;
-        }
-        .stat-card:hover {
-            transform: translateY(-5px);
-            border-color: #7c3aed;
         }
         .stat-card h3 {
             font-size: 36px;
@@ -114,7 +98,6 @@
         .stat-card p {
             color: #a1a1aa;
         }
-        /* Вкладки */
         .tab-buttons {
             display: flex;
             gap: 15px;
@@ -129,14 +112,9 @@
             color: white;
             cursor: pointer;
             transition: 0.3s;
-            font-size: 14px;
-        }
-        .tab-btn:hover {
-            border-color: #7c3aed;
         }
         .tab-btn.active {
             background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
-            border-color: transparent;
         }
         .tab-content {
             display: none;
@@ -148,7 +126,6 @@
         .tab-content.active {
             display: block;
         }
-        /* Форма добавления товара */
         .form-group {
             margin-bottom: 20px;
         }
@@ -156,24 +133,14 @@
             display: block;
             margin-bottom: 8px;
             color: #a1a1aa;
-            font-weight: 500;
         }
-        .form-group input, 
-        .form-group select, 
-        .form-group textarea {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 12px;
             background: #0f172a;
             border: 1px solid #334155;
             border-radius: 8px;
             color: white;
-            font-size: 14px;
-        }
-        .form-group input:focus, 
-        .form-group select:focus, 
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #7c3aed;
         }
         .form-row {
             display: grid;
@@ -191,28 +158,25 @@
             color: white;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.3s;
             text-decoration: none;
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(124,58,237,0.4);
         }
         .btn-secondary {
             background: #334155;
         }
-        .btn-secondary:hover {
-            background: #475569;
+        .delete-btn, .edit-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 5px;
         }
-        .btn-danger {
+        .edit-btn {
+            background: #f59e0b;
+            color: white;
+        }
+        .delete-btn {
             background: #ef4444;
-        }
-        .btn-danger:hover {
-            background: #dc2626;
-        }
-        /* Таблицы */
-        .products-table, .orders-table {
-            overflow-x: auto;
+            color: white;
         }
         table {
             width: 100%;
@@ -225,32 +189,6 @@
         }
         th {
             color: #7c3aed;
-            font-weight: 600;
-        }
-        .delete-btn, .edit-btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-right: 5px;
-            font-size: 12px;
-        }
-        .edit-btn {
-            background: #f59e0b;
-            color: white;
-        }
-        .delete-btn {
-            background: #ef4444;
-            color: white;
-        }
-        .status-paid {
-            color: #f59e0b;
-        }
-        .status-completed {
-            color: #10b981;
-        }
-        .status-delivered {
-            color: #8b5cf6;
         }
         .message {
             padding: 12px;
@@ -272,22 +210,11 @@
             background: #0f172a;
             padding: 40px 0;
             text-align: center;
-            border-top: 1px solid #1e293b;
             margin-top: 60px;
         }
         @media (max-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr;
-            }
-            .dashboard-header h1 {
-                font-size: 32px;
-            }
-            .tab-buttons {
-                justify-content: center;
-            }
-            th, td {
-                font-size: 12px;
-                padding: 8px;
             }
         }
     </style>
@@ -341,30 +268,87 @@
                 </div>
             </div>
 
-            <!-- Кнопка добавления товара -->
-            <div style="margin-bottom: 20px; text-align: right;">
-                <a href="seller-add-product.html" class="btn">
-                    <i class="fas fa-plus"></i> Добавить товар
-                </a>
-            </div>
-
             <!-- Вкладки -->
             <div class="tab-buttons">
-                <button class="tab-btn active" onclick="switchTab('products')">📦 Мои товары</button>
+                <button class="tab-btn active" onclick="switchTab('add')">➕ Добавить товар</button>
+                <button class="tab-btn" onclick="switchTab('products')">📦 Мои товары</button>
                 <button class="tab-btn" onclick="switchTab('orders')">📋 Заказы</button>
             </div>
 
+            <!-- Вкладка: Добавление товара -->
+            <div id="addTab" class="tab-content active">
+                <h3 style="margin-bottom: 20px;">➕ Добавить новый товар</h3>
+                <div id="formMessage"></div>
+                <form id="addProductForm">
+                    <div class="form-group">
+                        <label>Название товара *</label>
+                        <input type="text" id="productName" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Категория *</label>
+                            <select id="productCategory" required>
+                                <option value="games">🎮 Игры</option>
+                                <option value="software">💻 Программы</option>
+                                <option value="subscriptions">📱 Подписки</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Цена (₽) *</label>
+                            <input type="number" id="productPrice" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Старая цена (₽)</label>
+                            <input type="number" id="productOldPrice">
+                        </div>
+                        <div class="form-group">
+                            <label>Скидка (%)</label>
+                            <input type="number" id="productDiscount">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Описание *</label>
+                        <textarea id="productDescription" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Цифровой ключ *</label>
+                        <input type="text" id="productKey" placeholder="XXXX-XXXX-XXXX-XXXX" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Иконка</label>
+                            <select id="productImage">
+                                <option value="gamepad">🎮 Gamepad</option>
+                                <option value="laptop-code">💻 Laptop Code</option>
+                                <option value="crown">👑 Crown</option>
+                                <option value="shield-alt">🛡️ Shield</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Бейдж</label>
+                            <select id="productBadge">
+                                <option value="">Нет</option>
+                                <option value="popular">🔥 Популярное</option>
+                                <option value="new">🆕 Новинка</option>
+                                <option value="sale">🏷️ Скидка</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">➕ Добавить товар</button>
+                </form>
+            </div>
+
             <!-- Вкладка: Мои товары -->
-            <div id="productsTab" class="tab-content active">
+            <div id="productsTab" class="tab-content">
                 <h3 style="margin-bottom: 20px;">Мои товары</h3>
-                <div class="products-table">
+                <div style="overflow-x: auto;">
                     <table>
                         <thead>
                             <tr><th>Название</th><th>Цена</th><th>Категория</th><th>Продано</th><th>Действия</th></tr>
                         </thead>
-                        <tbody id="sellerProductsList">
-                            <tr><td colspan="5" style="text-align: center">Загрузка...</td></tr>
-                        </tbody>
+                        <tbody id="sellerProductsList"></tbody>
                     </table>
                 </div>
             </div>
@@ -372,14 +356,12 @@
             <!-- Вкладка: Заказы -->
             <div id="ordersTab" class="tab-content">
                 <h3 style="margin-bottom: 20px;">Заказы</h3>
-                <div class="orders-table">
+                <div style="overflow-x: auto;">
                     <table>
                         <thead>
-                            <tr><th>Товар</th><th>Покупатель</th><th>Кол-во</th><th>Сумма</th><th>Статус</th><th>Действие</th></tr>
+                            <tr><th>Товар</th><th>Покупатель</th><th>Сумма</th><th>Статус</th><th>Действие</th></tr>
                         </thead>
-                        <tbody id="sellerOrdersList">
-                            <tr><td colspan="6" style="text-align: center">Загрузка...</td></tr>
-                        </tbody>
+                        <tbody id="sellerOrdersList"></tbody>
                     </table>
                 </div>
             </div>
@@ -393,32 +375,45 @@
     </footer>
 
     <script>
-        // ==================== ДАННЫЕ (localStorage) ====================
+        // ==================== ФУНКЦИИ ДЛЯ РАБОТЫ С ДАННЫМИ ====================
         
-        // Получение текущего пользователя
         function getCurrentUser() {
             const user = sessionStorage.getItem('currentUser');
             return user ? JSON.parse(user) : null;
         }
         
-        // Получение всех товаров
         function getAllProducts() {
             return JSON.parse(localStorage.getItem('products')) || [];
         }
         
-        // Получение товаров продавца
         function getSellerProducts(sellerId) {
             const products = getAllProducts();
             return products.filter(p => p.sellerId == sellerId);
         }
         
-        // Получение заказов продавца
         function getSellerOrders(sellerId) {
             const orders = JSON.parse(localStorage.getItem('orders')) || [];
             return orders.filter(o => o.sellerId == sellerId);
         }
         
-        // Обновление товара
+        function addProduct(product) {
+            const products = getAllProducts();
+            product.id = Date.now();
+            product.createdAt = new Date().toISOString();
+            product.soldCount = 0;
+            product.rating = 0;
+            product.reviewsCount = 0;
+            products.push(product);
+            localStorage.setItem('products', JSON.stringify(products));
+            return product;
+        }
+        
+        function deleteProduct(productId) {
+            let products = getAllProducts();
+            products = products.filter(p => p.id != productId);
+            localStorage.setItem('products', JSON.stringify(products));
+        }
+        
         function updateProduct(productId, updatedData) {
             const products = getAllProducts();
             const index = products.findIndex(p => p.id == productId);
@@ -430,14 +425,6 @@
             return false;
         }
         
-        // Удаление товара
-        function deleteProduct(productId) {
-            let products = getAllProducts();
-            products = products.filter(p => p.id != productId);
-            localStorage.setItem('products', JSON.stringify(products));
-        }
-        
-        // Обновление статуса заказа
         function updateOrderStatus(orderId, status) {
             const orders = JSON.parse(localStorage.getItem('orders')) || [];
             const index = orders.findIndex(o => o.id == orderId);
@@ -445,20 +432,6 @@
                 orders[index].status = status;
                 localStorage.setItem('orders', JSON.stringify(orders));
                 return true;
-            }
-            return false;
-        }
-        
-        // Отправка ключа покупателю
-        function sendProductKey(orderId, productKey) {
-            if (confirm(`Отправить ключ покупателю?\nКлюч: ${productKey}`)) {
-                if (updateOrderStatus(orderId, 'delivered')) {
-                    alert('✅ Ключ отправлен! Покупатель получит его на email.');
-                    loadSellerData();
-                    return true;
-                }
-                alert('❌ Ошибка при отправке');
-                return false;
             }
             return false;
         }
@@ -496,7 +469,7 @@
             if (!tbody) return;
             
             if (products.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px;">У вас пока нет товаров. <a href="seller-add-product.html" style="color: #7c3aed;">Добавить первый товар</a></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">У вас пока нет товаров</td></tr>';
                 return;
             }
             
@@ -507,10 +480,10 @@
                     <td>${getCategoryName(p.category)}</td>
                     <td>${p.soldCount || 0}</td>
                     <td>
-                        <button class="edit-btn" onclick="editProduct('${p.id}')"><i class="fas fa-edit"></i></button>
-                        <button class="delete-btn" onclick="deleteProductConfirm('${p.id}')"><i class="fas fa-trash"></i></button>
+                        <button class="edit-btn" onclick="editProduct('${p.id}')"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="delete-btn" onclick="deleteProductConfirm('${p.id}')"><i class="fas fa-trash"></i> Del</button>
                     </td>
-                </tr>
+                 </tr>
             `).join('');
         }
         
@@ -519,7 +492,7 @@
             if (!tbody) return;
             
             if (orders.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;">Нет заказов</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">Нет заказов</td></tr>';
                 return;
             }
             
@@ -527,25 +500,66 @@
                 <tr>
                     <td><strong>${escapeHtml(o.productName)}</strong></td>
                     <td>${escapeHtml(o.buyerName)}</td>
-                    <td>${o.quantity}</td>
                     <td>${o.total.toLocaleString()} ₽</td>
-                    <td class="status-${o.status}">${getStatusText(o.status)}</td>
+                    <td>${getStatusText(o.status)}</td>
                     <td>
                         ${o.status === 'paid' ? `<button class="edit-btn" onclick="sendProductKey('${o.id}', '${o.productKey}')">Отправить ключ</button>` : ''}
-                        ${o.status === 'delivered' ? `<span style="color: #f59e0b;">⏳ Ожидает подтверждения</span>` : ''}
-                        ${o.status === 'completed' ? `<span style="color: #10b981;">✅ Завершен</span>` : ''}
+                        ${o.status === 'delivered' ? '<span style="color:#f59e0b;">⏳ Ожидает подтверждения</span>' : ''}
                     </td>
-                </tr>
+                 </tr>
             `).join('');
         }
         
-        // ==================== ДЕЙСТВИЯ С ТОВАРАМИ ====================
+        // ==================== ДЕЙСТВИЯ ====================
+        
+        function showMessage(message, type) {
+            const messageArea = document.getElementById('formMessage');
+            messageArea.innerHTML = `<div class="message ${type}">${message}</div>`;
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 3000);
+        }
+        
+        // Добавление товара
+        document.getElementById('addProductForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const currentUser = getCurrentUser();
+            if (!currentUser || currentUser.role !== 'seller') {
+                showMessage('Доступ запрещен. Только для продавцов.', 'error');
+                return;
+            }
+            
+            const productData = {
+                name: document.getElementById('productName').value,
+                category: document.getElementById('productCategory').value,
+                price: parseInt(document.getElementById('productPrice').value),
+                oldPrice: document.getElementById('productOldPrice').value ? parseInt(document.getElementById('productOldPrice').value) : null,
+                discount: document.getElementById('productDiscount').value ? parseInt(document.getElementById('productDiscount').value) : null,
+                description: document.getElementById('productDescription').value,
+                key: document.getElementById('productKey').value,
+                image: document.getElementById('productImage').value,
+                badge: document.getElementById('productBadge').value || null,
+                sellerId: currentUser.id,
+                sellerName: currentUser.name
+            };
+            
+            if (!productData.name || !productData.price || !productData.description || !productData.key) {
+                showMessage('Заполните все обязательные поля', 'error');
+                return;
+            }
+            
+            addProduct(productData);
+            showMessage('✅ Товар успешно добавлен!', 'success');
+            document.getElementById('addProductForm').reset();
+            loadSellerData();
+        });
         
         function deleteProductConfirm(productId) {
-            if (confirm('Вы уверены, что хотите удалить этот товар?')) {
+            if (confirm('Удалить товар?')) {
                 deleteProduct(productId);
                 loadSellerData();
-                alert('Товар удален');
+                showMessage('Товар удален', 'success');
             }
         }
         
@@ -555,38 +569,35 @@
             if (!product) return;
             
             const newName = prompt('Новое название:', product.name);
-            const newPrice = prompt('Новая цена (₽):', product.price);
+            const newPrice = prompt('Новая цена:', product.price);
             
-            if (newName && newPrice && !isNaN(newPrice)) {
-                updateProduct(productId, {
-                    name: newName,
-                    price: parseInt(newPrice)
-                });
+            if (newName && newPrice) {
+                updateProduct(productId, { name: newName, price: parseInt(newPrice) });
                 loadSellerData();
-                alert('Товар обновлен');
-            } else if (newName && newPrice) {
-                alert('Введите корректную цену');
+                showMessage('Товар обновлен', 'success');
+            }
+        }
+        
+        function sendProductKey(orderId, productKey) {
+            if (confirm(`Отправить ключ покупателю?\n${productKey}`)) {
+                updateOrderStatus(orderId, 'delivered');
+                loadSellerData();
+                alert('✅ Ключ отправлен!');
             }
         }
         
         // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
         
         function switchTab(tab) {
-            const productsTab = document.getElementById('productsTab');
-            const ordersTab = document.getElementById('ordersTab');
-            const buttons = document.querySelectorAll('.tab-btn');
+            const tabs = ['add', 'products', 'orders'];
+            tabs.forEach(t => {
+                const el = document.getElementById(`${t}Tab`);
+                if (el) el.classList.remove('active');
+            });
+            document.getElementById(`${tab}Tab`).classList.add('active');
             
-            if (tab === 'products') {
-                productsTab.classList.add('active');
-                ordersTab.classList.remove('active');
-                buttons[0].classList.add('active');
-                buttons[1].classList.remove('active');
-            } else {
-                productsTab.classList.remove('active');
-                ordersTab.classList.add('active');
-                buttons[0].classList.remove('active');
-                buttons[1].classList.add('active');
-            }
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
         }
         
         function getCategoryName(category) {
@@ -597,7 +608,7 @@
         function getStatusText(status) {
             const statuses = {
                 'pending': '⏳ Ожидает оплаты',
-                'paid': '✅ Оплачено (деньги на удержании)',
+                'paid': '✅ Оплачено',
                 'delivered': '📦 Ключ отправлен',
                 'completed': '🎉 Завершен'
             };
@@ -612,33 +623,25 @@
         }
         
         function goToProfile() {
-            const currentUser = getCurrentUser();
-            if (currentUser) {
-                window.location.href = 'profile.html';
-            } else {
-                window.location.href = 'login.html';
-            }
+            const user = getCurrentUser();
+            window.location.href = user ? 'profile.html' : 'login.html';
         }
         
-        // ==================== ИНИЦИАЛИЗАЦИЯ ====================
-        
+        // Инициализация
         document.addEventListener('DOMContentLoaded', function() {
-            // Проверка авторизации продавца
-            const currentUser = getCurrentUser();
-            if (!currentUser) {
+            const user = getCurrentUser();
+            if (!user) {
                 window.location.href = 'login.html';
                 return;
             }
-            if (currentUser.role !== 'seller') {
-                alert('Доступ запрещен. Эта страница только для продавцов.');
+            if (user.role !== 'seller') {
+                alert('Доступ запрещен');
                 window.location.href = 'index.html';
                 return;
             }
-            
             loadSellerData();
         });
         
-        // Глобальные функции для onclick
         window.switchTab = switchTab;
         window.editProduct = editProduct;
         window.deleteProductConfirm = deleteProductConfirm;
