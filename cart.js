@@ -1,7 +1,5 @@
 // ==================== КОРЗИНА ====================
 
-let allProducts = [];
-
 // Получение корзины
 function getCart() {
     const cart = localStorage.getItem('cart');
@@ -24,8 +22,12 @@ function updateCartCountDisplay() {
 
 // Добавление в корзину
 window.addToCart = function(productId) {
-    const product = allProducts.find(p => p.id == productId);
-    if (!product) return;
+    // Используем глобальный allProducts из main.js
+    const product = window.allProducts ? window.allProducts.find(p => p.id == productId) : null;
+    if (!product) {
+        console.error('Товар не найден:', productId);
+        return;
+    }
     
     let cart = getCart();
     const existingItem = cart.find(item => item.id == productId);
@@ -38,6 +40,7 @@ window.addToCart = function(productId) {
             name: product.name,
             price: product.price,
             image: product.image,
+            imageData: product.imageData,
             quantity: 1,
             sellerId: product.sellerId,
             sellerName: product.sellerName,
@@ -102,17 +105,22 @@ function displayCartItems() {
         total += item.price * item.quantity;
         html += `
             <div class="cart-item">
-                <div class="cart-item-image"><i class="fas fa-${item.image}"></i></div>
+                <div class="cart-item-image">
+                    ${item.imageData ? 
+                        `<img src="${item.imageData}" style="width:100%; height:100%; object-fit:cover;">` : 
+                        `<i class="fas fa-${item.image || 'box'}"></i>`
+                    }
+                </div>
                 <div class="cart-item-info">
-                    <div class="cart-item-title">${item.name}</div>
+                    <div class="cart-item-title">${escapeHtml(item.name)}</div>
                     <div class="cart-item-price">${item.price} ₽</div>
                     <div class="cart-item-quantity">
-                        <button onclick="updateCartQuantity(${item.id}, -1)">-</button>
+                        <button onclick="updateCartQuantity('${item.id}', -1)">-</button>
                         <span>${item.quantity}</span>
-                        <button onclick="updateCartQuantity(${item.id}, 1)">+</button>
+                        <button onclick="updateCartQuantity('${item.id}', 1)">+</button>
                     </div>
                 </div>
-                <div class="cart-item-remove" onclick="removeFromCart(${item.id})"><i class="fas fa-trash"></i></div>
+                <div class="cart-item-remove" onclick="removeFromCart('${item.id}')"><i class="fas fa-trash"></i></div>
             </div>
         `;
     }
@@ -128,7 +136,7 @@ window.toggleCart = function() {
 };
 
 // Оформление заказа
-window.checkout = function() {
+window.checkout = async function() {
     const cart = getCart();
     const currentUser = window.getCurrentUser();
     
@@ -147,8 +155,7 @@ window.checkout = function() {
     for (let item of cart) {
         keysMessage += `📦 ${item.name} x${item.quantity}\n🔑 Ключ: ${item.key}\n\n`;
         
-        let orders = JSON.parse(localStorage.getItem('orders')) || [];
-        orders.push({
+        const order = {
             productId: item.id,
             productName: item.name,
             quantity: item.quantity,
@@ -161,8 +168,15 @@ window.checkout = function() {
             productKey: item.key,
             status: 'paid',
             createdAt: new Date().toISOString()
-        });
-        localStorage.setItem('orders', JSON.stringify(orders));
+        };
+        
+        if (window.DB && window.DB.createOrder) {
+            await window.DB.createOrder(order);
+        } else {
+            let orders = JSON.parse(localStorage.getItem('orders')) || [];
+            orders.push(order);
+            localStorage.setItem('orders', JSON.stringify(orders));
+        }
     }
     
     alert(keysMessage);
@@ -187,14 +201,15 @@ function showNotification(message, type = 'success') {
     }
 }
 
-// Загрузка товаров из localStorage
-function loadProductsForCart() {
-    allProducts = JSON.parse(localStorage.getItem('products')) || [];
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 // Инициализация
 document.addEventListener('DOMContentLoaded', function() {
-    loadProductsForCart();
     updateCartCountDisplay();
     displayCartItems();
 });
