@@ -9,7 +9,7 @@ const firebaseConfig = {
     measurementId: "G-T6F7KWP9RR"
 };
 
-// Инициализация Firebase (для совместимых версий)
+// Инициализация Firebase
 if (typeof firebase !== 'undefined') {
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
@@ -18,5 +18,5 @@ if (typeof firebase !== 'undefined') {
     window.auth = firebase.auth();
     console.log('✅ Firebase инициализирован');
 } else {
-    console.error('❌ Firebase SDK не загружен, проверьте подключение скриптов');
+    console.error('❌ Firebase SDK не загружен');
 }
