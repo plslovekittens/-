@@ -22,8 +22,12 @@ function updateCartCountDisplay() {
 
 // Добавление в корзину
 window.addToCart = function(productId) {
-    // Используем глобальный allProducts из main.js
-    const product = window.allProducts ? window.allProducts.find(p => p.id == productId) : null;
+    // Используем window.allProducts из main.js
+    if (!window.allProducts) {
+        console.error('Товары не загружены');
+        return;
+    }
+    const product = window.allProducts.find(p => p.id == productId);
     if (!product) {
         console.error('Товар не найден:', productId);
         return;
@@ -51,12 +55,6 @@ window.addToCart = function(productId) {
     saveCart(cart);
     displayCartItems();
     showNotification('Товар добавлен в корзину', 'success');
-    
-    const cartBtn = document.querySelector('.cart-btn');
-    if (cartBtn) {
-        cartBtn.style.transform = 'scale(1.2)';
-        setTimeout(() => cartBtn.style.transform = 'scale(1)', 200);
-    }
 };
 
 // Удаление из корзины
