@@ -41,7 +41,7 @@
         .tab-content.active { display: block; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; color: #a1a1aa; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 14px; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .image-upload-area {
             border: 2px dashed #334155;
@@ -223,6 +223,13 @@
         </div>
     </footer>
 
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="firebase-db.js"></script>
+    <script src="auth.js"></script>
+    
     <script>
         // Получение текущего пользователя
         function getCurrentUser() {
@@ -230,63 +237,27 @@
             return user ? JSON.parse(user) : null;
         }
         
-        // Получение всех товаров
-        function getAllProducts() {
-            return JSON.parse(localStorage.getItem('products')) || [];
-        }
-        
-        function getSellerProducts(sellerId) {
-            const products = getAllProducts();
-            return products.filter(p => p.sellerId == sellerId);
-        }
-        
-        function getSellerOrders(sellerId) {
-            const orders = JSON.parse(localStorage.getItem('orders')) || [];
-            return orders.filter(o => o.sellerId == sellerId);
-        }
-        
-        function addProduct(product) {
-            const products = getAllProducts();
-            product.id = Date.now();
-            product.createdAt = new Date().toISOString();
-            product.soldCount = 0;
-            product.rating = 0;
-            product.reviewsCount = 0;
-            products.push(product);
-            localStorage.setItem('products', JSON.stringify(products));
-            return product;
-        }
-        
-        function deleteProduct(productId) {
-            let products = getAllProducts();
-            products = products.filter(p => p.id != productId);
-            localStorage.setItem('products', JSON.stringify(products));
-        }
-        
-        function updateProduct(productId, updatedData) {
-            const products = getAllProducts();
-            const index = products.findIndex(p => p.id == productId);
-            if (index !== -1) {
-                products[index] = { ...products[index], ...updatedData };
-                localStorage.setItem('products', JSON.stringify(products));
-                return true;
+        // Предпросмотр фото
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                    document.getElementById('productImageData').value = e.target.result;
+                };
+                reader.readAsDataURL(file);
             }
-            return false;
         }
         
-        function updateOrderStatus(orderId, status) {
-            const orders = JSON.parse(localStorage.getItem('orders')) || [];
-            const index = orders.findIndex(o => o.id == orderId);
-            if (index !== -1) {
-                orders[index].status = status;
-                localStorage.setItem('orders', JSON.stringify(orders));
-                return true;
-            }
-            return false;
+        function showMessage(message, type) {
+            const messageArea = document.getElementById('formMessage');
+            messageArea.innerHTML = `<div class="message ${type}">${message}</div>`;
+            setTimeout(() => { messageArea.innerHTML = ''; }, 3000);
         }
         
-        // Загрузка данных
-        function loadSellerData() {
+        // Загрузка данных продавца
+        async function loadSellerData() {
             const currentUser = getCurrentUser();
             if (!currentUser || currentUser.role !== 'seller') {
                 alert('Доступ запрещен. Только для продавцов.');
@@ -294,8 +265,11 @@
                 return;
             }
             
-            const products = getSellerProducts(currentUser.id);
-            const orders = getSellerOrders(currentUser.id);
+            const productsResult = await window.DB.getSellerProducts(currentUser.id);
+            const ordersResult = await window.DB.getSellerOrders(currentUser.id);
+            
+            const products = productsResult.success ? productsResult.data : [];
+            const orders = ordersResult.success ? ordersResult.data : [];
             
             document.getElementById('totalProducts').textContent = products.length;
             document.getElementById('totalSales').textContent = orders.length;
@@ -324,7 +298,7 @@
                         <button class="edit-btn" onclick="editProduct('${p.id}')"><i class="fas fa-edit"></i></button>
                         <button class="delete-btn" onclick="deleteProductConfirm('${p.id}')"><i class="fas fa-trash"></i></button>
                     </td>
-                </tr>
+                </table>
             `).join('');
         }
         
@@ -346,28 +320,51 @@
             `).join('');
         }
         
-        // Предпросмотр фото
-        function previewImage(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('imagePreview').innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-                    document.getElementById('productImageData').value = e.target.result;
-                };
-                reader.readAsDataURL(file);
+        async function deleteProductConfirm(productId) {
+            if (confirm('Удалить товар?')) {
+                const result = await window.DB.deleteProduct(productId);
+                if (result.success) {
+                    showMessage('Товар удален', 'success');
+                    loadSellerData();
+                } else {
+                    showMessage('Ошибка: ' + result.error, 'error');
+                }
             }
         }
         
-        // Сообщения
-        function showMessage(message, type) {
-            const messageArea = document.getElementById('formMessage');
-            messageArea.innerHTML = `<div class="message ${type}">${message}</div>`;
-            setTimeout(() => { messageArea.innerHTML = ''; }, 3000);
+        async function editProduct(productId) {
+            const productsResult = await window.DB.getSellerProducts(getCurrentUser().id);
+            const product = productsResult.data.find(p => p.id == productId);
+            if (!product) return;
+            
+            const newName = prompt('Новое название:', product.name);
+            const newPrice = prompt('Новая цена:', product.price);
+            
+            if (newName && newPrice) {
+                const result = await window.DB.updateProduct(productId, { name: newName, price: parseInt(newPrice) });
+                if (result.success) {
+                    showMessage('Товар обновлен', 'success');
+                    loadSellerData();
+                } else {
+                    showMessage('Ошибка: ' + result.error, 'error');
+                }
+            }
+        }
+        
+        async function sendProductKey(orderId, productKey) {
+            if (confirm(`Отправить ключ покупателю?\n${productKey}`)) {
+                const result = await window.DB.updateOrderStatus(orderId, 'delivered');
+                if (result.success) {
+                    alert('✅ Ключ отправлен!');
+                    loadSellerData();
+                } else {
+                    alert('❌ Ошибка: ' + result.error);
+                }
+            }
         }
         
         // Добавление товара
-        document.getElementById('addProductForm').addEventListener('submit', function(e) {
+        document.getElementById('addProductForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const currentUser = getCurrentUser();
@@ -402,44 +399,17 @@
                 return;
             }
             
-            addProduct(productData);
-            showMessage('✅ Товар успешно добавлен!', 'success');
-            document.getElementById('addProductForm').reset();
-            document.getElementById('imagePreview').innerHTML = '';
-            document.getElementById('productImageData').value = '';
-            loadSellerData();
+            const result = await window.DB.addProduct(productData);
+            if (result.success) {
+                showMessage('✅ Товар успешно добавлен в Firebase!', 'success');
+                document.getElementById('addProductForm').reset();
+                document.getElementById('imagePreview').innerHTML = '';
+                document.getElementById('productImageData').value = '';
+                loadSellerData();
+            } else {
+                showMessage('❌ Ошибка: ' + result.error, 'error');
+            }
         });
-        
-        function deleteProductConfirm(productId) {
-            if (confirm('Удалить товар?')) {
-                deleteProduct(productId);
-                loadSellerData();
-                showMessage('Товар удален', 'success');
-            }
-        }
-        
-        function editProduct(productId) {
-            const products = getAllProducts();
-            const product = products.find(p => p.id == productId);
-            if (!product) return;
-            
-            const newName = prompt('Новое название:', product.name);
-            const newPrice = prompt('Новая цена:', product.price);
-            
-            if (newName && newPrice) {
-                updateProduct(productId, { name: newName, price: parseInt(newPrice) });
-                loadSellerData();
-                showMessage('Товар обновлен', 'success');
-            }
-        }
-        
-        function sendProductKey(orderId, productKey) {
-            if (confirm(`Отправить ключ покупателю?\n${productKey}`)) {
-                updateOrderStatus(orderId, 'delivered');
-                loadSellerData();
-                alert('✅ Ключ отправлен!');
-            }
-        }
         
         function switchTab(tab) {
             document.getElementById('addTab').classList.remove('active');
@@ -480,7 +450,6 @@
             loadSellerData();
         });
         
-        // Глобальные функции
         window.switchTab = switchTab;
         window.editProduct = editProduct;
         window.deleteProductConfirm = deleteProductConfirm;
