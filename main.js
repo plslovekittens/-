@@ -1,18 +1,35 @@
 // ==================== ОСНОВНОЙ ФУНКЦИОНАЛ ====================
 
-let allProducts = [];
+// Используем глобальную переменную
+window.allProducts = [];
 
 // Загрузка товаров из Firestore
 async function loadProducts() {
-    const result = await window.DB.getAllProducts();
-    if (result.success) {
-        allProducts = result.data;
-        displayProducts(allProducts);
+    console.log("🔄 Загрузка товаров из Firestore...");
+    
+    if (!window.db) {
+        console.error("❌ Firestore не инициализирован!");
+        return;
+    }
+    
+    try {
+        const snapshot = await window.db.collection('products').where('isActive', '==', true).get();
+        console.log("📦 Получено документов:", snapshot.size);
+        
+        window.allProducts = [];
+        snapshot.forEach(doc => {
+            window.allProducts.push({ id: doc.id, ...doc.data() });
+        });
+        
+        console.log("✅ Загружено товаров:", window.allProducts.length);
+        
+        displayProducts(window.allProducts);
         displayCategories();
         updateStats();
-    } else {
-        console.error('Ошибка загрузки товаров:', result.error);
-        allProducts = [];
+        
+    } catch (error) {
+        console.error("❌ Ошибка загрузки товаров:", error);
+        window.allProducts = [];
         displayProducts([]);
         displayCategories();
     }
@@ -21,7 +38,7 @@ async function loadProducts() {
 // Обновление статистики
 function updateStats() {
     const productsCount = document.getElementById('productsCount');
-    if (productsCount) productsCount.textContent = allProducts.length;
+    if (productsCount) productsCount.textContent = window.allProducts.length;
 }
 
 // Отображение категорий
@@ -30,9 +47,9 @@ function displayCategories() {
     if (!grid) return;
     
     const categories = [
-        { id: "games", name: "Игры", icon: "gamepad", count: allProducts.filter(p => p.category === 'games').length },
-        { id: "software", name: "Программы", icon: "laptop-code", count: allProducts.filter(p => p.category === 'software').length },
-        { id: "subscriptions", name: "Подписки", icon: "crown", count: allProducts.filter(p => p.category === 'subscriptions').length }
+        { id: "games", name: "Игры", icon: "gamepad", count: window.allProducts.filter(p => p.category === 'games').length },
+        { id: "software", name: "Программы", icon: "laptop-code", count: window.allProducts.filter(p => p.category === 'software').length },
+        { id: "subscriptions", name: "Подписки", icon: "crown", count: window.allProducts.filter(p => p.category === 'subscriptions').length }
     ];
     
     grid.innerHTML = categories.map(cat => `
@@ -84,7 +101,7 @@ function displayProducts(productsToShow) {
 
 // Фильтрация
 window.filterProducts = function(category) {
-    const filtered = category === 'all' ? allProducts : allProducts.filter(p => p.category === category);
+    const filtered = category === 'all' ? window.allProducts : window.allProducts.filter(p => p.category === category);
     displayProducts(filtered);
     
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -118,7 +135,7 @@ window.searchProducts = function() {
         return;
     }
     
-    const filtered = allProducts.filter(p => p.name.toLowerCase().includes(query));
+    const filtered = window.allProducts.filter(p => p.name.toLowerCase().includes(query));
     
     if (filtered.length === 0) {
         results.innerHTML = '<div class="no-results">Ничего не найдено</div>';
@@ -135,7 +152,7 @@ window.searchProducts = function() {
 
 window.selectProduct = function(productId) {
     closeSearch();
-    const product = allProducts.find(p => p.id == productId);
+    const product = window.allProducts.find(p => p.id == productId);
     if (product) {
         alert(`${product.name}\nЦена: ${product.price} ₽`);
     }
@@ -161,14 +178,18 @@ function escapeHtml(text) {
 
 // Инициализация
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("📄 DOM загружен, ожидаем Firebase...");
+    
     const checkFirebase = setInterval(() => {
         if (window.db && window.DB) {
             clearInterval(checkFirebase);
-            console.log('Firebase готов, загружаем товары...');
+            console.log("✅ Firebase готов, загружаем товары...");
             loadProducts();
             if (window.updateCartCountDisplay) window.updateCartCountDisplay();
             if (window.displayCartItems) window.displayCartItems();
             window.updateUserInterface();
+        } else {
+            console.log("⏳ Ожидание Firebase...");
         }
     }, 500);
 });
