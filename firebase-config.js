@@ -9,14 +9,32 @@ const firebaseConfig = {
     measurementId: "G-T6F7KWP9RR"
 };
 
-// Инициализация Firebase
-if (typeof firebase !== 'undefined') {
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
+// Функция инициализации Firebase
+function initFirebase() {
+    if (typeof firebase === 'undefined') {
+        console.error('❌ Firebase SDK не загружен! Проверьте подключение скриптов в HTML.');
+        return false;
     }
-    window.db = firebase.firestore();
-    window.auth = firebase.auth();
-    console.log('✅ Firebase инициализирован');
-} else {
-    console.error('❌ Firebase SDK не загружен');
+    
+    try {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+            console.log('✅ Firebase приложение инициализировано');
+        }
+        
+        window.db = firebase.firestore();
+        window.auth = firebase.auth();
+        
+        console.log('✅ Firebase инициализирован');
+        console.log('✅ window.auth определён:', window.auth ? 'Да' : 'Нет');
+        console.log('✅ window.db определён:', window.db ? 'Да' : 'Нет');
+        
+        return true;
+    } catch (error) {
+        console.error('❌ Ошибка инициализации Firebase:', error);
+        return false;
+    }
 }
+
+// Запускаем инициализацию
+initFirebase();
