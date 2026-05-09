@@ -1,6 +1,5 @@
 // ==================== ОСНОВНОЙ ФУНКЦИОНАЛ ====================
 
-// Используем глобальную переменную
 window.allProducts = [];
 
 // Загрузка товаров из Firestore
@@ -13,15 +12,24 @@ async function loadProducts() {
     }
     
     try {
+        // Загружаем ВСЕ активные товары
         const snapshot = await window.db.collection('products').where('isActive', '==', true).get();
-        console.log("📦 Получено документов:", snapshot.size);
+        console.log("📦 Получено документов из Firestore:", snapshot.size);
         
         window.allProducts = [];
         snapshot.forEach(doc => {
-            window.allProducts.push({ id: doc.id, ...doc.data() });
+            const product = { id: doc.id, ...doc.data() };
+            window.allProducts.push(product);
+            console.log("📦 Товар:", product.name, "Категория:", product.category);
         });
         
         console.log("✅ Загружено товаров:", window.allProducts.length);
+        
+        // Если товаров нет - показываем сообщение
+        if (window.allProducts.length === 0) {
+            console.log("⚠️ Товары не найдены в Firestore. Добавьте товары через панель продавца.");
+            document.getElementById('productsGrid').innerHTML = '<div class="no-products">Товары не найдены. Добавьте товары через панель продавца.</div>';
+        }
         
         displayProducts(window.allProducts);
         displayCategories();
@@ -67,7 +75,7 @@ function displayProducts(productsToShow) {
     if (!grid) return;
     
     if (productsToShow.length === 0) {
-        grid.innerHTML = '<div class="no-products">Товары не найдены</div>';
+        grid.innerHTML = '<div class="no-products">Товары не найдены. <a href="login.html" style="color: #7c3aed;">Войдите как продавец</a> чтобы добавить товары.</div>';
         return;
     }
     
@@ -144,7 +152,10 @@ window.searchProducts = function() {
     
     results.innerHTML = filtered.slice(0, 5).map(p => `
         <div class="search-result-item" onclick="selectProduct('${p.id}')">
-            <i class="fas fa-${p.image || 'box'}"></i>
+            ${p.imageData ? 
+                `<img src="${p.imageData}" style="width:40px; height:40px; border-radius:8px; object-fit:cover;">` : 
+                `<i class="fas fa-${p.image || 'box'}"></i>`
+            }
             <div><div>${escapeHtml(p.name)}</div><small>${p.price} ₽</small></div>
         </div>
     `).join('');
