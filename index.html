@@ -16,10 +16,10 @@
             border-radius: 50%;
             color: white;
             cursor: pointer;
-            transition: 0.3s;
             display: none;
             align-items: center;
             justify-content: center;
+            margin-left: 10px;
         }
         .logout-btn:hover {
             background: #dc2626;
@@ -126,30 +126,18 @@
         <div class="cart-footer"><div class="cart-total"><span>Итого:</span><span id="cartTotal">0 ₽</span></div><button class="btn btn-primary btn-full" onclick="checkout()"><i class="fas fa-qrcode"></i> Оплатить через СБП</button></div>
     </div>
 
-    <div class="chat-widget" id="chatWidget">
-        <button class="chat-toggle" onclick="toggleChat()"><i class="fas fa-headset"></i></button>
-        <div class="chat-window" id="chatWindow">
-            <div class="chat-header"><h4><i class="fas fa-headset"></i> Поддержка Volt</h4><button onclick="toggleChat()"><i class="fas fa-times"></i></button></div>
-            <div class="chat-messages" id="chatMessages"><div class="chat-message support"><span>Поддержка:</span><div class="message-text">Здравствуйте! Чем могу помочь?</div></div></div>
-            <div class="chat-input"><input type="text" id="chatInput" placeholder="Введите сообщение..."><button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button></div>
-        </div>
-    </div>
-
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-section"><div class="logo"><i class="fas fa-bolt"></i> VOLT</div><p>Цифровой маркетплейс. Покупайте и продавайте безопасно.</p><div class="payment-methods"><i class="fab fa-cc-visa"></i><i class="fab fa-cc-mastercard"></i><i class="fas fa-qrcode"></i></div></div>
-                <div class="footer-section"><h4>Для покупателей</h4><ul><li><a href="#">Как купить</a></li><li><a href="rules.html">Защита сделки</a></li><li><a href="#">Возврат</a></li></ul></div>
-                <div class="footer-section"><h4>Для продавцов</h4><ul><li><a href="seller-info.html">Начать продавать</a></li><li><a href="#">Комиссия 5%</a></li><li><a href="rules.html">Правила площадки</a></li></ul></div>
-                <div class="footer-section"><h4>Контакты</h4><div class="contact-buttons"><a href="https://t.me/plslovekittens" target="_blank" class="contact-btn telegram"><i class="fab fa-telegram"></i> Telegram</a><a href="https://discord.gg/willka" target="_blank" class="contact-btn discord"><i class="fab fa-discord"></i> Discord</a><a href="https://vk.com/ssaattaaann" target="_blank" class="contact-btn vk"><i class="fab fa-vk"></i> VK</a></div></div>
+                <div class="footer-section"><div class="logo"><i class="fas fa-bolt"></i> VOLT</div><p>Цифровой маркетплейс</p></div>
+                <div class="footer-section"><h4>Контакты</h4><a href="https://t.me/plslovekittens" target="_blank">Telegram</a><br><a href="https://vk.com/ssaattaaann" target="_blank">VK</a></div>
             </div>
-            <div class="footer-bottom"><p>&copy; 2024 Volt Store. Безопасная сделка — гарантия качества.</p></div>
         </div>
     </footer>
 
     <div class="notification" id="notification"></div>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK (COMPAT ВЕРСИИ) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
@@ -162,47 +150,17 @@
     
     <script>
         function toggleSearch() {
-            const overlay = document.getElementById('searchOverlay');
-            if (overlay) overlay.classList.toggle('active');
+            document.getElementById('searchOverlay').classList.toggle('active');
         }
         function closeSearch() {
-            const overlay = document.getElementById('searchOverlay');
-            if (overlay) overlay.classList.remove('active');
+            document.getElementById('searchOverlay').classList.remove('active');
         }
         function toggleCart() {
-            const sidebar = document.getElementById('cartSidebar');
-            if (sidebar) sidebar.classList.toggle('active');
-        }
-        function toggleChat() {
-            const chatWindow = document.getElementById('chatWindow');
-            if (chatWindow) chatWindow.classList.toggle('active');
-        }
-        function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const messagesContainer = document.getElementById('chatMessages');
-            const message = input.value.trim();
-            if (!message) return;
-            const userMsg = document.createElement('div');
-            userMsg.className = 'chat-message user';
-            userMsg.innerHTML = `<span>Вы:</span><div class="message-text">${message}</div>`;
-            messagesContainer.appendChild(userMsg);
-            input.value = '';
-            setTimeout(() => {
-                const supportMsg = document.createElement('div');
-                supportMsg.className = 'chat-message support';
-                supportMsg.innerHTML = `<span>Поддержка:</span><div class="message-text">Спасибо за обращение! Наш специалист свяжется с вами.</div>`;
-                messagesContainer.appendChild(supportMsg);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }, 500);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            document.getElementById('cartSidebar').classList.toggle('active');
         }
         function goToProfile() {
-            const currentUser = window.getCurrentUser();
-            if (currentUser) {
-                window.location.href = 'profile.html';
-            } else {
-                window.location.href = 'login.html';
-            }
+            const user = window.getCurrentUser();
+            window.location.href = user ? 'profile.html' : 'login.html';
         }
     </script>
 </body>
