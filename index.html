@@ -7,6 +7,30 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .logout-btn {
+            background: #ef4444;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .logout-btn:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+        }
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -27,6 +51,9 @@
                     </button>
                     <button class="user-btn" onclick="goToProfile()">
                         <i class="fas fa-user"></i>
+                    </button>
+                    <button class="logout-btn" id="logoutBtn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
                     </button>
                 </div>
             </div>
@@ -122,26 +149,15 @@
 
     <div class="notification" id="notification"></div>
 
-    <!-- ========== ПОДКЛЮЧЕНИЕ СКРИПТОВ (ПРАВИЛЬНЫЙ ПОРЯДОК) ========== -->
-    
-    <!-- 1. Firebase SDK (COMPAT версии) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     
-    <!-- 2. Наша конфигурация Firebase -->
     <script src="firebase-config.js"></script>
-    
-    <!-- 3. Работа с базой данных -->
     <script src="firebase-db.js"></script>
-    
-    <!-- 4. Авторизация -->
     <script src="auth.js"></script>
-    
-    <!-- 5. Корзина -->
     <script src="cart.js"></script>
-    
-    <!-- 6. Основной функционал -->
     <script src="main.js"></script>
     
     <script>
