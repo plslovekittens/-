@@ -104,14 +104,25 @@ window.loginUser = async function(email, password) {
     }
 };
 
-// Выход
+// Выход из аккаунта
 window.logoutUser = async function() {
     try {
-        if (window.auth) await window.auth.signOut();
+        if (window.auth) {
+            await window.auth.signOut();
+        }
     } catch (error) {
-        console.error('Ошибка выхода:', error);
+        console.error('Ошибка выхода из Firebase:', error);
     }
+    
+    // Очищаем сессию
     sessionStorage.removeItem('currentUser');
+    
+    // Очищаем корзину (опционально)
+    localStorage.removeItem('cart');
+    
+    console.log('✅ Выход выполнен');
+    
+    // Перенаправляем на главную
     window.location.href = 'index.html';
 };
 
@@ -125,8 +136,22 @@ window.getCurrentUser = function() {
 window.updateUserInterface = function() {
     const currentUser = window.getCurrentUser();
     const userBtn = document.querySelector('.user-btn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const authButtons = document.getElementById('authButtons');
+    const userInfo = document.getElementById('userInfo');
+    const userName = document.getElementById('userName');
+    const sellerLink = document.getElementById('sellerLink');
     
     if (currentUser) {
+        // Показываем информацию о пользователе
+        if (authButtons) authButtons.style.display = 'none';
+        if (userInfo) userInfo.style.display = 'block';
+        if (userName) userName.innerHTML = `<i class="fas fa-user"></i> ${currentUser.name}`;
+        if (sellerLink && currentUser.role === 'seller') {
+            sellerLink.style.display = 'block';
+        }
+        
+        // Меняем иконку пользователя
         if (userBtn) {
             userBtn.innerHTML = `<i class="fas fa-user"></i> ${currentUser.name}`;
             userBtn.style.width = 'auto';
@@ -134,17 +159,29 @@ window.updateUserInterface = function() {
             userBtn.style.borderRadius = '20px';
             userBtn.style.gap = '8px';
         }
+        
+        // Показываем кнопку выхода
+        if (logoutBtn) logoutBtn.style.display = 'flex';
+        
     } else {
+        // Скрываем информацию о пользователе
+        if (authButtons) authButtons.style.display = 'block';
+        if (userInfo) userInfo.style.display = 'none';
+        
+        // Возвращаем иконку пользователя
         if (userBtn) {
             userBtn.innerHTML = `<i class="fas fa-user"></i>`;
             userBtn.style.width = '40px';
             userBtn.style.padding = '0';
             userBtn.style.borderRadius = '50%';
         }
+        
+        // Скрываем кнопку выхода
+        if (logoutBtn) logoutBtn.style.display = 'none';
     }
 };
 
-// Отслеживание состояния авторизации (с проверкой наличия auth)
+// Отслеживание состояния авторизации
 if (window.auth) {
     window.auth.onAuthStateChanged(async (user) => {
         console.log('Auth state changed:', user ? user.email : 'null');
@@ -171,38 +208,6 @@ if (window.auth) {
         }
         window.updateUserInterface();
     });
-} else {
-    console.warn('⚠️ window.auth не определён, onAuthStateChanged не будет работать');
-    // Повторная проверка через 500 мс
-    setTimeout(() => {
-        if (window.auth) {
-            window.auth.onAuthStateChanged(async (user) => {
-                console.log('Auth state changed (delayed):', user ? user.email : 'null');
-                if (user) {
-                    const userDoc = await window.db.collection('users').doc(user.uid).get();
-                    if (userDoc.exists) {
-                        const userData = userDoc.data();
-                        sessionStorage.setItem('currentUser', JSON.stringify({
-                            id: user.uid,
-                            name: userData.name,
-                            email: user.email,
-                            role: userData.role
-                        }));
-                    } else {
-                        sessionStorage.setItem('currentUser', JSON.stringify({
-                            id: user.uid,
-                            name: user.email.split('@')[0],
-                            email: user.email,
-                            role: 'buyer'
-                        }));
-                    }
-                } else {
-                    sessionStorage.removeItem('currentUser');
-                }
-                window.updateUserInterface();
-            });
-        }
-    }, 500);
 }
 
 // Обработчики форм
