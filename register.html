@@ -44,11 +44,16 @@
             color: white; font-size: 16px;
             font-weight: 600; cursor: pointer;
         }
+        .btn-register:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
         .auth-link { text-align: center; margin-top: 20px; color: #94a3b8; }
         .auth-link a { color: #7c3aed; text-decoration: none; }
         .message { padding: 12px; border-radius: 10px; margin-bottom: 20px; text-align: center; }
         .message.error { background: rgba(239,68,68,0.2); border: 1px solid #ef4444; color: #ef4444; }
         .message.success { background: rgba(16,185,129,0.2); border: 1px solid #10b981; color: #10b981; }
+        .message.info { background: rgba(59,130,246,0.2); border: 1px solid #3b82f6; color: #3b82f6; }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -66,7 +71,7 @@
                 <div class="role-option" data-role="seller" onclick="selectRole('seller')"><i class="fas fa-store"></i> Продавец</div>
             </div>
             <input type="hidden" id="regRole" value="buyer">
-            <button type="submit" class="btn-register">Зарегистрироваться</button>
+            <button type="submit" class="btn-register" id="submitBtn" disabled>Зарегистрироваться</button>
         </form>
         <div class="auth-link">Уже есть аккаунт? <a href="login.html">Войти</a></div>
     </div>
@@ -74,10 +79,49 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="auth.js"></script>
     
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeWBgPT84RzljctkdpGO1xtmhVd2MdD1w",
+            authDomain: "diplom-57d78.firebaseapp.com",
+            projectId: "diplom-57d78",
+            storageBucket: "diplom-57d78.firebasestorage.app",
+            messagingSenderId: "448908238147",
+            appId: "1:448908238147:web:d222f715cf13a3c83d23f6"
+        };
+        
+        let db, auth;
+        let firebaseReady = false;
+        
+        function showMessage(message, type) {
+            const area = document.getElementById('messageArea');
+            area.innerHTML = `<div class="message ${type}">${message}</div>`;
+            setTimeout(() => { if (area.innerHTML.includes(message)) area.innerHTML = ''; }, 4000);
+        }
+        
+        function initFirebase() {
+            try {
+                if (typeof firebase === 'undefined') {
+                    showMessage('Ошибка загрузки Firebase', 'error');
+                    return false;
+                }
+                
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                db = firebase.firestore();
+                auth = firebase.auth();
+                firebaseReady = true;
+                console.log('✅ Firebase инициализирован');
+                document.getElementById('submitBtn').disabled = false;
+                return true;
+            } catch (error) {
+                console.error('❌ Ошибка:', error);
+                showMessage('Ошибка: ' + error.message, 'error');
+                return false;
+            }
+        }
+        
         function selectRole(role) {
             document.getElementById('regRole').value = role;
             document.querySelectorAll('.role-option').forEach(opt => {
@@ -86,34 +130,74 @@
             });
         }
         
-        function showMessage(message, type) {
-            const area = document.getElementById('messageArea');
-            area.innerHTML = `<div class="message ${type}">${message}</div>`;
-            setTimeout(() => area.innerHTML = '', 4000);
-        }
-        
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            if (!firebaseReady || !auth) {
+                showMessage('Подождите, Firebase загружается...', 'info');
+                return;
+            }
+            
             const name = document.getElementById('regName').value.trim();
             const email = document.getElementById('regEmail').value.trim();
             const password = document.getElementById('regPassword').value;
             const confirm = document.getElementById('regPasswordConfirm').value;
             const role = document.getElementById('regRole').value;
             
-            if (!name || !email || !password) { showMessage('Заполните все поля', 'error'); return; }
-            if (password !== confirm) { showMessage('Пароли не совпадают', 'error'); return; }
-            if (password.length < 6) { showMessage('Пароль минимум 6 символов', 'error'); return; }
+            if (!name || !email || !password) {
+                showMessage('Заполните все поля', 'error');
+                return;
+            }
+            if (password !== confirm) {
+                showMessage('Пароли не совпадают', 'error');
+                return;
+            }
+            if (password.length < 6) {
+                showMessage('Пароль минимум 6 символов', 'error');
+                return;
+            }
             
-            const result = await window.registerUser(name, email, password, role);
-            if (result.success) {
-                showMessage('Регистрация успешна! Перенаправление...', 'success');
-                setTimeout(() => window.location.href = 'login.html', 1500);
-            } else {
-                showMessage('Ошибка: ' + result.error, 'error');
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Регистрация...';
+            
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                await db.collection('users').doc(user.uid).set({
+                    name: name,
+                    email: email,
+                    role: role,
+                    createdAt: new Date().toISOString(),
+                    balance: 0,
+                    isActive: true
+                });
+                
+                showMessage('✅ Регистрация успешна!', 'success');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Ошибка:', error);
+                btn.disabled = false;
+                btn.textContent = 'Зарегистрироваться';
+                
+                if (error.code === 'auth/email-already-in-use') {
+                    showMessage('Этот email уже зарегистрирован', 'error');
+                } else if (error.code === 'auth/weak-password') {
+                    showMessage('Пароль слишком слабый', 'error');
+                } else if (error.code === 'auth/operation-not-allowed') {
+                    showMessage('Email/Password не включен в Firebase Console', 'error');
+                } else {
+                    showMessage('Ошибка: ' + error.message, 'error');
+                }
             }
         });
         
         document.querySelector('.role-option[data-role="buyer"]').classList.add('selected');
+        initFirebase();
     </script>
 </body>
 </html>
