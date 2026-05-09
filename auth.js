@@ -1,18 +1,41 @@
 // ==================== АВТОРИЗАЦИЯ С FIREBASE ====================
 
+// Функция ожидания Firebase Auth
+function waitForAuth() {
+    return new Promise((resolve) => {
+        if (window.auth) {
+            resolve(true);
+            return;
+        }
+        let attempts = 0;
+        const interval = setInterval(() => {
+            attempts++;
+            if (window.auth) {
+                clearInterval(interval);
+                resolve(true);
+            } else if (attempts > 50) {
+                clearInterval(interval);
+                resolve(false);
+            }
+        }, 100);
+    });
+}
+
 // Регистрация (Firebase)
 window.registerUser = async function(name, email, password, role) {
+    const authReady = await waitForAuth();
+    if (!authReady || !window.auth) {
+        return { success: false, error: 'Firebase не загружен. Обновите страницу.' };
+    }
+    
     try {
-        // Проверка длины пароля
         if (password.length < 6) {
             return { success: false, error: 'Пароль должен содержать минимум 6 символов' };
         }
         
-        // 1. Создаём пользователя в Firebase Authentication
         const userCredential = await window.auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
         
-        // 2. Сохраняем данные пользователя в Firestore
         await window.db.collection('users').doc(user.uid).set({
             name: name,
             email: email,
@@ -44,11 +67,15 @@ window.registerUser = async function(name, email, password, role) {
 
 // Вход (Firebase)
 window.loginUser = async function(email, password) {
+    const authReady = await waitForAuth();
+    if (!authReady || !window.auth) {
+        return { success: false, error: 'Firebase не загружен. Обновите страницу.' };
+    }
+    
     try {
         const userCredential = await window.auth.signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
         
-        // Получаем данные пользователя из Firestore
         const userDoc = await window.db.collection('users').doc(user.uid).get();
         const userData = userDoc.exists ? userDoc.data() : { name: user.email.split('@')[0], role: 'buyer' };
         
@@ -80,7 +107,7 @@ window.loginUser = async function(email, password) {
 // Выход
 window.logoutUser = async function() {
     try {
-        await window.auth.signOut();
+        if (window.auth) await window.auth.signOut();
     } catch (error) {
         console.error('Ошибка выхода:', error);
     }
@@ -117,32 +144,66 @@ window.updateUserInterface = function() {
     }
 };
 
-// Отслеживание состояния авторизации
-window.auth.onAuthStateChanged(async (user) => {
-    console.log('Auth state changed:', user ? user.email : 'null');
-    if (user) {
-        const userDoc = await window.db.collection('users').doc(user.uid).get();
-        if (userDoc.exists) {
-            const userData = userDoc.data();
-            sessionStorage.setItem('currentUser', JSON.stringify({
-                id: user.uid,
-                name: userData.name,
-                email: user.email,
-                role: userData.role
-            }));
+// Отслеживание состояния авторизации (с проверкой наличия auth)
+if (window.auth) {
+    window.auth.onAuthStateChanged(async (user) => {
+        console.log('Auth state changed:', user ? user.email : 'null');
+        if (user) {
+            const userDoc = await window.db.collection('users').doc(user.uid).get();
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+                sessionStorage.setItem('currentUser', JSON.stringify({
+                    id: user.uid,
+                    name: userData.name,
+                    email: user.email,
+                    role: userData.role
+                }));
+            } else {
+                sessionStorage.setItem('currentUser', JSON.stringify({
+                    id: user.uid,
+                    name: user.email.split('@')[0],
+                    email: user.email,
+                    role: 'buyer'
+                }));
+            }
         } else {
-            sessionStorage.setItem('currentUser', JSON.stringify({
-                id: user.uid,
-                name: user.email.split('@')[0],
-                email: user.email,
-                role: 'buyer'
-            }));
+            sessionStorage.removeItem('currentUser');
         }
-    } else {
-        sessionStorage.removeItem('currentUser');
-    }
-    window.updateUserInterface();
-});
+        window.updateUserInterface();
+    });
+} else {
+    console.warn('⚠️ window.auth не определён, onAuthStateChanged не будет работать');
+    // Повторная проверка через 500 мс
+    setTimeout(() => {
+        if (window.auth) {
+            window.auth.onAuthStateChanged(async (user) => {
+                console.log('Auth state changed (delayed):', user ? user.email : 'null');
+                if (user) {
+                    const userDoc = await window.db.collection('users').doc(user.uid).get();
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        sessionStorage.setItem('currentUser', JSON.stringify({
+                            id: user.uid,
+                            name: userData.name,
+                            email: user.email,
+                            role: userData.role
+                        }));
+                    } else {
+                        sessionStorage.setItem('currentUser', JSON.stringify({
+                            id: user.uid,
+                            name: user.email.split('@')[0],
+                            email: user.email,
+                            role: 'buyer'
+                        }));
+                    }
+                } else {
+                    sessionStorage.removeItem('currentUser');
+                }
+                window.updateUserInterface();
+            });
+        }
+    }, 500);
+}
 
 // Обработчики форм
 document.addEventListener('DOMContentLoaded', function() {
@@ -226,3 +287,5 @@ window.selectRole = function(role) {
         }
     });
 };
+
+console.log('✅ auth.js загружен');
