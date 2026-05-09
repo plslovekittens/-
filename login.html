@@ -37,11 +37,16 @@
             color: white; font-size: 16px;
             font-weight: 600; cursor: pointer;
         }
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
         .auth-link { text-align: center; margin-top: 20px; color: #94a3b8; }
         .auth-link a { color: #7c3aed; text-decoration: none; }
         .message { padding: 12px; border-radius: 10px; margin-bottom: 20px; text-align: center; }
         .message.error { background: rgba(239,68,68,0.2); border: 1px solid #ef4444; color: #ef4444; }
         .message.success { background: rgba(16,185,129,0.2); border: 1px solid #10b981; color: #10b981; }
+        .message.info { background: rgba(59,130,246,0.2); border: 1px solid #3b82f6; color: #3b82f6; }
     </style>
 </head>
 <body>
@@ -51,43 +56,121 @@
         <form id="loginForm">
             <div class="form-group"><input type="email" id="loginEmail" placeholder="Email" required></div>
             <div class="form-group"><input type="password" id="loginPassword" placeholder="Пароль" required></div>
-            <button type="submit" class="btn-login">Войти</button>
+            <button type="submit" class="btn-login" id="submitBtn" disabled>Войти</button>
         </form>
         <div class="auth-link">Нет аккаунта? <a href="register.html">Зарегистрироваться</a></div>
     </div>
 
+    <!-- Firebase SDK (COMPAT ВЕРСИИ) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="auth.js"></script>
     
     <script>
+        // Конфигурация Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeWBgPT84RzljctkdpGO1xtmhVd2MdD1w",
+            authDomain: "diplom-57d78.firebaseapp.com",
+            projectId: "diplom-57d78",
+            storageBucket: "diplom-57d78.firebasestorage.app",
+            messagingSenderId: "448908238147",
+            appId: "1:448908238147:web:d222f715cf13a3c83d23f6"
+        };
+        
+        let auth = null;
+        let firebaseReady = false;
+        
         function showMessage(message, type) {
             const area = document.getElementById('messageArea');
             area.innerHTML = `<div class="message ${type}">${message}</div>`;
-            setTimeout(() => area.innerHTML = '', 3000);
+            setTimeout(() => { if (area.innerHTML.includes(message)) area.innerHTML = ''; }, 3000);
         }
         
+        // Инициализация Firebase
+        function initFirebase() {
+            try {
+                if (typeof firebase === 'undefined') {
+                    console.error('Firebase SDK не загружен');
+                    showMessage('Ошибка загрузки Firebase. Обновите страницу.', 'error');
+                    return false;
+                }
+                
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                auth = firebase.auth();
+                firebaseReady = true;
+                console.log('✅ Firebase инициализирован');
+                console.log('✅ auth:', !!auth);
+                
+                // Разблокируем кнопку
+                document.getElementById('submitBtn').disabled = false;
+                return true;
+            } catch (error) {
+                console.error('❌ Ошибка:', error);
+                showMessage('Ошибка: ' + error.message, 'error');
+                return false;
+            }
+        }
+        
+        // Обработчик формы входа
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            if (!firebaseReady || !auth) {
+                showMessage('Подождите, Firebase загружается...', 'info');
+                return;
+            }
+            
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-            if (!email || !password) { showMessage('Заполните все поля', 'error'); return; }
             
-            const result = await window.loginUser(email, password);
-            if (result.success) {
+            if (!email || !password) {
+                showMessage('Заполните все поля', 'error');
+                return;
+            }
+            
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Вход...';
+            
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                console.log('✅ Вход выполнен:', user.uid);
+                
+                sessionStorage.setItem('currentUser', JSON.stringify({
+                    id: user.uid,
+                    email: user.email,
+                    name: user.email.split('@')[0]
+                }));
+                
                 showMessage('Вход выполнен! Перенаправление...', 'success');
+                
                 setTimeout(() => {
-                    if (result.userData.role === 'seller') {
-                        window.location.href = 'seller-dashboard.html';
-                    } else {
-                        window.location.href = 'index.html';
-                    }
+                    window.location.href = 'index.html';
                 }, 1500);
-            } else {
-                showMessage('Ошибка: ' + result.error, 'error');
+                
+            } catch (error) {
+                console.error('❌ Ошибка:', error.code, error.message);
+                btn.disabled = false;
+                btn.textContent = 'Войти';
+                
+                if (error.code === 'auth/user-not-found') {
+                    showMessage('Пользователь не найден', 'error');
+                } else if (error.code === 'auth/wrong-password') {
+                    showMessage('Неверный пароль', 'error');
+                } else if (error.code === 'auth/invalid-email') {
+                    showMessage('Неверный формат email', 'error');
+                } else if (error.code === 'auth/operation-not-allowed') {
+                    showMessage('Email/Password не включен в Firebase Console', 'error');
+                } else {
+                    showMessage('Ошибка: ' + error.message, 'error');
+                }
             }
         });
+        
+        // Запускаем инициализацию
+        initFirebase();
     </script>
 </body>
 </html>
