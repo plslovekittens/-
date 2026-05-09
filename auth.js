@@ -1,33 +1,7 @@
-// ==================== АВТОРИЗАЦИЯ С FIREBASE ====================
+// ==================== АВТОРИЗАЦИЯ ====================
 
-// Функция ожидания Firebase Auth
-function waitForAuth() {
-    return new Promise((resolve) => {
-        if (window.auth) {
-            resolve(true);
-            return;
-        }
-        let attempts = 0;
-        const interval = setInterval(() => {
-            attempts++;
-            if (window.auth) {
-                clearInterval(interval);
-                resolve(true);
-            } else if (attempts > 50) {
-                clearInterval(interval);
-                resolve(false);
-            }
-        }, 100);
-    });
-}
-
-// Регистрация (Firebase)
+// Регистрация
 window.registerUser = async function(name, email, password, role) {
-    const authReady = await waitForAuth();
-    if (!authReady || !window.auth) {
-        return { success: false, error: 'Firebase не загружен. Обновите страницу.' };
-    }
-    
     try {
         if (password.length < 6) {
             return { success: false, error: 'Пароль должен содержать минимум 6 символов' };
@@ -45,7 +19,7 @@ window.registerUser = async function(name, email, password, role) {
             isActive: true
         });
         
-        console.log('✅ Пользователь создан в Firebase:', user.uid);
+        console.log('✅ Пользователь создан:', user.uid);
         return { success: true, user: user };
         
     } catch (error) {
@@ -58,20 +32,15 @@ window.registerUser = async function(name, email, password, role) {
         } else if (error.code === 'auth/invalid-email') {
             return { success: false, error: 'Неверный формат email' };
         } else if (error.code === 'auth/operation-not-allowed') {
-            return { success: false, error: 'Email/Password не включен в Firebase Console. Включите его в разделе Authentication → Sign-in methods.' };
+            return { success: false, error: 'Email/Password не включен в Firebase Console' };
         } else {
             return { success: false, error: error.message };
         }
     }
 };
 
-// Вход (Firebase)
+// Вход
 window.loginUser = async function(email, password) {
-    const authReady = await waitForAuth();
-    if (!authReady || !window.auth) {
-        return { success: false, error: 'Firebase не загружен. Обновите страницу.' };
-    }
-    
     try {
         const userCredential = await window.auth.signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
@@ -104,25 +73,15 @@ window.loginUser = async function(email, password) {
     }
 };
 
-// Выход из аккаунта
+// Выход
 window.logoutUser = async function() {
     try {
-        if (window.auth) {
-            await window.auth.signOut();
-        }
+        if (window.auth) await window.auth.signOut();
     } catch (error) {
-        console.error('Ошибка выхода из Firebase:', error);
+        console.error('Ошибка выхода:', error);
     }
-    
-    // Очищаем сессию
     sessionStorage.removeItem('currentUser');
-    
-    // Очищаем корзину (опционально)
     localStorage.removeItem('cart');
-    
-    console.log('✅ Выход выполнен');
-    
-    // Перенаправляем на главную
     window.location.href = 'index.html';
 };
 
@@ -137,21 +96,8 @@ window.updateUserInterface = function() {
     const currentUser = window.getCurrentUser();
     const userBtn = document.querySelector('.user-btn');
     const logoutBtn = document.getElementById('logoutBtn');
-    const authButtons = document.getElementById('authButtons');
-    const userInfo = document.getElementById('userInfo');
-    const userName = document.getElementById('userName');
-    const sellerLink = document.getElementById('sellerLink');
     
     if (currentUser) {
-        // Показываем информацию о пользователе
-        if (authButtons) authButtons.style.display = 'none';
-        if (userInfo) userInfo.style.display = 'block';
-        if (userName) userName.innerHTML = `<i class="fas fa-user"></i> ${currentUser.name}`;
-        if (sellerLink && currentUser.role === 'seller') {
-            sellerLink.style.display = 'block';
-        }
-        
-        // Меняем иконку пользователя
         if (userBtn) {
             userBtn.innerHTML = `<i class="fas fa-user"></i> ${currentUser.name}`;
             userBtn.style.width = 'auto';
@@ -159,62 +105,40 @@ window.updateUserInterface = function() {
             userBtn.style.borderRadius = '20px';
             userBtn.style.gap = '8px';
         }
-        
-        // Показываем кнопку выхода
         if (logoutBtn) logoutBtn.style.display = 'flex';
-        
     } else {
-        // Скрываем информацию о пользователе
-        if (authButtons) authButtons.style.display = 'block';
-        if (userInfo) userInfo.style.display = 'none';
-        
-        // Возвращаем иконку пользователя
         if (userBtn) {
             userBtn.innerHTML = `<i class="fas fa-user"></i>`;
             userBtn.style.width = '40px';
             userBtn.style.padding = '0';
             userBtn.style.borderRadius = '50%';
         }
-        
-        // Скрываем кнопку выхода
         if (logoutBtn) logoutBtn.style.display = 'none';
     }
 };
 
-// Отслеживание состояния авторизации
-if (window.auth) {
-    window.auth.onAuthStateChanged(async (user) => {
-        console.log('Auth state changed:', user ? user.email : 'null');
-        if (user) {
-            const userDoc = await window.db.collection('users').doc(user.uid).get();
-            if (userDoc.exists) {
-                const userData = userDoc.data();
-                sessionStorage.setItem('currentUser', JSON.stringify({
-                    id: user.uid,
-                    name: userData.name,
-                    email: user.email,
-                    role: userData.role
-                }));
-            } else {
-                sessionStorage.setItem('currentUser', JSON.stringify({
-                    id: user.uid,
-                    name: user.email.split('@')[0],
-                    email: user.email,
-                    role: 'buyer'
-                }));
-            }
-        } else {
-            sessionStorage.removeItem('currentUser');
+// Отслеживание состояния
+window.auth.onAuthStateChanged(async (user) => {
+    if (user) {
+        const userDoc = await window.db.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+            sessionStorage.setItem('currentUser', JSON.stringify({
+                id: user.uid,
+                name: userDoc.data().name,
+                email: user.email,
+                role: userDoc.data().role
+            }));
         }
-        window.updateUserInterface();
-    });
-}
+    } else {
+        sessionStorage.removeItem('currentUser');
+    }
+    window.updateUserInterface();
+});
 
 // Обработчики форм
 document.addEventListener('DOMContentLoaded', function() {
     window.updateUserInterface();
     
-    // Регистрация
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
         registerForm.addEventListener('submit', async function(e) {
@@ -241,7 +165,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Вход
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', async function(e) {
@@ -256,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (result.userData.role === 'seller') {
                     window.location.href = 'seller-dashboard.html';
                 } else {
-                    window.location.href = 'profile.html';
+                    window.location.href = 'index.html';
                 }
             } else {
                 alert('Ошибка: ' + result.error);
@@ -265,7 +188,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Глобальные функции
 window.logout = window.logoutUser;
 
 window.toggleUserDropdown = function() {
@@ -284,13 +206,8 @@ document.addEventListener('click', function(e) {
 window.selectRole = function(role) {
     const roleInput = document.getElementById('regRole');
     if (roleInput) roleInput.value = role;
-    
     document.querySelectorAll('.role-option').forEach(opt => {
         opt.classList.remove('selected');
-        if (opt.getAttribute('data-role') === role) {
-            opt.classList.add('selected');
-        }
+        if (opt.getAttribute('data-role') === role) opt.classList.add('selected');
     });
 };
-
-console.log('✅ auth.js загружен');
