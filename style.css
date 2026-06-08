@@ -986,11 +986,12 @@ body {
 }
 
 /* ==================== ПОДВАЛ ==================== */
+
 .footer {
-    background: var(--bg-card);
+    background: #0a0a0f;
     padding: 60px 0 30px;
     border-top: 1px solid rgba(124, 58, 237, 0.2);
-    margin-top: 60px;
+    margin-top: 80px;
 }
 
 .footer-content {
@@ -1003,17 +1004,35 @@ body {
 .footer-section .logo {
     font-size: 24px;
     margin-bottom: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .footer-section p {
-    color: var(--text-gray);
+    color: #94a3b8;
     font-size: 14px;
     line-height: 1.6;
+    margin-bottom: 20px;
 }
 
 .footer-section h4 {
+    color: white;
+    font-size: 18px;
     margin-bottom: 20px;
-    color: var(--text-white);
+    position: relative;
+    display: inline-block;
+}
+
+.footer-section h4::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(135deg, #7c3aed, #c084fc);
+    border-radius: 2px;
 }
 
 .footer-section ul {
@@ -1025,15 +1044,41 @@ body {
 }
 
 .footer-section ul a {
-    color: var(--text-gray);
+    color: #94a3b8;
     text-decoration: none;
-    transition: var(--transition-fast);
+    transition: all 0.3s;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .footer-section ul a:hover {
-    color: var(--primary);
+    color: #7c3aed;
+    transform: translateX(5px);
 }
 
+/* Платежные методы */
+.payment-methods {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.payment-methods i {
+    font-size: 32px;
+    color: #94a3b8;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.payment-methods i:hover {
+    color: #7c3aed;
+    transform: translateY(-3px);
+}
+
+/* Контактные кнопки */
 .contact-buttons {
     display: flex;
     flex-direction: column;
@@ -1043,38 +1088,165 @@ body {
 .contact-btn {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    color: var(--text-white);
+    gap: 15px;
+    padding: 12px 18px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(124, 58, 237, 0.2);
+    border-radius: 14px;
     text-decoration: none;
-    transition: var(--transition-fast);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    transition: left 0.5s;
+}
+
+.contact-btn:hover::before {
+    left: 100%;
 }
 
 .contact-btn:hover {
-    background: var(--primary);
-    transform: translateX(5px);
+    transform: translateX(8px);
+    border-color: currentColor;
 }
 
-.contact-btn i {
-    font-size: 18px;
+.contact-btn i:first-child {
+    font-size: 28px;
 }
 
-.payment-methods {
-    margin-top: 20px;
+.contact-info {
+    flex: 1;
     display: flex;
-    gap: 15px;
-    font-size: 24px;
-    color: var(--text-gray);
+    flex-direction: column;
 }
 
+.contact-name {
+    font-weight: 600;
+    font-size: 15px;
+    color: white;
+}
+
+.contact-username {
+    font-size: 11px;
+    opacity: 0.6;
+    color: #94a3b8;
+}
+
+.arrow-icon {
+    font-size: 14px;
+    transition: transform 0.3s;
+    color: #94a3b8;
+}
+
+.contact-btn:hover .arrow-icon {
+    transform: translateX(5px);
+    color: currentColor;
+}
+
+.contact-btn.telegram {
+    color: #0088cc;
+}
+.contact-btn.telegram:hover {
+    background: rgba(0, 136, 204, 0.08);
+    border-color: #0088cc;
+}
+.contact-btn.telegram:hover .contact-name {
+    color: #0088cc;
+}
+
+.contact-btn.vk {
+    color: #4a76a8;
+}
+.contact-btn.vk:hover {
+    background: rgba(74, 118, 168, 0.08);
+    border-color: #4a76a8;
+}
+.contact-btn.vk:hover .contact-name {
+    color: #4a76a8;
+}
+
+.contact-btn.discord {
+    color: #5865f2;
+}
+.contact-btn.discord:hover {
+    background: rgba(88, 101, 242, 0.08);
+    border-color: #5865f2;
+}
+.contact-btn.discord:hover .contact-name {
+    color: #5865f2;
+}
+
+/* Нижняя часть подвала */
 .footer-bottom {
-    text-align: center;
     padding-top: 30px;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
-    color: var(--text-gray);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.footer-bottom p {
+    color: #94a3b8;
     font-size: 13px;
+}
+
+.footer-links {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.3s;
+}
+
+.footer-links a:hover {
+    color: #7c3aed;
+}
+
+/* Адаптивность подвала */
+@media (max-width: 768px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 30px;
+    }
+    
+    .footer-section h4::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .contact-btn {
+        justify-content: center;
+    }
+    
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .footer-links {
+        justify-content: center;
+    }
+    
+    .payment-methods {
+        justify-content: center;
+    }
 }
 
 /* ==================== МОДАЛЬНЫЕ ОКНА ==================== */
